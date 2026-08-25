@@ -63,14 +63,14 @@ const REALTIME_VOICE = 'cedar';
  *  is picked at random per connect so the greeting varies. Hardcoded constants
  *  (never user/external text) — safe to speak verbatim, no sanitization needed. */
 const GREETINGS = [
-  "Hi, what's up?",
-  "Hey, how's it going?",
-  "Hello, how can I help you?",
-  "Hey there, Michael here — what can I do for you?",
-  "Hi! What are we working on today?",
-  "Hey, good to hear you. What's on your mind?",
-  "Hello! What do you need?",
-  "Hey, I'm all ears — what's going on?"
+  'やあ、どうしたの？',
+  'ねえ、調子はどう？',
+  'こんにちは。何かお手伝いできることは？',
+  'やあ、Michaelだよ。何をしてほしい？',
+  'こんにちは！今日は何に取り組む？',
+  'やあ、声が聞けて嬉しいよ。何か考えてることは？',
+  'こんにちは！何か必要なことはある？',
+  'やあ、しっかり聞くよ。どうしたの？'
 ];
 
 /** Michael's voice persona (rt-6 — the final Phase-1 instructions, authored by god). Michael
@@ -208,7 +208,7 @@ function wire(s: RealtimeSession): void {
   // recover from a transient error). A hard transport drop is handled by disconnect().
   s.on('error', (err) => {
     const e = (err as { error?: unknown })?.error;
-    const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : 'realtime session error';
+    const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : 'リアルタイムセッションエラー';
     setState({ error: msg });
   });
 
@@ -254,9 +254,9 @@ function teardownMedia(): void {
 function micFriendly(msg: string): string {
   const m = msg.toLowerCase();
   if (m.includes('permission') || m.includes('notallowed') || m.includes('denied'))
-    return 'microphone permission denied — allow mic access to talk to Michael';
+    return 'マイクの権限が拒否されました — Michaelと話すにはマイクへのアクセスを許可してください';
   if (m.includes('notfound') || m.includes('device'))
-    return 'no microphone found — check your input device';
+    return 'マイクが見つかりません — 入力デバイスを確認してください';
   return msg;
 }
 

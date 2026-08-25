@@ -52,12 +52,12 @@ export function AgentControlStrip({ agentId }: { agentId: string }) {
   const togglePause = async () => {
     const s = snap?.paused ? await window.cth.controlResume(agentId) : await window.cth.controlPause(agentId, true);
     if (s) setSnap(s);
-    flash(snap?.paused ? 'tools allowed again' : 'tools blocked from the next call on');
+    flash(snap?.paused ? 'ツールの使用を再許可しました' : '次回の呼び出しからツールをブロックします');
   };
   const halt = async () => {
     const s = await window.cth.controlHalt(agentId);
     if (s) setSnap(s);
-    flash('will stop after the current step');
+    flash('現在のステップ完了後に停止します');
   };
   const sendSteer = async () => {
     const t = steer.trim();
@@ -65,7 +65,7 @@ export function AgentControlStrip({ agentId }: { agentId: string }) {
     const s = await window.cth.controlSteer(agentId, t);
     if (s) setSnap(s);
     setSteer('');
-    flash('note queued, arrives on its next turn');
+    flash('メモを送信キューに追加しました。次のターンで届きます');
   };
 
   return (
@@ -82,20 +82,20 @@ export function AgentControlStrip({ agentId }: { agentId: string }) {
           <span
             className="cth-tip cth-tip-left cth-tip-wrap"
             data-tip={snap?.paused
-              ? 'Give its tools back. The agent keeps its session and picks up where it stopped.'
-              : 'The agent keeps thinking and talking to you, but cannot read, write or run anything until you allow it again. Immediate, and reversible.'}
-            aria-label={snap?.paused ? 'Allow tools again' : 'Block this agent from using tools'}
+              ? 'ツールを返却します。エージェントはセッションを維持し、停止した箇所から再開します。'
+              : 'エージェントは思考や会話を続けますが、再度許可するまで読み・書き・実行はできません。即時かつ取り消し可能です。'}
+            aria-label={snap?.paused ? 'ツールを再度許可' : 'このエージェントのツール使用をブロック'}
           >
-            {snap?.paused ? 'allow tools' : 'block tools'}
+            {snap?.paused ? 'ツール許可' : 'ツール遮断'}
           </span>
         </PixelButton>
         <PixelButton variant="destructive" size="sm" onClick={halt}>
           <span
             className="cth-tip cth-tip-left cth-tip-wrap"
-            data-tip="Let it finish the step it is on, then stop. The process and its session survive, so Restart and Continue can pick it back up. To end the process outright, use the X."
-            aria-label="Stop this agent after the current step"
+            data-tip="現在のステップが終わった時点で停止します。プロセスとセッションは保持されるため、再起動・続行から復帰できます。完全に終了する場合は ✕ を使用してください。"
+            aria-label="このエージェントを現在のステップ後に停止"
           >
-            stop after this step
+            このステップ後に停止
           </span>
         </PixelButton>
         {/* Sits with them at the founder's call. It is a different KIND of
@@ -106,10 +106,10 @@ export function AgentControlStrip({ agentId }: { agentId: string }) {
         {/* v0.3.4: the auto-delivery switch moved to the god's Command Center
             header — ONE floor-wide control instead of a per-agent toggle. */}
         {snap?.autoDeliveryPaused && (
-          <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>queued messages held (whole floor)</span>
+          <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>メッセージを保留中（フロア全体）</span>
         )}
-        {snap?.halted && <span style={{ fontSize: 11, color: 'var(--cth-coral)' }}>stopping after this step…</span>}
-        {!!snap?.pendingSteers && <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>{snap.pendingSteers} note{snap.pendingSteers === 1 ? '' : 's'} waiting</span>}
+        {snap?.halted && <span style={{ fontSize: 11, color: 'var(--cth-coral)' }}>このステップ後に停止します…</span>}
+        {!!snap?.pendingSteers && <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>メモ{snap.pendingSteers}件 待機中</span>}
       </div>
       <div style={{ display: 'flex', gap: 6 }}>
         <input
@@ -117,7 +117,7 @@ export function AgentControlStrip({ agentId }: { agentId: string }) {
           value={steer}
           onChange={(e) => setSteer(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') sendSteer(); }}
-          placeholder="send this agent a note… (arrives as context on its next turn, nothing is typed into its terminal)"
+          placeholder="このエージェントへメモを送る… (次のターンでコンテキストとして渡され、ターミナルには入力されません)"
           style={{
             flex: 1, padding: '4px 6px', background: 'var(--cth-paper-100)', border: 'none',
             fontFamily: 'var(--cth-font-ui)',
@@ -127,9 +127,9 @@ export function AgentControlStrip({ agentId }: { agentId: string }) {
         <PixelButton variant="secondary" size="sm" onClick={sendSteer} disabled={!steer.trim()}>
           <span
             className="cth-tip cth-tip-wrap"
-            data-tip="Hands the agent a note at its next turn boundary. It does not interrupt what it is doing now, and nothing is typed into its terminal."
-            aria-label="Send this agent a note"
-          >send</span>
+            data-tip="次のターンの区切りでエージェントにメモを渡します。現在の作業は中断されず、ターミナルには何も入力されません。"
+            aria-label="このエージェントにメモを送信"
+          >送信</span>
         </PixelButton>
       </div>
       {note && <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>{note}</span>}

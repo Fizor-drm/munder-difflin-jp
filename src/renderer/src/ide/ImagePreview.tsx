@@ -63,22 +63,22 @@ export function ImagePreview({ root, rel, onCopyPath, onViewSource }: ImagePrevi
             <button
               key={String(v)}
               onClick={() => setFit(v)}
-              title={v ? 'Scale the image down to fit the pane' : 'Show every pixel at 1:1 (scroll to pan)'}
+              title={v ? '画像をペインに収めて表示' : '全ピクセルを等倍で表示（スクロールで移動）'}
               style={{
                 ...ideTextBtn,
                 background: fit === v ? 'var(--cth-sky-light)' : 'var(--cth-cream-100)',
                 boxShadow: fit === v ? 'inset 0 0 0 1px var(--cth-ink-500)' : 'inset 0 0 0 1px var(--cth-ink-100)'
               }}
-            >{v ? 'fit' : '1:1'}</button>
+            >{v ? 'フィット' : '1:1'}</button>
           ))}
         </span>
 
         {onViewSource && (
-          <button onClick={onViewSource} title="Open the SVG markup in the editor" style={ideTextBtn}>
-            view source
+          <button onClick={onViewSource} title="SVG のソースをエディタで開く" style={ideTextBtn}>
+            ソース表示
           </button>
         )}
-        <button onClick={onCopyPath} title="Copy absolute path" style={ideTextBtn}>copy path</button>
+        <button onClick={onCopyPath} title="絶対パスをコピー" style={ideTextBtn}>パスをコピー</button>
       </div>
 
       <div style={{
@@ -99,11 +99,11 @@ export function ImagePreview({ root, rel, onCopyPath, onViewSource }: ImagePrevi
         backgroundSize: '16px 16px',
         backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px'
       }}>
-        {img.status === 'loading' && <Centered>loading image…</Centered>}
+        {img.status === 'loading' && <Centered>画像を読み込み中…</Centered>}
         {img.status === 'error' && <Centered tone="error">{img.error}</Centered>}
         {img.status === 'ready' && decodeFailed && (
           <Centered tone="error">
-            could not decode this image — the file may be corrupt or misnamed
+            画像をデコードできませんでした — ファイルが破損しているか、拡張子が誤っている可能性があります
           </Centered>
         )}
         {img.status === 'ready' && !decodeFailed && (

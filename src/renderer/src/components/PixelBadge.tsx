@@ -34,18 +34,18 @@ const colorByStatus: Record<StatusKind, string> = {
 // so it reads as "needs you"; sub-agents waiting on god/another agent are
 // "waiting", which is honest about who they're actually stalled on.
 const labelByStatus: Record<StatusKind, string> = {
-  idle:     'idle',
-  thinking: 'working',
-  working:  'working',
-  waiting:  'waiting',
-  blocked:  'needs you',
-  success:  'done',
-  ghost:    'gone',
-  compacting: 'compacting',
-  looping:    'looping',
+  idle:     'アイドル',
+  thinking: '作業中',
+  working:  '作業中',
+  waiting:  '待機中',
+  blocked:  '応答が必要',
+  success:  '完了',
+  ghost:    '切断',
+  compacting: '圧縮中',
+  looping:    'ループ中',
   // Reads as "you are typing", not "the agent is typing" — it is your text
   // sitting on the prompt, and it is why nothing is being delivered.
-  typing:     'your draft'
+  typing:     '入力中（下書き）'
 };
 
 export function PixelBadge({ status, label, style }: PixelBadgeProps) {

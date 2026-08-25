@@ -31,7 +31,7 @@ export function OrgSection({ onSummary }: { onSummary?: (s: string) => void }) {
   }, [mirror]);
 
   useEffect(() => {
-    onSummary?.(!cfg.apiKey.trim() ? 'no key' : cfg.enabled ? 'on' : 'off');
+    onSummary?.(!cfg.apiKey.trim() ? 'キーなし' : cfg.enabled ? 'オン' : 'オフ');
   }, [cfg, onSummary]);
 
   const apply = (next: OrgTriggerConfig, persist = true) => {
@@ -45,34 +45,33 @@ export function OrgSection({ onSummary }: { onSummary?: (s: string) => void }) {
     <>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ flex: 1, fontSize: 12, color: 'var(--cth-ink-700)' }}>
-          Accept messages from your organisation
+          組織からのメッセージを受け入れる
         </span>
         <Toggle on={cfg.enabled} onClick={() => apply({ ...cfg, enabled: !cfg.enabled })} />
       </div>
 
-      <Field label="ORGANISATION KEY">
+      <Field label="組織キー">
         <SecretField
           value={cfg.apiKey}
           revealed={revealed}
           onReveal={() => setRevealed((r) => !r)}
-          placeholder="paste your key"
+          placeholder="キーを貼り付け"
           onChange={(apiKey) => apply({ ...cfg, apiKey }, false)}
           onBlur={() => apply(cfg)}
         />
         <Hint>{CLONE_NODE_BLURB}</Hint>
       </Field>
 
-      <Field label="TRUST">
+      <Field label="信頼モード">
         <ModePicker value={cfg.mode} onChange={(mode: TriggerMode) => apply({ ...cfg, mode })} />
       </Field>
 
       <Callout tone="note">
-        Settings only, for now. The org messaging service does not exist yet, so a key here starts no
-        connection and nothing is sent or received. It is stored ready for when it does.
+        現時点では設定のみです。組織メッセージングサービスはまだ存在しないため、ここでキーを保存しても接続は開始されず、送受信も行われません。サービス提供時に備えて保存されます。
       </Callout>
 
       {cfg.enabled && !hasKey && (
-        <Callout>This is switched on with no key set, so no teammate can reach you yet.</Callout>
+        <Callout>オンになっていますが、キーが未設定のため、まだ誰もあなたに届きません。</Callout>
       )}
     </>
   );

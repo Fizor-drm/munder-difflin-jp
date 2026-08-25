@@ -32,11 +32,11 @@ test('normalizeWeekly sorts, de-dupes and rejects nonsense', () => {
 });
 
 test('formatWeekly names the common sets rather than listing them', () => {
-  assert.equal(formatWeekly({ days: [0, 1, 2, 3, 4, 5, 6], minute: 540 }), 'every day at 09:00');
-  assert.equal(formatWeekly({ days: [1, 2, 3, 4, 5], minute: 540 }), 'weekdays at 09:00');
-  assert.equal(formatWeekly({ days: [0, 6], minute: 630 }), 'weekends at 10:30');
-  assert.equal(formatWeekly({ days: [1, 4], minute: 870 }), 'Mon, Thu at 14:30');
-  assert.equal(formatWeekly({ days: [], minute: 0 }), 'no days picked');
+  assert.equal(formatWeekly({ days: [0, 1, 2, 3, 4, 5, 6], minute: 540 }), '毎日 09:00');
+  assert.equal(formatWeekly({ days: [1, 2, 3, 4, 5], minute: 540 }), '平日 09:00');
+  assert.equal(formatWeekly({ days: [0, 6], minute: 630 }), '週末 10:30');
+  assert.equal(formatWeekly({ days: [1, 4], minute: 870 }), '月・木 14:30');
+  assert.equal(formatWeekly({ days: [], minute: 0 }), '曜日が未選択');
   assert.equal(formatMinute(0), '00:00');
   assert.equal(formatMinute(1439), '23:59');
 });

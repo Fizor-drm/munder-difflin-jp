@@ -305,14 +305,14 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
         <span style={{
           fontFamily: 'var(--cth-font-display)', fontSize: 12, lineHeight: '20px',
           color: 'var(--cth-ink-900)'
-        }}>MUNDER DIFFLIN · FOCUS MODE</span>
+        }}>MUNDER DIFFLIN · 集中モード</span>
         {/* Same top-right controls as the main title bar — fullscreen covers
             it, so theme / exit-fullscreen / IDE must live here too. */}
         <div className="cth-titlebar-nodrag" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
           <button
             onClick={toggleRoster}
-            title={rosterCollapsed ? 'Show the agent list' : 'Hide the agent list — full-width terminal'}
-            aria-label={rosterCollapsed ? 'Show the agent list' : 'Hide the agent list'}
+            title={rosterCollapsed ? 'エージェント一覧を表示' : 'エージェント一覧を非表示（全幅ターミナル）'}
+            aria-label={rosterCollapsed ? 'エージェント一覧を表示' : 'エージェント一覧を非表示'}
             aria-pressed={rosterCollapsed}
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -336,8 +336,8 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
               // running TUI. Both entry points must tell them.
               notifyThemeChangeAll(next === 'dark' ? 'dark' : 'light');
             }}
-            title={appThemeNow === 'dark' ? 'Switch to the light theme' : 'Switch to the dark theme'}
-            aria-label="Toggle dark mode"
+            title={appThemeNow === 'dark' ? 'ライトテーマに切替' : 'ダークテーマに切替'}
+            aria-label="ダークモード切替"
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 28, height: 28, padding: 0,
@@ -356,8 +356,8 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
           <button
             className="cth-settings-btn"
             onClick={() => window.dispatchEvent(new CustomEvent('cth:open-settings'))}
-            title="Settings"
-            aria-label="Settings"
+            title="設定"
+            aria-label="設定"
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 28, height: 28, padding: 0,
@@ -378,8 +378,8 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
           </button>
           <button
             onClick={() => setFullscreen(null)}
-            title="Exit focus mode (Esc)"
-            aria-label="Exit focus mode"
+            title="集中モードを終了 (Esc)"
+            aria-label="集中モードを終了"
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 28, height: 28, padding: 0,
@@ -415,7 +415,7 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
           <div style={{ padding: 8, borderBottom: '1px solid var(--cth-ink-300)' }}>
             <button
               onClick={() => setAddAgentOpen(true)}
-              title="Add agent"
+              title="エージェント追加"
               style={{
                 width: '100%', height: 32,
                 background: 'var(--cth-cream-100)',
@@ -428,7 +428,7 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
                 cursor: 'pointer'
               }}
             >
-              <Icon name="plus" /> agent
+              <Icon name="plus" /> エージェント
             </button>
           </div>
 
@@ -504,7 +504,7 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
                   background: 'var(--cth-status-working)',
                   boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)'
                 }}>
-                  <Icon name="play" /> restoring your team…
+                  <Icon name="play" /> チームを復元しています…
                 </div>
               )}
               {!autoRestoring && restorableAgents.length > 0 && (
@@ -514,10 +514,10 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
                   onClick={restoreTeam}
                   disabled={restoring}
                   style={{ width: '100%' }}
-                  title={`Respawn from last session: ${restorableAgents.map((a: Agent) => a.name).join(', ')} — same ids, memory and inboxes reattach automatically`}
+                  title={`前回のセッションから復元: ${restorableAgents.map((a: Agent) => a.name).join(', ')} — 同じID・メモリ・受信箱が自動で再接続されます`}
                 >
                   <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-                    <Icon name="play" /> {restoring ? 'restoring…' : `restore team (${restorableAgents.length})`}
+                    <Icon name="play" /> {restoring ? '復元中…' : `チームを復元 (${restorableAgents.length})`}
                   </span>
                 </PixelButton>
               )}
@@ -526,7 +526,7 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
                   {restorableAgents.map((a: Agent) => (
                     <span
                       key={a.id}
-                      title={`${a.name} — restorable from last session`}
+                      title={`${a.name} — 前回のセッションから復元可能`}
                       style={{
                         display: 'inline-flex', alignItems: 'center', gap: 2,
                         height: 20, padding: '0 2px 0 6px',
@@ -538,8 +538,8 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
                       {a.name}
                       <button
                         onClick={() => useStore.getState().removeRestorableAgent(a.id)}
-                        title={`Dismiss ${a.name} — remove permanently from the restore list`}
-                        aria-label={`Dismiss ${a.name}`}
+                        title={`${a.name}を除外 — 復元リストから完全に削除します`}
+                        aria-label={`${a.name}を除外`}
                         style={{
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                           width: 14, height: 14, padding: 0, lineHeight: 1,
@@ -632,7 +632,7 @@ function ContextBar({ tokens, limit, accent }: { tokens?: number; limit?: number
   const k = (n: number) => (n >= 1000 ? `${Math.round(n / 1000)}k` : String(n));
   return (
     <div
-      title={`Context: ${k(tokens)} / ${k(limit)} tokens (${pct}%)`}
+      title={`コンテキスト: ${k(tokens)} / ${k(limit)} トークン (${pct}%)`}
       style={{ display: 'flex', alignItems: 'center', gap: 5, minWidth: 0 }}
     >
       <span style={{
@@ -771,8 +771,8 @@ function SidebarRow({
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); toggleEditor(); }
               }}
-              title={agent.note ? 'Edit private note' : 'Add private note'}
-              aria-label={`Edit note for ${agent.name}`}
+              title={agent.note ? 'プライベートメモを編集' : 'プライベートメモを追加'}
+              aria-label={`${agent.name}のメモを編集`}
               style={{
                 flexShrink: 0, width: 20, height: 20,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -796,8 +796,8 @@ function SidebarRow({
             <span style={{
               flexShrink: 0, maxWidth: '52%',
               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-            }} title={agent.model ? `Model: ${agent.model}` : 'Runs the CLI default model'}>
-              {shortModel(agent.model) ?? 'CLI default'}
+            }} title={agent.model ? `モデル: ${agent.model}` : 'CLIのデフォルトモデルを使用'}>
+              {shortModel(agent.model) ?? 'CLIデフォルト'}
             </span>
             <span style={{ flexShrink: 0, opacity: 0.5 }}>·</span>
             <span style={{
@@ -834,7 +834,7 @@ function SidebarRow({
               <span style={{
                 fontSize: scale.note, lineHeight: 1.35,
                 color: 'var(--cth-ink-300)', fontStyle: 'italic'
-              }}>no note</span>
+              }}>メモなし</span>
             )}
           </div>
         </div>
@@ -867,7 +867,7 @@ function SidebarRow({
             fontSize: noteLabelSize,
             lineHeight: `${Math.round(noteLabelSize * 1.5)}px`,
             color: 'var(--cth-ink-700)'
-          }}>PRIVATE NOTE</div>
+          }}>プライベートメモ</div>
           {/* A textarea, not an input: the note is a bullet list, so Enter has
               to make a new line rather than doing nothing. autoFocus is safe
               now that opening is an explicit click, not a pointer fly-by. */}
@@ -882,8 +882,8 @@ function SidebarRow({
                 buttonRef.current?.focus();
               }
             }}
-            placeholder="one line per bullet…"
-            aria-label={`Note for ${agent.name}`}
+            placeholder="1行に1項目…"
+            aria-label={`${agent.name}のメモ`}
             style={{
               width: '100%',
               height: noteHeight,
@@ -902,7 +902,7 @@ function SidebarRow({
           />
           <div style={{
             marginTop: 5, fontSize: 10, color: 'var(--cth-ink-500)'
-          }}>one line = one bullet · esc to close</div>
+          }}>1行 = 1項目 · escで閉じる</div>
         </div>
         </>,
         document.body
@@ -933,7 +933,7 @@ function Header({ agent, onEdit }: { agent: Agent; onEdit: () => void }) {
    *  button would read as "restart Michael" while looking like "close". */
   const onKill = async () => {
     if (!agent.ptyId) return;
-    if (!confirm(`Close ${agent.name}? The PTY process will terminate and the agent is archived (kept in history, off the floor).`)) return;
+    if (!confirm(`${agent.name}を閉じますか？PTYプロセスが終了し、エージェントはアーカイブされます（履歴には残りますが、フロアからは退場します）。`)) return;
     await window.cth.killPty(agent.ptyId);
     disposeTerminal(agent.ptyId);
     // archiveAgent re-homes focus mode to the next agent, and only leaves it when
@@ -963,8 +963,8 @@ function Header({ agent, onEdit }: { agent: Agent; onEdit: () => void }) {
         <PixelButton variant="secondary" size="sm" onClick={onEdit}>
           <span
             className="cth-tip cth-tip-left cth-tip-wrap"
-            data-tip={`Edit ${agent.name}: their name and face, which engine they run on, and the briefing that tells them what they are for.`}
-            aria-label={`Edit ${agent.name}`}
+            data-tip={`${agent.name}を編集：名前と見た目、実行エンジン、そして役割を伝えるブリーフィング。`}
+            aria-label={`${agent.name}を編集`}
             style={{ display: 'inline-flex', alignItems: 'center', lineHeight: 0 }}
           >
             <Icon name="edit" />
@@ -989,8 +989,8 @@ function Header({ agent, onEdit }: { agent: Agent; onEdit: () => void }) {
         <PixelButton variant="secondary" size="sm" onClick={() => useStore.getState().setIdeOpen(true, agent.id)}>
           <span
             className="cth-tip cth-tip-wrap"
-            data-tip={`Open the IDE: browse and edit files in ${agent.name}'s workspace, and see their uncommitted changes as a diff.`}
-            aria-label="Open the IDE"
+            data-tip={`IDEを開く：${agent.name}のワークスペースのファイルを閲覧・編集し、未コミットの変更をdiffで確認します。`}
+            aria-label="IDEを開く"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
           >
             <Icon name="code" /> IDE
@@ -1005,12 +1005,12 @@ function Header({ agent, onEdit }: { agent: Agent; onEdit: () => void }) {
         <PixelButton variant="secondary" size="sm" onClick={openTerminal} disabled={openState === 'opening'}>
           <span
             className="cth-tip cth-tip-wrap"
-            data-tip={`Open your system terminal app in ${agent.worktreePath || agent.cwd} — a normal shell in this agent's folder, separate from the agent's own terminal.`}
-            aria-label="Open a system terminal in this agent's folder"
+            data-tip={`${agent.worktreePath || agent.cwd} でシステムのターミナルアプリを開きます — このエージェントのフォルダでの通常のシェルで、エージェント自身のターミナルとは別物です。`}
+            aria-label="このエージェントのフォルダでシステムターミナルを開く"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
           >
             <Icon name="terminal" />
-            {openState === 'opening' ? '...' : openState === 'ok' ? 'ok' : openState === 'error' ? 'err' : 'terminal'}
+            {openState === 'opening' ? '...' : openState === 'ok' ? 'OK' : openState === 'error' ? 'エラー' : 'ターミナル'}
           </span>
         </PixelButton>
         {/* The badge is a STATUS, not a button, but it sits in a row of them.
@@ -1031,7 +1031,7 @@ function Header({ agent, onEdit }: { agent: Agent; onEdit: () => void }) {
                 24px box — the button measured the same as its neighbours while
                 reading taller than them. */}
             <span
-              title={`Close ${agent.name} — ends the process and archives the agent`}
+              title={`${agent.name}を閉じる — プロセスを終了してエージェントをアーカイブします`}
               style={{ display: 'inline-flex', alignItems: 'center', lineHeight: 0 }}
             >
               <Icon name="x" />

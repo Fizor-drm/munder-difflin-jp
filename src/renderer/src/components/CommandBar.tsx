@@ -56,7 +56,7 @@ export function CommandBar({ accent, busy, blocked, onSend }: CommandBarProps) {
               cursor: 'pointer'
             }}
           >
-            {m === 'free' ? 'free' : m === 'slash' ? '/skill' : 'quick'}
+            {m === 'free' ? 'フリー' : m === 'slash' ? '/skill' : 'クイック'}
           </button>
         ))}
       </div>
@@ -73,7 +73,7 @@ export function CommandBar({ accent, busy, blocked, onSend }: CommandBarProps) {
             value={text}
             onChange={e => setText(e.target.value)}
             onKeyDown={onKey}
-            placeholder={blocked ? "Ada needs you..." : busy ? "Ada is working..." : "Type a command"}
+            placeholder={blocked ? "Adaがあなたの入力を待っています…" : busy ? "Adaが作業中…" : "コマンドを入力"}
             style={{
               flex: 1,
               padding: '4px 6px 2px',
@@ -89,13 +89,13 @@ export function CommandBar({ accent, busy, blocked, onSend }: CommandBarProps) {
           />
           <PixelButton variant="primary" size="md" onClick={send}>
             <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-              send <Icon name="arrow-right" />
+              送信 <Icon name="arrow-right" />
             </span>
           </PixelButton>
         </div>
       </PixelPanel>
-      {busy && <span style={{ fontSize: 12, color: 'var(--cth-ink-500)' }}>Ada is mid-tool. Queue or hit pause.</span>}
-      {blocked && <span style={{ fontSize: 12, color: 'var(--cth-coral)' }}>Approval needed.</span>}
+      {busy && <span style={{ fontSize: 12, color: 'var(--cth-ink-500)' }}>Adaがツール実行中です。キューに入れるか一時停止してください。</span>}
+      {blocked && <span style={{ fontSize: 12, color: 'var(--cth-coral)' }}>承認が必要です。</span>}
     </div>
   );
 }

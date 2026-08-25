@@ -103,7 +103,7 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
         setTimeout(() => setOpenTerminalState('idle'), 1500);
       } else {
         setOpenTerminalState('error');
-        setOpenTerminalError(result.error ?? 'unknown error');
+        setOpenTerminalError(result.error ?? '不明なエラー');
         setTimeout(() => setOpenTerminalState('idle'), 4000);
       }
     } catch (e) {
@@ -115,7 +115,7 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
 
   const onKill = async () => {
     if (!agent.ptyId) return;
-    if (!confirm(`Close ${agent.name}? The PTY process will terminate and the agent is archived (kept in history, off the floor).`)) return;
+    if (!confirm(`${agent.name} を閉じますか？ PTYプロセスは終了し、エージェントはアーカイブされます（履歴には残り、フロアからは外れます）。`)) return;
     await window.cth.killPty(agent.ptyId);
     disposeTerminal(agent.ptyId);
     archiveAgent(agent.id);
@@ -173,11 +173,11 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
         <PixelButton variant="secondary" size="sm" onClick={() => setEditOpen(true)}>
           <span
             className="cth-tip cth-tip-wrap"
-            data-tip={`Edit ${agent.name}: their name and face, which engine they run on, and the briefing that tells them what they are for.`}
-            aria-label="Edit this agent"
+            data-tip={`${agent.name} を編集：名前と顔、実行エンジン、そして役割を伝えるブリーフィング。`}
+            aria-label="このエージェントを編集"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
           >
-            <Icon name="edit" />{!compactHeader && ' edit'}
+            <Icon name="edit" />{!compactHeader && ' 編集'}
           </span>
         </PixelButton>
         {/* v0.3.4: the IDE lives at agent level (replaces the old files tab) —
@@ -185,8 +185,8 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
         <PixelButton variant="secondary" size="sm" onClick={() => useStore.getState().setIdeOpen(true, agent.id)}>
           <span
             className="cth-tip cth-tip-wrap"
-            data-tip={`Open the IDE: browse and edit files in ${agent.project}, and see uncommitted changes as a diff.`}
-            aria-label="Open the IDE"
+            data-tip={`IDEを開く: ${agent.project} のファイルを閲覧・編集し、未コミットの変更をdiffで確認できます。`}
+            aria-label="IDEを開く"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
           >
             <Icon name="code" />{!compactHeader && ' IDE'}
@@ -198,8 +198,8 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
               get; the tip names the folder you get it in. */}
           <span
             className="cth-tip cth-tip-wrap"
-            data-tip={`Open your system terminal app in ${agent.cwd} — a normal shell in this agent's folder, separate from the agent's own terminal.`}
-            aria-label="Open a system terminal in this agent's folder"
+            data-tip={`${agent.cwd} でシステムのターミナルアプリを開きます — このエージェントのフォルダにある通常のシェルで、エージェント自身のターミナルとは別物です。`}
+            aria-label="このエージェントのフォルダでシステムターミナルを開く"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
           >
             <Icon name="terminal" />
@@ -207,9 +207,9 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
                 a click you just made, and they are two characters wide. Only
                 the resting word "terminal" is worth its space. */}
             {openTerminalState === 'opening' ? '...'
-              : openTerminalState === 'ok' ? 'ok'
-              : openTerminalState === 'error' ? 'err'
-              : compactHeader ? '' : 'terminal'}
+              : openTerminalState === 'ok' ? '完了'
+              : openTerminalState === 'error' ? '失敗'
+              : compactHeader ? '' : 'ターミナル'}
           </span>
         </PixelButton>
         {isReal && (
@@ -239,8 +239,8 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
         {sidebarTab === 'terminal' && (
           isReal && agent.ptyId ? (
             isFullscreenedHere ? (
-              <EmptyTab title="In focus mode">
-                This terminal is open in focus mode. Press Esc or exit focus mode to bring it back here.
+              <EmptyTab title="フォーカスモード中">
+                このターミナルはフォーカスモードで開いています。Escを押すかフォーカスモードを解除するとここに戻ります。
               </EmptyTab>
             ) : (
             <div style={{ flex: 1, minWidth: 0, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
@@ -265,8 +265,8 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
             </div>
             )
           ) : (
-            <EmptyTab title="No PTY">
-              This agent has no live terminal. Spawn an agent through "add agent" to use the terminal tab.
+            <EmptyTab title="PTYなし">
+              このエージェントには実行中のターミナルがありません。「エージェント追加」からスポーンするとターミナルタブを使用できます。
             </EmptyTab>
           )
         )}

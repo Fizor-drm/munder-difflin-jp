@@ -46,7 +46,7 @@ export function HivePicker({ config, onOpenCurrent }: HivePickerProps) {
       // Success never returns (the process relaunches). A return means an error.
       if (!res.ok) {
         window.localStorage.removeItem(SKIP_KEY);
-        setError(res.error ?? 'Could not open that folder.');
+        setError(res.error ?? 'そのフォルダを開けませんでした。');
         setBusy(undefined);
       }
     } catch (e) {
@@ -74,20 +74,20 @@ export function HivePicker({ config, onOpenCurrent }: HivePickerProps) {
       padding: 32
     }}>
       <div style={{ width: 560, maxWidth: '94vw' }}>
-        <PixelPanel variant="dialog" title="SELECT A HARNESS CONFIG" noPadding>
+        <PixelPanel variant="dialog" title="ハーネス設定を選択" noPadding>
           <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
             <p style={{ margin: 0, fontSize: 12, lineHeight: '19px', color: 'var(--cth-ink-700)' }}>
-              A <strong>harness config</strong> is the folder where the app keeps everything for one
-              workspace — its settings, your agents and their memory, tasks, triggers, and history.
-              Each config is separate and self-contained, so you can run different setups side by side.
-              Open the one you were working in, switch to another, or start a new one.
+              <strong>ハーネス設定</strong>は、アプリが1つのワークスペースのすべてを保存するフォルダです —
+              設定、エージェントとそのメモリ、タスク、トリガー、履歴が含まれます。
+              各設定は独立して完結しているため、異なるセットアップを並べて実行できます。
+              作業していた設定を開くことも、別の設定に切り替えることも、新しく作ることもできます。
             </p>
 
             {/* CURRENT — the last-used home, the one-click default. */}
             {current && (
               <div>
                 <div style={{ fontFamily: 'var(--cth-font-display)', fontSize: 9, color: 'var(--cth-ink-500)', marginBottom: 4 }}>
-                  CURRENT
+                  現在
                 </div>
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
@@ -104,7 +104,7 @@ export function HivePicker({ config, onOpenCurrent }: HivePickerProps) {
                     }}>{current}</div>
                   </div>
                   <PixelButton variant="primary" size="md" onClick={onOpenCurrent} disabled={!!busy}>
-                    open
+                    開く
                   </PixelButton>
                 </div>
               </div>
@@ -114,7 +114,7 @@ export function HivePicker({ config, onOpenCurrent }: HivePickerProps) {
             {recents.length > 0 && (
               <div>
                 <div style={{ fontFamily: 'var(--cth-font-display)', fontSize: 9, color: 'var(--cth-ink-500)', marginBottom: 4 }}>
-                  RECENT
+                  最近
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 220, overflowY: 'auto' }}>
                   {recents.map((h) => (
@@ -122,7 +122,7 @@ export function HivePicker({ config, onOpenCurrent }: HivePickerProps) {
                       key={h}
                       onClick={() => openHive(h)}
                       disabled={!!busy}
-                      title={`Switch to ${h} (reloads the app)`}
+                      title={`${h} に切り替えます（アプリが再読み込みされます）`}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px',
                         background: 'var(--cth-paper-100)', boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
@@ -141,7 +141,7 @@ export function HivePicker({ config, onOpenCurrent }: HivePickerProps) {
                         }}>{h}</div>
                       </div>
                       <span style={{ fontSize: 11, color: 'var(--cth-ink-500)', flexShrink: 0 }}>
-                        {busy === h ? 'opening…' : 'switch →'}
+                        {busy === h ? '開いています…' : '切り替え →'}
                       </span>
                     </button>
                   ))}
@@ -158,7 +158,7 @@ export function HivePicker({ config, onOpenCurrent }: HivePickerProps) {
 
             {busy && (
               <div style={{ fontSize: 12, color: 'var(--cth-ink-500)' }}>
-                Opening {folderName(busy)} — the app will reload…
+                {folderName(busy)} を開いています — アプリが再読み込みされます…
               </div>
             )}
 
@@ -167,12 +167,12 @@ export function HivePicker({ config, onOpenCurrent }: HivePickerProps) {
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
               <PixelButton variant="secondary" size="md" onClick={browse} disabled={!!busy}>
                 <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-                  <Icon name="folder" /> open existing config…
+                  <Icon name="folder" /> 既存の設定を開く…
                 </span>
               </PixelButton>
               <PixelButton variant="secondary" size="md" onClick={browse} disabled={!!busy}>
                 <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-                  <Icon name="plus" /> create new config…
+                  <Icon name="plus" /> 新規設定を作成…
                 </span>
               </PixelButton>
             </div>

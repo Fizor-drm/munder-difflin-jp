@@ -82,7 +82,7 @@ export function ReleaseDrop({ version, html, onDismiss }: ReleaseDropProps) {
     >
       <div
         role="dialog"
-        aria-label={`What's new in Munder Difflin ${version}`}
+        aria-label={`Munder Difflin ${version} の新着情報`}
         onClick={(e) => e.stopPropagation()}
         style={{
           margin: 'auto',
@@ -122,7 +122,7 @@ export function ReleaseDrop({ version, html, onDismiss }: ReleaseDropProps) {
           }}>
             Munder Difflin <span style={{ color: YELLOW }}>v{version.replace(/^v/, '')}</span>
             <span style={{ color: INK_FAINT, fontWeight: 500, marginLeft: 10, letterSpacing: '.12em' }}>
-              / release notes
+              / リリースノート
             </span>
           </span>
           <span aria-hidden style={{
@@ -133,8 +133,8 @@ export function ReleaseDrop({ version, html, onDismiss }: ReleaseDropProps) {
           </span>
           <button
             onClick={onDismiss}
-            aria-label="Close release notes"
-            title="Close (Esc)"
+            aria-label="リリースノートを閉じる"
+            title="閉じる(Esc)"
             style={{
               flexShrink: 0, width: 26, height: 26, padding: 0,
               background: PAPER, color: INK, border: `2px solid ${PAPER}`,
@@ -149,7 +149,7 @@ export function ReleaseDrop({ version, html, onDismiss }: ReleaseDropProps) {
             authored <a target="_blank"> reach the OS browser, and it carries no
             script, same-origin, form or navigation rights with it. */}
         <iframe
-          title={`What's new in ${version}`}
+          title={`${version} の新着情報`}
           srcDoc={srcDoc}
           sandbox="allow-popups"
           referrerPolicy="no-referrer"

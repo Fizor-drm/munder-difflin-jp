@@ -60,12 +60,12 @@ export function AgentHoldButton({ agentId }: { agentId: string }) {
         // Preload is not hot-reloaded; only a restart picks it up.
         void Promise.resolve()
           .then(() => window.cth.hiveSetAgentHold?.(agentId, !on)
-            ?? Promise.reject(new Error('restart the app: this build\'s preload predates the 1:1 control')))
+            ?? Promise.reject(new Error('アプリを再起動してください: このビルドのpreloadには1:1機能がありません')))
           // Mirror locally only after main confirms the write. Flipping
           // optimistically would show a hold Michael never heard about.
           .then((r) => {
             if (r?.ok) { setErr(null); useStore.getState().updateAgent(agentId, { onHold: !on }); }
-            else setErr(r?.error ?? 'could not set the hold');
+            else setErr(r?.error ?? '1:1を設定できませんでした');
           })
           .catch((e: unknown) => setErr(e instanceof Error ? e.message : String(e)))
           .finally(() => setBusy(false));
@@ -74,12 +74,12 @@ export function AgentHoldButton({ agentId }: { agentId: string }) {
       <span
         className="cth-tip cth-tip-wrap"
         data-tip={err ? err : on
-          ? `End the 1:1. Michael can hand ${agent.name} work again.`
-          : `Take ${agent.name} aside. Michael stops sending them work until you end it. Unlike the two buttons here, this does not restrain the agent: they keep running and keep answering you.`}
-        aria-label={on ? 'End the 1:1 and release this agent to Michael' : 'Take this agent aside for a 1:1'}
+          ? `1:1を終了します。Michaelは再び ${agent.name} に仕事を割り当てられるようになります。`
+          : `${agent.name} を個別に呼び出します。終了するまでMichaelはこのエージェントに仕事を送りません。隣の2つのボタンと違い、エージェント自体は制限されず、動き続け、あなたに応答し続けます。`}
+        aria-label={on ? '1:1を終了してこのエージェントをMichaelに戻す' : 'このエージェントを1:1で個別に呼び出す'}
         style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
       >
-        <Icon name={on ? 'pause' : 'play'} /> {err ? '1:1 failed' : on ? 'in 1:1' : '1:1'}
+        <Icon name={on ? 'pause' : 'play'} /> {err ? '1:1 失敗' : on ? '1:1 中' : '1:1'}
       </span>
     </PixelButton>
   );

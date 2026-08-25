@@ -93,21 +93,21 @@ export function HistoryPane({ gitRoot, onOpenRevDiff }: {
   }, [commits, gitRoot]);
 
   const jump = async (c: GitCommitRow) => {
-    if (!window.confirm(`Jump the repo to ${c.shortSha} ("${c.subject.slice(0, 60)}")?\n\nThis detaches HEAD. Blocked automatically if the tree is dirty or an agent is mid-run.`)) return;
+    if (!window.confirm(`リポジトリを ${c.shortSha}（「${c.subject.slice(0, 60)}」）に移動しますか？\n\nHEAD がデタッチされます。ツリーに未コミットの変更がある場合やエージェント実行中の場合は自動的にブロックされます。`)) return;
     const res = await window.cth.gitCheckout(gitRoot, c.sha, true);
-    setNote(res.ok ? `now at ${c.shortSha} (detached HEAD)` : res.error);
+    setNote(res.ok ? `${c.shortSha} に移動しました（detached HEAD）` : res.error);
     if (res.ok) void load(page);
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 }}>
       <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-        {loading && commits.length === 0 && <div style={noteStyle}>loading history…</div>}
-        {!loading && commits.length === 0 && <div style={noteStyle}>no commits</div>}
+        {loading && commits.length === 0 && <div style={noteStyle}>履歴を読み込み中…</div>}
+        {!loading && commits.length === 0 && <div style={noteStyle}>コミットがありません</div>}
         <CommitGraph commits={commits} currentBranch={branch} onCommitClick={(sha) => { void pick(sha); }} />
         {commits.length >= page * 200 && (
           <div style={{ padding: '4px 12px' }}>
-            <button style={smallBtn} onClick={() => setPage((p) => p + 1)}>load older…</button>
+            <button style={smallBtn} onClick={() => setPage((p) => p + 1)}>さらに読み込む…</button>
           </div>
         )}
       </div>
@@ -124,19 +124,19 @@ export function HistoryPane({ gitRoot, onOpenRevDiff }: {
             <span style={{
               flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
             }} title={selected.subject}>{selected.subject}</span>
-            <button style={smallBtn} onClick={() => void jump(selected)} title="Check out this commit (detached HEAD)">
-              <Icon name="arrow-right" /> jump here
+            <button style={smallBtn} onClick={() => void jump(selected)} title="このコミットをチェックアウト（detached HEAD）">
+              <Icon name="arrow-right" /> ここへ移動
             </button>
-            <button style={{ ...smallBtn, width: 20, justifyContent: 'center' }} onClick={() => setSelected(null)} title="Close">✕</button>
+            <button style={{ ...smallBtn, width: 20, justifyContent: 'center' }} onClick={() => setSelected(null)} title="閉じる">✕</button>
           </div>
           {/* `flex: 1` is load-bearing: without it this scroller sizes to its
               CONTENT, overflows the parent's maxHeight and never reaches its own
               scroll threshold, so a commit touching many files runs off the
               bottom with no way to scroll to the rest. */}
           <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
-            {!files && !note && <div style={noteStyle}>loading files…</div>}
+            {!files && !note && <div style={noteStyle}>ファイルを読み込み中…</div>}
             {note && <div style={{ ...noteStyle, color: 'var(--cth-ink-700)' }}>{note}</div>}
-            {files && files.length === 0 && <div style={noteStyle}>no file changes (merge?)</div>}
+            {files && files.length === 0 && <div style={noteStyle}>ファイル変更なし（マージコミット？）</div>}
             {files?.map((f) => (
               <FileRow
                 key={f.path}
@@ -178,7 +178,7 @@ export function ComparePane({ gitRoot, onOpenRevDiff }: {
   useEffect(() => {
     if (!base || !head) { setResult(null); return; }
     let alive = true;
-    setNote('comparing…');
+    setNote('比較中…');
     void window.cth.gitCompareRefs(gitRoot, base, head, mode).then((res) => {
       if (!alive) return;
       if ('error' in res) { setNote(res.error); setResult(null); return; }
@@ -190,9 +190,9 @@ export function ComparePane({ gitRoot, onOpenRevDiff }: {
 
   const switchTo = async () => {
     if (!head) return;
-    if (!window.confirm(`Switch this repo to '${head}'?\n\nBlocked automatically if the tree is dirty or an agent is mid-run.`)) return;
+    if (!window.confirm(`このリポジトリを '${head}' に切り替えますか？\n\nツリーに未コミットの変更がある場合やエージェント実行中の場合は自動的にブロックされます。`)) return;
     const res = await window.cth.gitCheckout(gitRoot, head.replace(/^origin\//, ''), false);
-    setNote(res.ok ? `switched to ${head}` : res.error);
+    setNote(res.ok ? `${head} に切り替えました` : res.error);
   };
 
   const sel: React.CSSProperties = {
@@ -205,18 +205,18 @@ export function ComparePane({ gitRoot, onOpenRevDiff }: {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '6px 12px', flexShrink: 0 }}>
         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-          <select value={base} onChange={(e) => setBase(e.target.value)} style={sel} title="Base — the branch you're comparing against">
+          <select value={base} onChange={(e) => setBase(e.target.value)} style={sel} title="ベース — 比較対象となるブランチ">
             {branches.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
-          <button style={{ ...smallBtn, width: 22, justifyContent: 'center' }} title="Swap base ↔ compare"
+          <button style={{ ...smallBtn, width: 22, justifyContent: 'center' }} title="ベースと比較を入れ替え"
             onClick={() => { setBase(head); setHead(base); }}>⇄</button>
-          <select value={head} onChange={(e) => setHead(e.target.value)} style={sel} title="Compare — the branch whose changes you're viewing">
+          <select value={head} onChange={(e) => setHead(e.target.value)} style={sel} title="比較 — 変更を表示するブランチ">
             {branches.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
         </div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 11, color: 'var(--cth-ink-500)' }}>
           {result && (
-            <span title={`'${head}' is ${result.ahead} ahead and ${result.behind} behind '${base}'`}>
+            <span title={`'${base}' に対して '${head}' は ${result.ahead} コミット先行、${result.behind} コミット遅れ`}>
               ↑{result.ahead} ↓{result.behind}
             </span>
           )}
@@ -224,18 +224,18 @@ export function ComparePane({ gitRoot, onOpenRevDiff }: {
             style={{ ...smallBtn, background: mode === 'three' ? 'var(--cth-sky-light)' : 'var(--cth-cream-100)' }}
             onClick={() => setMode((m) => (m === 'three' ? 'two' : 'three'))}
             title={mode === 'three'
-              ? 'Showing what the compare branch ADDS since the common ancestor (PR-style). Click for the literal two-dot difference.'
-              : 'Showing the literal difference between the two branch states. Click for PR-style (what compare adds).'}
-          >{mode === 'three' ? 'since common ancestor' : 'literal difference'}</button>
+              ? '共通の祖先以降に比較ブランチが追加した変更を表示しています（PR 方式）。クリックで2点間の直接差分に切り替わります。'
+              : '2つのブランチ状態の直接差分を表示しています。クリックで PR 方式（共通祖先からの追加分）に切り替わります。'}
+          >{mode === 'three' ? '共通祖先からの差分' : '直接差分'}</button>
           <span style={{ flex: 1 }} />
-          <button style={smallBtn} onClick={() => void switchTo()} title={`Check out '${head}'`}>
-            <Icon name="arrow-right" /> switch to {head.split('/').pop()}
+          <button style={smallBtn} onClick={() => void switchTo()} title={`'${head}' をチェックアウト`}>
+            <Icon name="arrow-right" /> {head.split('/').pop()} へ切替
           </button>
         </div>
       </div>
       <div style={{ flex: 1, minHeight: 0, overflow: 'auto', borderTop: '1px solid var(--cth-ink-100)' }}>
         {note && <div style={noteStyle}>{note}</div>}
-        {result && result.files.length === 0 && !note && <div style={noteStyle}>no differences</div>}
+        {result && result.files.length === 0 && !note && <div style={noteStyle}>差分なし</div>}
         {result?.files.map((f) => (
           <FileRow
             key={f.path}

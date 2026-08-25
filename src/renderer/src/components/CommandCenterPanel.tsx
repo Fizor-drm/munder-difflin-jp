@@ -63,17 +63,17 @@ interface GHIssue {
 
 /** Canonical tab order. Not every entry is always shown — see `visibleTabs`. */
 const TABS: { key: CCTab; label: string; icon: Parameters<typeof Icon>[0]['name'] }[] = [
-  { key: 'terminal', label: 'terminal', icon: 'terminal' },
-  { key: 'floor', label: 'monitor', icon: 'mcp' },
-  { key: 'tasks', label: 'tasks', icon: 'check' },
-  { key: 'human', label: 'ask me', icon: 'bell' },
-  { key: 'triggers', label: 'triggers', icon: 'clock' },
-  { key: 'trigger-history', label: 'history', icon: 'ledger' },
-  { key: 'memory', label: 'memory', icon: 'sparkle' },
-  { key: 'graph', label: 'graph', icon: 'web' },
-  { key: 'activity', label: 'activity', icon: 'bell' },
-  { key: 'skills', label: 'skills', icon: 'sparkle' },
-  { key: 'workers', label: 'workers', icon: 'gear' }
+  { key: 'terminal', label: 'ターミナル', icon: 'terminal' },
+  { key: 'floor', label: 'モニター', icon: 'mcp' },
+  { key: 'tasks', label: 'タスク', icon: 'check' },
+  { key: 'human', label: '質問', icon: 'bell' },
+  { key: 'triggers', label: 'トリガー', icon: 'clock' },
+  { key: 'trigger-history', label: '履歴', icon: 'ledger' },
+  { key: 'memory', label: 'メモリ', icon: 'sparkle' },
+  { key: 'graph', label: 'グラフ', icon: 'web' },
+  { key: 'activity', label: 'アクティビティ', icon: 'bell' },
+  { key: 'skills', label: 'スキル', icon: 'sparkle' },
+  { key: 'workers', label: 'ワーカー', icon: 'gear' }
 ];
 
 /** @param fullscreen this instance IS the fullscreen overlay, so it owns the pty
@@ -171,13 +171,13 @@ export function CommandCenterPanel({ agent, fullscreen = false }: { agent: Agent
           <div style={{
             fontFamily: 'var(--cth-font-display)', fontSize: 10, lineHeight: '14px', color: 'var(--cth-ink-900)',
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-          }}>COMMAND CENTER</div>
+          }}>コマンドセンター</div>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 1, minWidth: 0 }}>
             <PixelBadge status={agent.status} />
             <span style={{
               fontSize: 12, color: 'var(--cth-ink-500)',
               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-            }}>Michael runs the floor</span>
+            }}>Michael がフロアを統括中</span>
           </div>
         </div>
         {/* v0.3.4: floor-wide auto-delivery lives HERE (one switch for every
@@ -192,13 +192,13 @@ export function CommandCenterPanel({ agent, fullscreen = false }: { agent: Agent
             <span
               className="cth-tip cth-tip-wrap"
               data-tip={floorDeliveryPaused
-                ? 'Queued messages are being held for EVERY agent on the floor. Nothing is lost; it is delivered when you switch this back on.'
-                : 'Queued messages are delivered to every agent automatically. Click to hold the whole floor.'}
-              aria-label={floorDeliveryPaused ? 'Resume automatic delivery for the whole floor' : 'Hold automatic delivery for the whole floor'}
+                ? 'キュー内のメッセージはフロア上の全エージェントに対して保留中です。失われることはなく、スイッチを戻すと配信されます。'
+                : 'キュー内のメッセージは全エージェントに自動配信されます。クリックでフロア全体を保留にします。'}
+              aria-label={floorDeliveryPaused ? 'フロア全体の自動配信を再開' : 'フロア全体の自動配信を保留'}
               style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
             >
               <Icon name={floorDeliveryPaused ? 'pause' : 'play'} />
-              {floorDeliveryPaused ? 'paused' : 'auto'}
+              {floorDeliveryPaused ? '停止中' : '自動'}
             </span>
           </PixelButton>
           {/* Floor-level surface with no agent of its own: the honest target is
@@ -210,8 +210,8 @@ export function CommandCenterPanel({ agent, fullscreen = false }: { agent: Agent
           }}>
             <span
               className="cth-tip cth-tip-wrap"
-              data-tip="Open the IDE: browse and edit files in the selected agent's workspace, and see uncommitted changes as a diff."
-              aria-label="Open the IDE"
+              data-tip="IDE を開く: 選択中のエージェントのワークスペースのファイルを閲覧・編集し、未コミットの変更を diff で確認できます。"
+              aria-label="IDE を開く"
               style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
             >
               <Icon name="code" /> IDE
@@ -287,7 +287,7 @@ export function CommandCenterPanel({ agent, fullscreen = false }: { agent: Agent
       <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
         {tab === 'terminal' && (
           isFullscreenedHere ? (
-            <Centered>Terminal is open in fullscreen. Press Esc to bring it back.</Centered>
+            <Centered>ターミナルはフルスクリーンで開いています。Esc で戻ります。</Centered>
           ) : agent.ptyId ? (
             <>
               <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
@@ -310,7 +310,7 @@ export function CommandCenterPanel({ agent, fullscreen = false }: { agent: Agent
               <MessageQueueComposer agent={agent} />
             </>
           ) : (
-            <Centered>Michael has no live terminal.</Centered>
+            <Centered>Michael のライブターミナルはありません。</Centered>
           )
         )}
         {tab === 'floor' && <FloorTab seed={dispatchSeed} />}
@@ -419,7 +419,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
       const provider = opts.provider ?? previousProvider;
       let resume = opts.resume === true && provider === previousProvider;
       if (opts.resume && !resume && !opts.resumeOptional) {
-        throw new Error('Cannot resume a session through a different provider.');
+        throw new Error('別のプロバイダー経由ではセッションを再開できません。');
       }
       let resumeSessionId: string | undefined;
       if (resume) {
@@ -433,9 +433,9 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
         const registry = await window.cth.hiveRegistry();
         resumeSessionId = registry.agents[a.id]?.sessionId;
         if (!resumeSessionId) {
-          giveUpOnResume('No recorded session ID; current process was left running.');
+          giveUpOnResume('セッション ID の記録がなく、現在のプロセスは動作を続けています。');
         } else if (provider === 'claude' && !(await window.cth.resolveSessionCwd(resumeSessionId))) {
-          giveUpOnResume('Session transcript not found; current process was left running.');
+          giveUpOnResume('セッションのトランスクリプトが見つからず、現在のプロセスは動作を続けています。');
         }
       }
       // Capture the live grid before replacing anything. Restart & Continue
@@ -458,7 +458,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
       // `no pty: <id>`. Treating that as fatal aborted before the respawn and
       // turned the one situation the button exists for into a dead end.
       if (!killed.ok && !/^no pty:/.test(killed.error ?? '')) {
-        throw new Error(killed.error ?? 'Could not stop the current process.');
+        throw new Error(killed.error ?? '現在のプロセスを停止できませんでした。');
       }
       if (resume) {
         // A blank xterm can retain corrupt renderer/DOM/subscription state even
@@ -470,7 +470,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
         updateAgent(a.id, {
           terminalGeneration: (a.terminalGeneration ?? 0) + 1,
           status: 'idle',
-          action: 'recreating terminal…'
+          action: 'ターミナル再作成中…'
         });
       } else {
         resetTerminal(a.ptyId);
@@ -499,9 +499,9 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
         resumeSessionId,
         requireResume: resume
       });
-      if (!res.ok) throw new Error(res.error ?? 'Restart failed.');
+      if (!res.ok) throw new Error(res.error ?? '再起動に失敗しました。');
       if (resume && res.resumed !== true) {
-        throw new Error('Resume was refused; no replacement session was accepted.');
+        throw new Error('再開が拒否され、代替セッションも受け付けられませんでした。');
       }
       if (res.ok) {
         // Record the model even on a resume. A same-provider model change now
@@ -517,14 +517,14 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
               provider,
               model,
               status: 'idle' as const,
-              action: 'continuing…'
+              action: '継続中…'
             }
           : {
               command: command.trim(),
               provider,
               model,
               status: 'idle' as const,
-              action: provider === previousProvider ? 'restarting…' : `switching to ${providerPreset(provider).label}…`
+              action: provider === previousProvider ? '再起動中…' : `${providerPreset(provider).label} に切り替え中…`
             };
         updateAgent(a.id, patch);
       }
@@ -548,7 +548,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
     if (!body) return;
     const suggested = dispatchTo ? agents.find((a) => a.id === dispatchTo) : undefined;
     const full = suggested
-      ? `${body}\n\n(The human suggests ${suggested.name} (${suggested.id}) for this — your call as orchestrator.)`
+      ? `${body}\n\n（このタスクの担当候補として ${suggested.name} (${suggested.id}) が挙げられています。最終判断はオーケストレーターとしてお任せします。）`
       : body;
     const res = await window.cth.hiveSend(
       { to: 'god', act: 'request', subject: 'Task from the human', body: full },
@@ -556,14 +556,14 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
     );
     setDispatchText('');
     setDispatchMsg(res.ok
-      ? `sent to Michael${suggested ? ` (suggesting ${suggested.name})` : ''}`
-      : `failed: ${res.error ?? '?'}`);
+      ? `Michael に送信しました${suggested ? `（${suggested.name} を提案）` : ''}`
+      : `失敗: ${res.error ?? '?'}`);
     setTimeout(() => setDispatchMsg(null), 4000);
   };
 
   const fetchIssues = async () => {
     const repo = issueRepo || repos[0];
-    if (!repo) { setIssuesError('No repo selected.'); return; }
+    if (!repo) { setIssuesError('リポジトリが未選択です。'); return; }
     setIssuesLoading(true);
     setIssuesError(null);
     try {
@@ -572,7 +572,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
         setIssues((res.issues ?? []).slice(0, 10));
       } else {
         setIssues([]);
-        setIssuesError(res.error ?? 'Failed to fetch issues.');
+        setIssuesError(res.error ?? 'Issue の取得に失敗しました。');
       }
     } catch (e) {
       setIssues([]);
@@ -627,13 +627,13 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
 
   return (
     <Scroll>
-      <Section title="DISPATCH — VIA MICHAEL">
+      <Section title="ディスパッチ — Michael 経由">
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
           <span style={{ fontFamily: 'var(--cth-font-display)', fontSize: 8, color: 'var(--cth-ink-500)', flexShrink: 0 }}>
-            SUGGESTED OWNER
+            担当候補
           </span>
           <Select value={dispatchTo} onChange={setDispatchTo}>
-            <option value="">Michael decides</option>
+            <option value="">Michael にお任せ</option>
             {agents.filter((a) => !a.isGod).map((a) => (
               <option key={a.id} value={a.id}>{a.name}</option>
             ))}
@@ -643,18 +643,18 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
           value={dispatchText}
           onChange={(e) => setDispatchText(e.target.value)}
           rows={2}
-          placeholder="Describe the task… (Michael decomposes, writes the card, and assigns)"
+          placeholder="タスクを入力…（Michael が分解し、カードを作成して割り当てます）"
           style={textareaStyle}
         />
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
           <PixelButton variant="primary" size="sm" onClick={dispatch} disabled={!dispatchText.trim()}>
-            dispatch
+            ディスパッチ
           </PixelButton>
           {dispatchMsg && <span style={{ fontSize: 12, color: 'var(--cth-ink-500)' }}>{dispatchMsg}</span>}
         </div>
       </Section>
 
-      <Section title="AGENTS">
+      <Section title="エージェント">
         {agents.map((a) => {
           const agentProvider = inferAgentProvider(a.command, a.provider);
           const agentPreset = providerPreset(agentProvider);
@@ -671,7 +671,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
           const sparkSeries = spark[a.id] ?? [];
           const hasSpark = sparkSeries.some((v) => v > 0);
           const rateVal = Math.round(rate[a.id] ?? 0);
-          const rateLabel = rateVal > 0 ? `${fmtTokens(rateVal)}/m` : 'rate';
+          const rateLabel = rateVal > 0 ? `${fmtTokens(rateVal)}/分` : 'レート';
           const currentModelKnown = modelsForProvider(agentProvider)
             .some((model) => model.id === a.model);
           return (
@@ -694,11 +694,11 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                   border: 'none', background: 'transparent', cursor: 'pointer', padding: 0,
                   fontFamily: 'var(--cth-font-ui)', fontSize: 12, color: 'var(--cth-ink-900)'
                 }}
-              >{a.name}{a.isGod ? ' (god)' : ''}</button>
+              >{a.name}{a.isGod ? '（god）' : ''}</button>
               <PixelBadge status={armed ? 'looping' : a.status} />
               {armed && <span title={breaker?.reason} style={{ color: 'var(--cth-coral)', fontSize: 12 }}>⚠</span>}
               <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--cth-ink-500)' }}>
-                {(toolCounts[a.id] ?? 0)} tool calls
+                ツール呼び出し {(toolCounts[a.id] ?? 0)} 回
               </span>
               <TokenLimitEditor value={agentCap} onSet={(t) => setAgentCap(a.id, t)} />
             </div>
@@ -719,10 +719,10 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                   background: 'var(--cth-paper-200)', boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)', color: 'var(--cth-ink-700)'
                 }}>{lastTool[a.id]}</span>
               )}
-              <span style={{ fontFamily: 'var(--cth-font-mono)', fontSize: 10, color: 'var(--cth-ink-300)', flexShrink: 0 }}>budget</span>
+              <span style={{ fontFamily: 'var(--cth-font-mono)', fontSize: 10, color: 'var(--cth-ink-300)', flexShrink: 0 }}>予算</span>
               <span style={{ fontFamily: 'var(--cth-font-mono)', fontSize: 11, color: 'var(--cth-ink-900)', width: 56, textAlign: 'right' }}>{fmtTokens(tokens)}</span>
               <div
-                title={`CUMULATIVE session usage: ${tokens.toLocaleString()} of ${denom.toLocaleString()} tokens${agentCap ? ' (agent limit)' : ' (floor budget)'} — not the context window`}
+                title={`累計セッション使用量: ${tokens.toLocaleString()} / ${denom.toLocaleString()} トークン${agentCap ? '（エージェント上限）' : '（フロア予算）'} — コンテキストウィンドウではありません`}
                 style={{ width: 96, height: 8, background: 'var(--cth-cream-200)', boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)', flexShrink: 0 }}
               >
                 <div style={{ width: `${pct}%`, height: '100%', background: meterColor }} />
@@ -746,7 +746,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                       {fmtTokens(a.contextTokens!)}
                     </span>
                     <div
-                      title={`Context window: ${a.contextTokens!.toLocaleString()} of ${a.contextLimit!.toLocaleString()} tokens (${cpct}%)`}
+                      title={`コンテキストウィンドウ: ${a.contextTokens!.toLocaleString()} / ${a.contextLimit!.toLocaleString()} トークン (${cpct}%)`}
                       style={{ width: 96, height: 8, background: 'var(--cth-cream-200)', boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)', flexShrink: 0 }}
                     >
                       <div style={{ width: `${cpct}%`, height: '100%', background: ccolor }} />
@@ -756,7 +756,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                 );
               })() : (
                 <span style={{ fontFamily: 'var(--cth-font-mono)', fontSize: 11, color: 'var(--cth-ink-300)' }}>
-                  no status tick yet
+                  ステータス更新はまだありません
                 </span>
               )}
             </div>
@@ -788,7 +788,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
               >
                 {(!agentPreset.supportsModel || !currentModelKnown) && (
                   <option value={encodeProviderModel(agentProvider, a.model)}>
-                    {agentPreset.label} · {a.model ?? 'current'}
+                    {agentPreset.label} · {a.model ?? '現在'}
                   </option>
                 )}
                 {modelProvidersForAgent(a.isGod).map((preset) => (
@@ -803,7 +803,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                           key={`${preset.id}:${model.id ?? 'cli-default'}`}
                           value={encodeProviderModel(preset.id, model.id)}
                         >
-                          {model.label}{isHarnessDefault ? ' · default' : ''}
+                          {model.label}{isHarnessDefault ? ' · デフォルト' : ''}
                         </option>
                       );
                     })}
@@ -812,8 +812,8 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
               </Select>
               <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>
                 {restarting === a.id
-                  ? 'restarting…'
-                  : `${agentPreset.label} model (restarts agent)`}
+                  ? '再起動中…'
+                  : `${agentPreset.label} モデル（エージェントを再起動）`}
               </span>
               {/* Restart & Continue — kill + respawn keeping the SAME model and
                   resuming the prior conversation (--resume). Use this to redraw a
@@ -827,8 +827,8 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                   disabled={restarting === a.id}
                   onClick={() => restartWithModel(a, a.model, { resume: true })}
                 >
-                  <span title="Kill and respawn this agent, resuming its current conversation — fixes a corrupted/garbled terminal without losing context">
-                    restart &amp; continue
+                  <span title="このエージェントを停止して再起動し、現在の会話を再開します — コンテキストを失わずに壊れた/文字化けしたターミナルを修復します">
+                    再起動して継続
                   </span>
                 </PixelButton>
               </>}
@@ -841,7 +841,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
             )}
             {a.isGod && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 11, color: 'var(--cth-ink-500)', flexShrink: 0 }}>engine:</span>
+                <span style={{ fontSize: 11, color: 'var(--cth-ink-500)', flexShrink: 0 }}>エンジン:</span>
                 <Select
                   value={engineProvider}
                   disabled={restarting === a.id}
@@ -874,13 +874,13 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                   onClick={async () => {
                     const currentProvider = inferAgentProvider(a.command, a.provider);
                     if (engineProvider !== currentProvider) {
-                      if (!window.confirm("This restarts Michael; a conversation on a different engine can't be resumed.")) return;
+                      if (!window.confirm('Michael を再起動します。別のエンジン上の会話は再開できません。')) return;
                     }
                     await window.cth.updateConfig({ godProvider: engineProvider, godModel: engineModel });
                     await restartWithModel(a, engineModel, { provider: engineProvider, resume: false });
                   }}
                 >
-                  {restarting === a.id ? 'restarting…' : 'apply'}
+                  {restarting === a.id ? '再起動中…' : '適用'}
                 </PixelButton>
                 {/* Redraw a garbled terminal without losing the thread (resume the
                     SAME engine+model). Kept here since the god has no per-agent row above. */}
@@ -890,8 +890,8 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                   disabled={restarting === a.id}
                   onClick={() => restartWithModel(a, a.model, { resume: true })}
                 >
-                  <span title="Kill and respawn Michael, resuming the current conversation — fixes a corrupted/garbled terminal without losing context">
-                    restart &amp; continue
+                  <span title="Michael を停止して再起動し、現在の会話を再開します — コンテキストを失わずに壊れた/文字化けしたターミナルを修復します">
+                    再起動して継続
                   </span>
                 </PixelButton>
               </div>
@@ -905,14 +905,14 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
           background: 'var(--cth-cream-200)', boxShadow: 'inset 0 0 0 1px var(--cth-ink-100)',
           fontFamily: 'var(--cth-font-mono)', fontSize: 11, color: 'var(--cth-ink-900)', flexWrap: 'wrap'
         }}>
-          <span>Σ <strong>{fmtTokens(sumTokens)}</strong> tok</span>
-          <span style={{ color: 'var(--cth-ink-700)' }}>inputs {fmtTokens(sumInput)} (cache {fleetCachePct}%)</span>
-          <span style={{ color: 'var(--cth-ink-700)' }}>{Math.round(sumRate).toLocaleString()} tok/min</span>
+          <span>Σ <strong>{fmtTokens(sumTokens)}</strong> トークン</span>
+          <span style={{ color: 'var(--cth-ink-700)' }}>入力 {fmtTokens(sumInput)}（キャッシュ {fleetCachePct}%）</span>
+          <span style={{ color: 'var(--cth-ink-700)' }}>{Math.round(sumRate).toLocaleString()} トークン/分</span>
         </div>
         <div style={{ marginTop: 6 }}>
           <Muted>
-            live from each agent&apos;s OpenTelemetry · bars show tokens used vs each agent&apos;s limit, else the {fmtTokens(floorCap)} floor budget
-            {tokenCap && tokenCap > 0 ? '' : ' (default — set a floor token budget in Settings)'}
+            各エージェントの OpenTelemetry からのライブ値 · バーは各エージェントの上限（未設定なら {fmtTokens(floorCap)} のフロア予算）に対する使用トークンを表示
+            {tokenCap && tokenCap > 0 ? '' : '（デフォルト — 設定でフロアのトークン予算を指定できます）'}
           </Muted>
         </div>
       </Section>
@@ -920,22 +920,22 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
       <ArchivedSection />
 
 
-      <Section title="DIRECTORIES">
-        {repos.length === 0 && <Muted>No registered repos.</Muted>}
+      <Section title="フォルダ">
+        {repos.length === 0 && <Muted>登録されたリポジトリがありません。</Muted>}
         {repos.map((r) => (
           <div key={r} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
             <span style={{ flex: 1, fontSize: 12, color: 'var(--cth-ink-700)', wordBreak: 'break-all' }}>{r}</span>
             <button
               onClick={() => window.cth.openTerminalAt(r)}
-              title="Open in Terminal.app"
+              title="Terminal.app で開く"
               style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--cth-ink-500)' }}
             ><Icon name="terminal" /></button>
           </div>
         ))}
       </Section>
 
-      <Section title="ISSUES">
-        {repos.length === 0 && <Muted>No registered repos.</Muted>}
+      <Section title="ISSUE">
+        {repos.length === 0 && <Muted>登録されたリポジトリがありません。</Muted>}
         {repos.length > 0 && (
           <>
             <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
@@ -945,7 +945,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                 ))}
               </Select>
               <PixelButton variant="primary" size="sm" onClick={fetchIssues} disabled={issuesLoading}>
-                {issuesLoading ? 'fetching…' : 'Fetch issues'}
+                {issuesLoading ? '取得中…' : 'Issue を取得'}
               </PixelButton>
             </div>
             {issuesError && (
@@ -955,7 +955,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                 wordBreak: 'break-word'
               }}>{issuesError}</div>
             )}
-            {!issuesError && !issuesLoading && issues.length === 0 && <Muted>No issues fetched yet.</Muted>}
+            {!issuesError && !issuesLoading && issues.length === 0 && <Muted>取得した Issue はまだありません。</Muted>}
             {issues.map((issue) => (
               <div key={issue.number} style={{
                 display: 'flex', flexDirection: 'column', gap: 4,
@@ -967,7 +967,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
                     <strong>#{issue.number}</strong> {issue.title}
                   </span>
                   <PixelButton variant="secondary" size="sm" onClick={() => assignIssue(issue)}>
-                    Assign
+                    割り当て
                   </PixelButton>
                 </div>
                 {issue.labels.length > 0 && (
@@ -998,7 +998,7 @@ function ArchivedSection() {
   const [open, setOpen] = useState(false);
   if (archivedAgents.length === 0) return null;
   return (
-    <Section title={`ARCHIVED (${archivedAgents.length})`}>
+    <Section title={`アーカイブ済み (${archivedAgents.length})`}>
       <button
         onClick={() => setOpen((v) => !v)}
         style={{
@@ -1008,7 +1008,7 @@ function ArchivedSection() {
           fontFamily: 'var(--cth-font-ui)', fontSize: 12, color: 'var(--cth-ink-900)',
           marginBottom: open ? 6 : 0
         }}
-      >{open ? '▾' : '▸'} {open ? 'hide' : 'show'} closed agents</button>
+      >{open ? '▾' : '▸'} 閉じたエージェントを{open ? '隠す' : '表示'}</button>
       {open && archivedAgents.map((a) => (
         <div key={a.id} style={{
           display: 'flex', alignItems: 'center', gap: 8,
@@ -1063,7 +1063,7 @@ function MemoryTab({ godId, who: controlledWho, onWho }: { godId: string; who?: 
     setBusy(true);
     try {
       const res = await window.cth.searchMemory(query.trim());
-      setSearchOut(res.ok ? (res.output || 'Nothing matched yet.') : `Couldn't search: ${res.error}`);
+      setSearchOut(res.ok ? (res.output || '一致するものはまだありません。') : `検索できませんでした: ${res.error}`);
     } finally { setBusy(false); }
   };
 
@@ -1079,17 +1079,17 @@ function MemoryTab({ godId, who: controlledWho, onWho }: { godId: string; who?: 
 
   return (
     <Scroll>
-      <Section title="TEXT SEARCH (board, tasks, memory)">
+      <Section title="テキスト検索（ボード・タスク・メモリ）">
         <div style={{ display: 'flex', gap: 6 }}>
           <input
             value={textQuery}
             onChange={(e) => setTextQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') textSearch(); }}
-            placeholder="Find exact text across hive files…"
+            placeholder="Hive ファイル全体から完全一致のテキストを検索…"
             style={{ ...textareaStyle, height: 30 }}
           />
           <PixelButton variant="primary" size="sm" onClick={textSearch} disabled={textBusy || !textQuery.trim()}>
-            {textBusy ? '…' : 'search'}
+            {textBusy ? '…' : '検索'}
           </PixelButton>
         </div>
         {textResults.length > 0 && (
@@ -1102,30 +1102,30 @@ function MemoryTab({ godId, who: controlledWho, onWho }: { godId: string; who?: 
             ))}
           </div>
         )}
-        {textSearched && textResults.length === 0 && <Muted>Nothing matched.</Muted>}
+        {textSearched && textResults.length === 0 && <Muted>一致するものがありません。</Muted>}
       </Section>
 
-      <Section title="SEMANTIC SEARCH (MemPalace)">
+      <Section title="セマンティック検索（MemPalace）">
         <div style={{ display: 'flex', gap: 6 }}>
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') search(); }}
-            placeholder="What does the hive know about…"
+            placeholder="Hive が知っていることを尋ねる…"
             style={{ ...textareaStyle, height: 30 }}
           />
           <PixelButton variant="primary" size="sm" onClick={search} disabled={busy || !query.trim()}>
-            {busy ? '…' : 'search'}
+            {busy ? '…' : '検索'}
           </PixelButton>
         </div>
         {searchOut && <Pre>{searchOut}</Pre>}
       </Section>
 
-      <Section title="MEMORY FILE">
+      <Section title="メモリファイル">
         <Select value={who} onChange={setWho}>
           {agents.map((a) => (<option key={a.id} value={a.id}>{a.name}</option>))}
         </Select>
-        <Pre>{mem || 'No memory recorded yet.'}</Pre>
+        <Pre>{mem || 'メモリはまだ記録されていません。'}</Pre>
       </Section>
     </Scroll>
   );
@@ -1172,7 +1172,7 @@ function TokenLimitEditor({ value, onSet }: { value?: number; onSet: (tokens: nu
     return (
       <button
         onClick={() => { setText(value != null ? String(value) : ''); setEditing(true); }}
-        title="Set this agent's total token limit"
+        title="このエージェントの合計トークン上限を設定"
         style={{
           flexShrink: 0, padding: '1px 6px', border: 'none', cursor: 'pointer',
           background: value && value > 0 ? 'var(--cth-lemon)' : 'var(--cth-cream-200)',
@@ -1180,8 +1180,8 @@ function TokenLimitEditor({ value, onSet }: { value?: number; onSet: (tokens: nu
           fontFamily: 'var(--cth-font-ui)', fontSize: 11, color: 'var(--cth-ink-900)'
         }}
       >{value && value > 0
-        ? <>limit <span style={{ fontFamily: 'var(--cth-font-mono)' }}>{fmtTokens(value)}</span></>
-        : 'set limit'}</button>
+        ? <>上限 <span style={{ fontFamily: 'var(--cth-font-mono)' }}>{fmtTokens(value)}</span></>
+        : '上限を設定'}</button>
     );
   }
   return (
@@ -1194,7 +1194,7 @@ function TokenLimitEditor({ value, onSet }: { value?: number; onSet: (tokens: nu
           else if (e.key === 'Escape') { skipBlur.current = true; setEditing(false); }
         }}
         onBlur={() => { if (skipBlur.current) { skipBlur.current = false; return; } commit(); }}
-        placeholder="tokens"
+        placeholder="トークン"
         style={{
           width: 84, padding: '2px 4px', background: 'var(--cth-paper-100)', border: 'none',
           boxShadow: 'inset 0 0 0 1px var(--cth-ink-100)', fontFamily: 'var(--cth-font-mono)',
@@ -1202,7 +1202,7 @@ function TokenLimitEditor({ value, onSet }: { value?: number; onSet: (tokens: nu
         }}
       />
       <button
-        onMouseDown={(e) => e.preventDefault()} onClick={commit} title="Save limit"
+        onMouseDown={(e) => e.preventDefault()} onClick={commit} title="上限を保存"
         style={{ flexShrink: 0, padding: '1px 5px', border: 'none', cursor: 'pointer', background: 'var(--cth-mint)', boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)', fontSize: 11, color: 'var(--cth-ink-900)' }}
       >✓</button>
     </span>
@@ -1230,19 +1230,19 @@ function ActivityTab() {
 
   const fmt = (e: LogEntry): string => {
     switch (e.kind) {
-      case 'spawn': return `spawned ${e.name ?? e.agentId}`;
+      case 'spawn': return `${e.name ?? e.agentId} をスポーン`;
       case 'message': return `${e.from} → ${e.to}: ${e.subject || e.act}`;
-      case 'drain': return `${e.agentId} drained ${e.count} msg(s)`;
-      case 'escalate': return `escalated to human: ${e.subject ?? ''}`;
-      case 'approval': return `approval ${e.approve ? 'granted' : 'denied'}`;
+      case 'drain': return `${e.agentId} が ${e.count} 件のメッセージを処理`;
+      case 'escalate': return `人間へエスカレーション: ${e.subject ?? ''}`;
+      case 'approval': return `承認を${e.approve ? '許可' : '拒否'}`;
       default: return JSON.stringify(e);
     }
   };
 
   return (
     <Scroll>
-      <Section title="ACTIVITY">
-        {log.length === 0 && <Muted>Nothing yet.</Muted>}
+      <Section title="アクティビティ">
+        {log.length === 0 && <Muted>まだ何もありません。</Muted>}
         {[...log].reverse().map((e, i) => (
           <div key={i} style={{ fontSize: 12, color: 'var(--cth-ink-700)', padding: '2px 0', display: 'flex', gap: 6 }}>
             <span style={{ color: 'var(--cth-ink-300)', flexShrink: 0 }}>{e.kind ?? '·'}</span>
@@ -1251,8 +1251,8 @@ function ActivityTab() {
         ))}
       </Section>
 
-      <Section title="BOARD">
-        <Pre>{board || 'The board is empty.'}</Pre>
+      <Section title="ボード">
+        <Pre>{board || 'ボードは空です。'}</Pre>
       </Section>
     </Scroll>
   );

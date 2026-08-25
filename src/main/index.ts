@@ -1178,11 +1178,11 @@ function runBreakerBeat(progressWindowMs: number): void {
     } else if (d.action === 'constrain') {
       hive.send({ to: d.state.agentId, act: 'request', subject: 'Circuit breaker: constrain',
         body: `Automated guardrail escalated: ${reason}. Stop active work now: switch to read-only/plan, write a short plan of your next step, and send it to god for sign-off BEFORE running more tools.` }, 'breaker');
-      breakerToast(`${name} constrained`, reason);
+      breakerToast(`${name} を制限しました（サーキットブレーカー）`, reason);
     } else if (d.action === 'stop') {
       const ptyId = ptyForAgent(d.state.agentId);
       if (ptyId) { try { ptyManager.kill(ptyId); } catch { /* already gone */ } teardownPty(ptyId); }
-      breakerToast(`${name} stopped by circuit breaker`, reason);
+      breakerToast(`${name} がサーキットブレーカーによって停止されました`, reason);
     }
   }
 }
@@ -2181,8 +2181,8 @@ ipcMain.handle('hire:drainPending', () => {
 // is validated independently; valid neighbours survive an invalid manifest.
 ipcMain.handle('hire:openFile', async () => {
   const res = await dialog.showOpenDialog({
-    title: 'Import hire manifests',
-    filters: [{ name: 'Hire manifest', extensions: ['json'] }],
+    title: '採用マニフェストを読み込む',
+    filters: [{ name: '採用マニフェスト', extensions: ['json'] }],
     properties: ['openFile', 'multiSelections']
   });
   if (res.canceled || res.filePaths.length === 0) {
@@ -2219,7 +2219,7 @@ function createWindow(opts: { floor?: boolean } = {}): BrowserWindow {
     ...(geom && geom.x !== undefined && geom.y !== undefined ? { x: geom.x, y: geom.y } : {}),
     minWidth: MIN_WIN.width,
     minHeight: MIN_WIN.height,
-    title: isFloor ? 'Munder Difflin — Floor' : 'Munder Difflin',
+    title: isFloor ? 'Munder Difflin — フロア' : 'Munder Difflin',
     backgroundColor: '#FFF8E7',
     titleBarStyle: 'hiddenInset',
     show: false,
@@ -2323,11 +2323,11 @@ function createWindow(opts: { floor?: boolean } = {}): BrowserWindow {
       if (owned > 0) {
         const choice = dialog.showMessageBoxSync(win, {
           type: 'warning',
-          buttons: ['Close floor', 'Cancel'],
+          buttons: ['フロアを閉じる', 'キャンセル'],
           defaultId: 1,
           cancelId: 1,
-          message: `Close this floor? ${owned} running terminal${owned === 1 ? '' : 's'} on it will be stopped.`,
-          detail: 'Other floors keep running.'
+          message: `このフロアを閉じますか？ 稼働中の ${owned} 件のターミナルが停止されます。`,
+          detail: '他のフロアは動作を続けます。'
         });
         if (choice === 1) e.preventDefault();
       }
@@ -2388,14 +2388,14 @@ function openFloor(): BrowserWindow | null {
 function installAppMenu(): void {
   const isMac = process.platform === 'darwin';
   const newFloorItem = {
-    label: 'New Floor',
+    label: '新規フロア',
     accelerator: 'CmdOrCtrl+Shift+N',
     click: () => { openFloor(); }
   };
   const template: Electron.MenuItemConstructorOptions[] = [
     ...(isMac ? [{ role: 'appMenu' as const }] : []),
     {
-      label: 'File',
+      label: 'ファイル',
       submenu: isMac
         ? [newFloorItem, { type: 'separator' as const }, { role: 'close' as const }]
         : [newFloorItem, { type: 'separator' as const }, { role: 'quit' as const }]
@@ -2417,7 +2417,7 @@ function installAppMenu(): void {
     // handler and the textarea's native paste event both read the clipboard
     // synchronously, inside the keystroke, before any restore can land.
     {
-      label: 'Edit',
+      label: '編集',
       submenu: [
         { role: 'undo' as const, registerAccelerator: false },
         { role: 'redo' as const, registerAccelerator: false },
@@ -2957,7 +2957,7 @@ ipcMain.handle('dialog:chooseFolder', async (evt) => {
   if (!win) return { ok: false as const, error: 'no window' };
   const res = await dialog.showOpenDialog(win, {
     properties: ['openDirectory', 'createDirectory'],
-    title: 'Pick a folder'
+    title: 'フォルダを選択'
   });
   if (res.canceled || res.filePaths.length === 0) return { ok: false as const, error: 'cancelled' };
   return { ok: true as const, path: res.filePaths[0] };
@@ -3526,7 +3526,7 @@ ipcMain.handle('kg:addFiles', async (evt) => {
   if (!win) return { ok: false as const, error: 'no window' };
   const res = await dialog.showOpenDialog(win, {
     properties: ['openFile', 'multiSelections'],
-    title: 'Add documents to the Knowledge Graph'
+    title: 'ナレッジグラフにドキュメントを追加'
   });
   if (res.canceled || res.filePaths.length === 0) return { ok: false as const, error: 'cancelled' };
   const results = res.filePaths.map((srcPath) => {
@@ -3549,10 +3549,10 @@ ipcMain.handle('dialog:attachFiles', async (evt) => {
   if (!win) return { ok: false as const, error: 'no window' };
   const res = await dialog.showOpenDialog(win, {
     properties: ['openFile', 'multiSelections'],
-    title: 'Attach images or files',
+    title: '画像またはファイルを添付',
     filters: [
-      { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg', 'heic', 'tiff', 'avif'] },
-      { name: 'All Files', extensions: ['*'] }
+      { name: '画像', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg', 'heic', 'tiff', 'avif'] },
+      { name: 'すべてのファイル', extensions: ['*'] }
     ]
   });
   if (res.canceled || res.filePaths.length === 0) return { ok: false as const, error: 'cancelled' };
@@ -5020,7 +5020,7 @@ function healthCheckPtys(reason: string, awayMs: number | null): void {
   const away = awayMs != null ? ` (away ~${Math.round(awayMs / 1000)}s)` : '';
   if (dead.length) {
     console.warn(`[power] ${reason}${away}: ${dead.length}/${ptys.length} PTY(s) look wedged (process gone):`, dead.join(', '));
-    breakerToast('Agents need a restart', `${dead.length} agent terminal(s) didn't survive sleep — re-open them to resume.`);
+    breakerToast('エージェントの再起動が必要です', `${dead.length} 件のエージェントターミナルがスリープで停止しました — 開き直すと再開できます。`);
   } else {
     console.log(`[power] ${reason}${away}: ${ptys.length} PTY(s) healthy`);
   }

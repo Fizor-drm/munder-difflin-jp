@@ -84,7 +84,7 @@ export const MarkdownPreview = memo(function MarkdownPreview({
 function ImageChip({ alt, src, note }: { alt?: string; src?: string; note?: string }) {
   return (
     <span className="cth-md-img" title={src}>
-      🖼 {alt || 'image'}{note ? ` — ${note}` : ''}
+      🖼 {alt || '画像'}{note ? ` — ${note}` : ''}
     </span>
   );
 }
@@ -95,9 +95,9 @@ function ImageChip({ alt, src, note }: { alt?: string; src?: string; note?: stri
 function MdImage({ root, rel, alt, src }: { root: string; rel: string; alt?: string; src?: string }) {
   const img = useWorkspaceImage(root, rel);
   const [decodeFailed, setDecodeFailed] = useState(false);
-  if (img.status === 'loading') return <ImageChip alt={alt} src={src} note="loading" />;
+  if (img.status === 'loading') return <ImageChip alt={alt} src={src} note="読み込み中" />;
   if (img.status === 'error') return <ImageChip alt={alt} src={src} note={img.error} />;
-  if (decodeFailed) return <ImageChip alt={alt} src={src} note="could not decode" />;
+  if (decodeFailed) return <ImageChip alt={alt} src={src} note="デコードできませんでした" />;
   return (
     <img
       className="cth-md-image"

@@ -28,43 +28,43 @@ import { tool } from '@openai/agents-realtime';
 
 /** Relative "x ago" for a unix-ms timestamp; voice-safe and defensive. */
 function ago(ts: unknown): string {
-  if (typeof ts !== 'number' || !isFinite(ts) || ts <= 0) return 'an unknown time ago';
+  if (typeof ts !== 'number' || !isFinite(ts) || ts <= 0) return '不明な時刻';
   const ms = Date.now() - ts;
-  if (ms < 5_000) return 'just now';
+  if (ms < 5_000) return 'たった今';
   const s = Math.round(ms / 1000);
-  if (s < 60) return `${s} seconds ago`;
+  if (s < 60) return `${s}秒前`;
   const m = Math.round(s / 60);
-  if (m < 60) return `${m} minute${m === 1 ? '' : 's'} ago`;
+  if (m < 60) return `${m}分前`;
   const h = Math.round(m / 60);
-  if (h < 24) return `${h} hour${h === 1 ? '' : 's'} ago`;
+  if (h < 24) return `${h}時間前`;
   const d = Math.round(h / 24);
-  return `${d} day${d === 1 ? '' : 's'} ago`;
+  return `${d}日前`;
 }
 
 /** Humanize an interval in ms into spoken cadence ("every 5 minutes"). */
 function every(ms: unknown): string {
-  if (typeof ms !== 'number' || !isFinite(ms) || ms <= 0) return 'on an unknown cadence';
+  if (typeof ms !== 'number' || !isFinite(ms) || ms <= 0) return '不明な間隔で';
   const m = Math.round(ms / 60_000);
-  if (m < 1) return 'every minute or less';
-  if (m < 60) return `every ${m} minute${m === 1 ? '' : 's'}`;
+  if (m < 1) return '1分以下ごとに';
+  if (m < 60) return `${m}分ごとに`;
   const h = Math.round(m / 60);
-  return `every ${h} hour${h === 1 ? '' : 's'}`;
+  return `${h}時間ごとに`;
 }
 
-function plural(n: number, one: string, many = one + 's'): string {
-  return `${n} ${n === 1 ? one : many}`;
+function plural(n: number, one: string): string {
+  return `${n} ${one}`;
 }
 
 /** Compact a big number for speech (1.2 thousand / 3.4 million). */
 function tokens(n: unknown): string {
   const v = typeof n === 'number' && isFinite(n) ? n : 0;
-  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)} million`;
-  if (v >= 1_000) return `${(v / 1_000).toFixed(1)} thousand`;
+  if (v >= 1_000_000) return `${Math.round(v / 10_000)}万`;
+  if (v >= 1_000) return `${Math.round(v / 1_000)}`;
   return `${Math.round(v)}`;
 }
 
 function clip(s: string, n: number): string {
-  return s.length > n ? s.slice(0, n).trimEnd() + ' (truncated)' : s;
+  return s.length > n ? s.slice(0, n).trimEnd() + '（省略）' : s;
 }
 
 /** The trailing folder name of a path — speech-friendly (the persona avoids
@@ -96,10 +96,10 @@ const str = (x: unknown): string => (typeof x === 'string' ? x : '');
 async function spoken(fn: () => Promise<string>, what: string): Promise<string> {
   try {
     const out = (await fn()).trim();
-    return out || `I could not find any ${what} right now.`;
+    return out || `現在${what}は見つかりません。`;
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'an unknown error';
-    return `I could not read the ${what} just now (${msg}).`;
+    const msg = e instanceof Error ? e.message : '不明なエラー';
+    return `${what}を読み取れませんでした（${msg}）。`;
   }
 }
 
@@ -121,7 +121,7 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
         spoken(async () => {
           const reg = await window.cth.hiveRegistry();
           const entries = Object.entries(obj(reg.agents));
-          if (!entries.length) return 'The hive has no registered agents yet.';
+          if (!entries.length) return 'ハイブにはまだエージェントが登録されていません。';
           const active = entries.filter(([, a]) => !obj(a).archived);
           const archived = entries.length - active.length;
           const godId = reg.godId;
@@ -130,19 +130,19 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
             .filter(([id]) => id !== godId)
             .map(([, a]) => {
               const m = obj(a);
-              const name = str(m.name) || 'an unnamed agent';
+              const name = str(m.name) || '名前のないエージェント';
               const role = str(m.role);
               const provider = str(m.provider) || 'claude';
-              const status = str(m.status) || 'unknown';
-              return `${name}${role ? `, the ${role},` : ''} on ${provider} (${status})`;
+              const status = str(m.status) || '不明';
+              return `${name}${role ? `（${role}）` : ''}、${provider}（${status}）`;
             });
-          const head = `There ${active.length === 1 ? 'is' : 'are'} ${plural(active.length, 'agent')} active${
-            archived ? ` and ${plural(archived, 'archived agent')}` : ''
-          }.`;
-          const god = godName ? ` ${godName} is the god orchestrator.` : '';
-          const roster = lines.length ? ` Active workers: ${lines.join('; ')}.` : '';
+          const head = `アクティブ${plural(active.length, 'エージェント')}${
+            archived ? `、アーカイブ済み${archived}体` : ''
+          }がいます。`;
+          const god = godName ? ` ${godName}がgodオーケストレーターです。` : '';
+          const roster = lines.length ? ` アクティブなワーカー: ${lines.join('；')}。` : '';
           return head + god + roster;
-        }, 'fleet status')
+        }, 'フリート状況')
     }),
 
     // ── get_tasks ─────────────────────────────────────────────────────────
@@ -168,34 +168,31 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
           const filter = typeof a.status === 'string' ? a.status : null;
           const raw = await window.cth.hiveTasks();
           const list = Array.isArray(obj(raw).tasks) ? (obj(raw).tasks as unknown[]) : [];
-          if (!list.length) return 'The task board is empty.';
+          if (!list.length) return 'タスクボードは空です。';
           const tasks = list.map(obj);
           const by = (s: string): Record<string, unknown>[] => tasks.filter((t) => str(t.status) === s);
-          const counts = `${plural(by('todo').length, 'to do')}, ${by('doing').length} in progress, ${plural(
-            by('blocked').length,
-            'blocked'
-          )}, and ${by('done').length} done`;
+          const counts = `${by('todo').length}件が未着手、${by('doing').length}件が進行中、${by('blocked').length}件がブロック中、${by('done').length}件が完了`;
           const describe = (t: Record<string, unknown>): string => {
             const who = str(t.assignee);
-            return `"${clip(str(t.title) || str(t.id) || 'untitled', 90)}"${who ? ` (${who})` : ''}`;
+            return `"${clip(str(t.title) || str(t.id) || '無題', 90)}"${who ? `（${who}）` : ''}`;
           };
           if (filter) {
             const sel = by(filter);
-            if (!sel.length) return `Nothing is ${filter} right now. Overall: ${counts}.`;
-            return `${plural(sel.length, 'task')} ${filter}: ${sel.slice(0, 12).map(describe).join('; ')}.`;
+            if (!sel.length) return `現在${filter}のタスクはありません。全体: ${counts}。`;
+            return `${sel.length}件が${filter}: ${sel.slice(0, 12).map(describe).join('；')}。`;
           }
           const doing = by('doing');
           const blocked = by('blocked');
           const detail = [
-            doing.length ? `In progress: ${doing.slice(0, 8).map(describe).join('; ')}.` : '',
-            blocked.length ? `Blocked: ${blocked.slice(0, 8).map(describe).join('; ')}.` : ''
+            doing.length ? `進行中: ${doing.slice(0, 8).map(describe).join('；')}。` : '',
+            blocked.length ? `ブロック中: ${blocked.slice(0, 8).map(describe).join('；')}。` : ''
           ]
             .filter(Boolean)
             .join(' ');
-          return `There ${tasks.length === 1 ? 'is' : 'are'} ${plural(tasks.length, 'task')}: ${counts}.${
+          return `全${tasks.length}件のタスク（${counts}）。${
             detail ? ' ' + detail : ''
           }`;
-        }, 'task board')
+        }, 'タスクボード')
     }),
 
     // ── get_cost ──────────────────────────────────────────────────────────
@@ -208,7 +205,7 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
         spoken(async () => {
           const snap = await window.cth.telemetrySnapshot();
           const usage = Array.isArray(snap.usage) ? snap.usage : [];
-          if (!usage.length) return 'No token usage has been recorded this session yet.';
+          if (!usage.length) return 'このセッションではまだトークン使用が記録されていません。';
           let totIn = 0;
           let totOut = 0;
           const perAgent = new Map<string, number>();
@@ -218,18 +215,17 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
             const outTok = typeof m.output === 'number' ? m.output : 0;
             totIn += inTok;
             totOut += outTok;
-            const id = str(m.agentId) || 'unknown';
+            const id = str(m.agentId) || '不明';
             perAgent.set(id, (perAgent.get(id) ?? 0) + inTok + outTok);
           }
           const top = [...perAgent.entries()]
             .sort((x, y) => y[1] - x[1])
             .slice(0, 3)
-            .map(([id, tok]) => `${id} at ${tokens(tok)} tokens`);
-          return `So far this session the hive has used ${tokens(totIn)} input and ${tokens(totOut)} output tokens across ${plural(
-            perAgent.size,
-            'agent'
-          )}.${top.length ? ` Top users: ${top.join(', ')}.` : ''}`;
-        }, 'token usage')
+            .map(([id, tok]) => `${id}（${tokens(tok)}トークン）`);
+          return `このセッションでハイブは${perAgent.size}エージェント合計で入力${tokens(totIn)}トークン・出力${tokens(
+            totOut
+          )}トークンを使用しました。${top.length ? ` 使用量トップ: ${top.join('、')}。` : ''}`;
+        }, 'トークン使用量')
     }),
 
     // ── get_triggers ──────────────────────────────────────────────────────
@@ -242,21 +238,18 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
         spoken(async () => {
           const missions = await window.cth.listMissions();
           const list = Array.isArray(missions) ? missions : [];
-          if (!list.length) return 'There are no scheduled missions configured.';
+          if (!list.length) return '設定された定期ミッションはありません。';
           const enabled = list.filter((m) => obj(m).enabled);
-          if (!enabled.length) return `There are ${plural(list.length, 'scheduled mission')}, but all are disabled.`;
+          if (!enabled.length) return `${list.length}件の定期ミッションがありますが、すべて無効です。`;
           const lines = enabled.slice(0, 8).map((m) => {
             const o = obj(m);
-            const label = str(o.label) || 'a mission';
+            const label = str(o.label) || 'ミッション';
             const to = str(o.to);
-            const last = o.lastFiredAt ? `, last fired ${ago(o.lastFiredAt)}` : ', not fired yet';
-            return `${label} ${every(o.intervalMs)}${to ? ` to ${to}` : ''}${last}`;
+            const last = o.lastFiredAt ? `、最終実行は${ago(o.lastFiredAt)}` : '、未実行';
+            return `${label}（${every(o.intervalMs)}${to ? `、宛先 ${to}` : ''}${last}）`;
           });
-          return `There ${enabled.length === 1 ? 'is' : 'are'} ${plural(
-            enabled.length,
-            'active scheduled mission'
-          )}: ${lines.join('; ')}.`;
-        }, 'schedules')
+          return `有効な定期ミッションが${enabled.length}件あります: ${lines.join('；')}。`;
+        }, 'スケジュール')
     }),
 
     // ── get_config ────────────────────────────────────────────────────────
@@ -274,30 +267,30 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
           // one (it is hand-mirrored across three files) without breaking us.
           const cc = obj(c);
           const parts: string[] = [];
-          parts.push(`Autonomy mode is ${c.autoMode ? 'on' : 'off'}.`);
-          if (c.defaultModel) parts.push(`The default model is ${c.defaultModel}.`);
+          parts.push(`自律モードは${c.autoMode ? 'オン' : 'オフ'}です。`);
+          if (c.defaultModel) parts.push(`デフォルトモデルは${c.defaultModel}です。`);
           if (c.godProvider || c.godModel)
-            parts.push(`The god orchestrator runs ${[c.godProvider, c.godModel].filter(Boolean).join(' ')}.`);
+            parts.push(`godオーケストレーターは${[c.godProvider, c.godModel].filter(Boolean).join(' ')}で動作しています。`);
           if (typeof cc.maxConcurrentWorkers === 'number')
-            parts.push(`Up to ${plural(cc.maxConcurrentWorkers, 'worker')} run concurrently.`);
+            parts.push(`最大${cc.maxConcurrentWorkers}ワーカーが同時に実行されます。`);
           // De-monetized: report only the token cap (no dollar cap), and avoid
           // money words. The $ runaway guard still exists + fires; it just isn't spoken.
           if (typeof c.costCapTokens === 'number' && c.costCapTokens > 0)
-            parts.push(`Token cap: ${tokens(c.costCapTokens)} tokens.`);
+            parts.push(`トークン上限: ${tokens(c.costCapTokens)}トークン。`);
           const breakerOn = obj(c.circuitBreaker).enabled;
-          parts.push(`The circuit breaker is ${breakerOn ? 'enabled' : 'off'}.`);
-          parts.push(`Desktop notifications are ${c.notifications ? 'on' : 'off'}.`);
+          parts.push(`サーキットブレーカーは${breakerOn ? '有効' : 'オフ'}です。`);
+          parts.push(`デスクトップ通知は${c.notifications ? 'オン' : 'オフ'}です。`);
           const features = [
             c.slackEnabled && 'Slack',
-            c.webhookEnabled && 'webhooks',
-            c.freeflowEnabled && 'Free Flow voice',
-            c.realtimeVoiceEnabled && 'realtime voice (this session)',
-            c.semanticMemory && 'semantic memory',
-            obj(c.knowledgeGraph).enabled && 'the knowledge graph'
+            c.webhookEnabled && 'Webhook',
+            c.freeflowEnabled && 'Free Flow音声',
+            c.realtimeVoiceEnabled && 'リアルタイム音声（このセッション）',
+            c.semanticMemory && 'セマンティックメモリ',
+            obj(c.knowledgeGraph).enabled && 'ナレッジグラフ'
           ].filter(Boolean);
-          if (features.length) parts.push(`Enabled features: ${features.join(', ')}.`);
+          if (features.length) parts.push(`有効な機能: ${features.join('、')}。`);
           return parts.join(' ');
-        }, 'configuration')
+        }, '設定')
     }),
 
     // ── get_memory ────────────────────────────────────────────────────────
@@ -335,8 +328,8 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
               if (!bySource.has(who)) bySource.set(who, []);
               bySource.get(who)!.push(r.excerpt);
             }
-            const lines = [...bySource.entries()].slice(0, 6).map(([who, ex]) => `${who} noted ${ex.slice(0, 2).join('; ')}`);
-            return `From the team's notes — ${lines.join('. ')}.`;
+            const lines = [...bySource.entries()].slice(0, 6).map(([who, ex]) => `${who}のメモ: ${ex.slice(0, 2).join('；')}`);
+            return `チームのメモから — ${lines.join('。')}。`;
           };
 
           // query + agentId → search WITHIN one agent (semantic wing first, then text).
@@ -348,10 +341,10 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
             const mem = await window.cth.hiveMemory(agentId);
             const ql = query.toLowerCase();
             const matched = mem.split('\n').map((l) => l.trim()).filter((l) => l.toLowerCase().includes(ql)).slice(0, 8);
-            if (matched.length) return clip(`From ${agentId}'s memory — ${matched.join(' ')}`, 1600);
+            if (matched.length) return clip(`${agentId}のメモリから — ${matched.join(' ')}`, 1600);
             return mem.trim()
-              ? `I read ${agentId}'s memory but found nothing about "${query}".`
-              : `${agentId} has not recorded any memory yet.`;
+              ? `${agentId}のメモリを読みましたが、「${query}」に関するものは見つかりませんでした。`
+              : `${agentId}はまだメモリを記録していません。`;
           }
 
           // query alone → semantic across the whole palace, then text fallback across all agents.
@@ -360,24 +353,24 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
             if (res.ok && res.output.trim()) return clip(res.output.trim(), 1600);
             const tf = await textFallback(query);
             if (tf) return clip(tf, 1600);
-            return `I searched the team's memory but found nothing about "${query}".`;
+            return `チームのメモリを検索しましたが、「${query}」に関するものは見つかりませんでした。`;
           }
 
           // agentId alone → read that agent's notes directly (any agent, active OR archived).
           if (agentId) {
             const mem = await window.cth.hiveMemory(agentId);
-            return mem.trim() ? clip(mem.trim(), 1600) : `${agentId} has not recorded any memory yet.`;
+            return mem.trim() ? clip(mem.trim(), 1600) : `${agentId}はまだメモリを記録していません。`;
           }
 
           // neither → status, but make clear search always works.
           const status = await window.cth.memoryStatus();
           const sem = status.active
-            ? 'Semantic memory is active'
+            ? 'セマンティックメモリは有効です'
             : status.available
-            ? 'Semantic memory is enabled but idle'
-            : 'Semantic memory is offline';
-          return `${sem} — but I can always text-search every agent's notes, active or archived. Ask me to search a topic, or name an agent to read their memory.`;
-        }, 'memory')
+            ? 'セマンティックメモリは有効ですが待機中です'
+            : 'セマンティックメモリはオフラインです';
+          return `${sem}。ただし、すべてのエージェントのメモ（アーカイブ済みを含む）を常にテキスト検索できます。話題を指定して検索させるか、エージェント名を言えばそのメモリを読み上げます。`;
+        }, 'メモリ')
     }),
 
     // ── get_activity ──────────────────────────────────────────────────────
@@ -399,19 +392,19 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
           const want = typeof a.limit === 'number' && isFinite(a.limit) ? Math.max(1, Math.min(40, Math.round(a.limit))) : 12;
           const log = await window.cth.hiveLog(want);
           const list = Array.isArray(log) ? log : [];
-          if (!list.length) return 'There is no recorded hive activity yet.';
+          if (!list.length) return 'まだハイブのアクティビティ記録はありません。';
           const lines = list
             .slice(-want)
             .reverse()
             .map((e) => {
               const o = obj(e);
-              const kind = str(o.kind) || str(o.event) || 'event';
+              const kind = str(o.kind) || str(o.event) || 'イベント';
               const who = str(o.agentId) || str(o.name) || str(o.from);
               const when = ago(o.ts);
-              return `${kind}${who ? ` by ${who}` : ''} ${when}`;
+              return `${kind}${who ? `（${who}）` : ''}、${when}`;
             });
-          return `Most recent activity: ${lines.join('; ')}.`;
-        }, 'activity log')
+          return `最近のアクティビティ: ${lines.join('；')}。`;
+        }, 'アクティビティログ')
     }),
 
     // ── get_messages ──────────────────────────────────────────────────────
@@ -440,24 +433,24 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
           const speakOne = (m: { from: string; to: string; subject: string; body: string; created_at: string; requires_reply: boolean }, full: boolean): string => {
             const subj = str(m.subject).trim();
             const body = despan(str(m.body)).trim();
-            const head = `${str(m.from) || 'someone'} to ${str(m.to) || 'someone'}${subj ? ` about "${clip(subj, 80)}"` : ''} ${ago(Date.parse(m.created_at))}`;
-            if (!body) return `${head}, with no body.`;
-            return `${head}: ${clip(body, full ? 700 : 220)}${m.requires_reply ? ' (a reply was requested)' : ''}`;
+            const head = `${str(m.from) || '誰か'}から${str(m.to) || '誰か'}へ${subj ? `「${clip(subj, 80)}」について` : ''}、${ago(Date.parse(m.created_at))}`;
+            if (!body) return `${head}。本文なし。`;
+            return `${head}: ${clip(body, full ? 700 : 220)}${m.requires_reply ? '（返信が要求されています）' : ''}`;
           };
 
           if (messageId) {
             const found = await window.cth.hiveMessages({ id: messageId });
-            if (!found.length) return `I couldn't find a message with id ${messageId}.`;
-            return `That message — ${speakOne(found[0], true)}.`;
+            if (!found.length) return `ID ${messageId} のメッセージが見つかりませんでした。`;
+            return `そのメッセージ — ${speakOne(found[0], true)}。`;
           }
 
           const msgs = await window.cth.hiveMessages(agentId ? { agentId, limit } : { limit });
           if (!msgs.length)
-            return agentId ? `I don't see any messages in ${agentId}'s mailbox.` : 'There are no hive messages to read yet.';
-          const scope = agentId ? `${agentId}'s mailbox` : 'the floor';
+            return agentId ? `${agentId}のメールボックスにメッセージは見当たりません。` : '読めるハイブメッセージはまだありません。';
+          const scope = agentId ? `${agentId}のメールボックス` : 'フロア全体';
           const lines = msgs.slice(0, limit).map((m) => speakOne(m, false));
-          return `${plural(lines.length, 'recent message')} from ${scope}: ${lines.join('. ')}.`;
-        }, 'messages')
+          return `${scope}の最近のメッセージ${lines.length}件: ${lines.join('。')}。`;
+        }, 'メッセージ')
     }),
 
     // ── get_agent_detail ──────────────────────────────────────────────────
@@ -477,33 +470,33 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
         spoken(async () => {
           const a = obj(input);
           const want = str(a.agentId).trim().toLowerCase();
-          if (!want) return 'Tell me which agent you mean.';
+          if (!want) return 'どのエージェントのことか教えてください。';
           const dir = await window.cth.hiveAgentDirectory();
           const list = Array.isArray(dir.agents) ? dir.agents : [];
           const e =
             list.find((x) => x.id.toLowerCase() === want) ??
             list.find((x) => x.name.toLowerCase() === want) ??
             list.find((x) => x.id.toLowerCase().startsWith(want) || x.name.toLowerCase().startsWith(want));
-          if (!e) return `I don't see an agent matching "${str(a.agentId)}".`;
+          if (!e) return `"${str(a.agentId)}" に一致するエージェントは見つかりません。`;
           const parts: string[] = [];
-          const role = e.role ? `, the ${e.role},` : '';
+          const role = e.role ? `（${e.role}）` : '';
           const where = e.archived
-            ? 'archived — its terminal is closed, but its working directory and memory are still here'
-            : `active and ${e.status}`;
-          parts.push(`${e.name}${role} runs on ${e.provider}${e.model ? ` with model ${e.model}` : ''}, ${where}.`);
+            ? 'アーカイブ済み — ターミナルは閉じられていますが、作業ディレクトリとメモリは残っています'
+            : `アクティブ（${e.status}）`;
+          parts.push(`${e.name}${role}は${e.provider}で動作${e.model ? `（モデル: ${e.model}）` : ''}、${where}です。`);
           if (e.cwd)
             parts.push(
-              `Working directory: ${e.cwd}${e.cwdValid === false ? ', which is not a valid directory — spawning there would fail' : ''}.`
+              `作業ディレクトリ: ${e.cwd}${e.cwdValid === false ? '（無効なディレクトリのため、ここでのスポーンは失敗します）' : ''}。`
             );
-          if (typeof e.contextPct === 'number') parts.push(`Its context window is ${e.contextPct} percent full.`);
-          else if (typeof e.contextTokens === 'number') parts.push(`It is carrying ${tokens(e.contextTokens)} tokens of context.`);
-          if (e.tokens) parts.push(`It has used ${tokens(e.tokens)} tokens so far.`);
-          parts.push(`Circuit breaker: ${e.breaker}.`);
-          if (e.lastTool) parts.push(`Last tool was ${e.lastTool}${typeof e.lastActiveSecAgo === 'number' ? `, ${ago(Date.now() - e.lastActiveSecAgo * 1000)}` : ''}.`);
-          if (e.inboxBacklog) parts.push(`${plural(e.inboxBacklog, 'message')} waiting in its inbox.`);
-          parts.push(e.hasMemory ? "It has recorded memory — ask me to read it." : 'It has not recorded much memory yet.');
+          if (typeof e.contextPct === 'number') parts.push(`コンテキストウィンドウは${e.contextPct}%使用中です。`);
+          else if (typeof e.contextTokens === 'number') parts.push(`コンテキストは${tokens(e.contextTokens)}トークンです。`);
+          if (e.tokens) parts.push(`これまでに${tokens(e.tokens)}トークンを使用しました。`);
+          parts.push(`サーキットブレーカー: ${e.breaker}。`);
+          if (e.lastTool) parts.push(`最後のツールは${e.lastTool}${typeof e.lastActiveSecAgo === 'number' ? `（${ago(Date.now() - e.lastActiveSecAgo * 1000)}）` : ''}です。`);
+          if (e.inboxBacklog) parts.push(`受信箱に${e.inboxBacklog}件のメッセージが待機中です。`);
+          parts.push(e.hasMemory ? 'メモリが記録されています — 読み上げを依頼できます。' : 'まだメモリの記録はほとんどありません。');
           return parts.join(' ');
-        }, 'agent detail')
+        }, 'エージェント詳細')
     }),
 
     // ── list_agents ───────────────────────────────────────────────────────
@@ -525,31 +518,31 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
           const includeArchived = a.includeArchived !== false;
           const dir = await window.cth.hiveAgentDirectory();
           const all = Array.isArray(dir.agents) ? dir.agents : [];
-          if (!all.length) return 'The hive has no registered agents.';
+          if (!all.length) return 'ハイブには登録されたエージェントがいません。';
           const active = all.filter((e) => !e.archived);
           const archived = all.filter((e) => e.archived);
           const near = active
             .filter((e) => typeof e.contextPct === 'number' && e.contextPct >= 70)
-            .map((e) => `${e.name} at ${e.contextPct} percent`);
+            .map((e) => `${e.name}（コンテキスト${e.contextPct}%）`);
           const describe = (e: typeof all[number]): string =>
-            `${e.name} on ${e.provider}${e.cwd ? ` in ${shortDir(e.cwd)}` : ''}${
-              typeof e.contextPct === 'number' ? `, context ${e.contextPct} percent` : ''
-            }`;
+            `${e.name}（${e.provider}${e.cwd ? `、${shortDir(e.cwd)}` : ''}${
+              typeof e.contextPct === 'number' ? `、コンテキスト${e.contextPct}%` : ''
+            }）`;
           const parts: string[] = [];
           parts.push(
-            `${plural(active.length, 'active agent')}${archived.length ? ` and ${plural(archived.length, 'archived agent')}` : ''}.`
+            `アクティブ${active.length}体${archived.length ? `、アーカイブ済み${archived.length}体` : ''}のエージェント。`
           );
-          if (active.length) parts.push(`Active: ${active.slice(0, 12).map(describe).join('; ')}.`);
+          if (active.length) parts.push(`アクティブ: ${active.slice(0, 12).map(describe).join('；')}。`);
           if (includeArchived && archived.length)
             parts.push(
-              `Archived: ${archived
+              `アーカイブ済み: ${archived
                 .slice(0, 12)
-                .map((e) => `${e.name}${e.cwd ? ` (last in ${shortDir(e.cwd)})` : ''}`)
-                .join('; ')}.`
+                .map((e) => `${e.name}${e.cwd ? `（最後は ${shortDir(e.cwd)}）` : ''}`)
+                .join('；')}。`
             );
-          if (near.length) parts.push(`Near their context limit: ${near.join(', ')}.`);
+          if (near.length) parts.push(`コンテキスト上限が近い: ${near.join('、')}。`);
           return parts.join(' ');
-        }, 'agent roster')
+        }, 'エージェント一覧')
     }),
 
     // ── get_board ─────────────────────────────────────────────────────────
@@ -562,9 +555,9 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
         spoken(async () => {
           const board = await window.cth.hiveBoard();
           const text = despan(board || '');
-          if (!text) return 'The board is empty right now.';
+          if (!text) return 'ボードは現在空です。';
           return clip(text, 1800);
-        }, 'board')
+        }, 'ボード')
     }),
 
     // ── get_floor_state (v0.3.4) ──────────────────────────────────────────
@@ -583,7 +576,7 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
             .filter((a) => !a.archived)
             .map((a) => ({
               name: str(a.name) || str(a.id),
-              status: str(a.status) || 'unknown',
+              status: str(a.status) || '不明',
               engine: str(a.provider) || undefined,
               contextPct: typeof a.contextPct === 'number' ? a.contextPct : undefined,
               breaker: str(a.breaker) && str(a.breaker) !== 'healthy' ? str(a.breaker) : undefined,
@@ -591,11 +584,11 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
             }));
           const doing = tasks.filter((t) => str(t.status) === 'doing').map((t) => ({ title: str(t.title), owner: str(t.assignee) || undefined }));
           const blocked = tasks.filter((t) => str(t.status) === 'blocked').map((t) => ({ title: str(t.title), owner: str(t.assignee) || undefined }));
-          const summary = `${plural(rows.length, 'agent')} on the floor, ${doing.length} in progress, ${blocked.length} blocked.`;
+          const summary = `フロアに${rows.length}エージェント、進行中${doing.length}件、ブロック中${blocked.length}件。`;
           // Flagged JSON per the Realtime prompting guidance: precise fields the
           // model can quote verbatim, with the spoken line separate.
           return `${summary} DATA: ${JSON.stringify({ agents: rows, doing, blocked })}`;
-        }, 'floor state')
+        }, 'フロア状態')
     }),
 
     // ── get_app_info (v0.3.4) ─────────────────────────────────────────────
@@ -608,8 +601,8 @@ export function realtimeReadTools(): ReturnType<typeof tool>[] {
         spoken(async () => {
           const info = await window.cth.appInfo();
           const notes = despan(info.changelog || '');
-          return `This is Munder Difflin version ${info.version}. ${notes ? `Latest release notes: ${clip(notes, 1600)}` : 'No release notes are bundled with this build.'}`;
-        }, 'app info')
+          return `これはMunder Difflin バージョン${info.version}です。 ${notes ? `最新リリースノート: ${clip(notes, 1600)}` : 'このビルドにはリリースノートが含まれていません。'}`;
+        }, 'アプリ情報')
     })
   ];
 }

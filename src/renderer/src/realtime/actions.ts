@@ -33,16 +33,16 @@ async function act(verb: string, input: unknown): Promise<string> {
   // renderer ahead of a stale preload), say so instead of throwing an opaque error.
   if (typeof window.cth?.realtimeAction !== 'function') {
     console.error('[realtime-action] window.cth.realtimeAction is not available — restart the app to load the rt-5 preload.', { verb });
-    return 'Voice actions are not available in this build yet — try restarting the app.';
+    return 'このビルドでは音声操作はまだ利用できません。アプリを再起動してください。';
   }
   try {
     const res = await window.cth.realtimeAction({ verb, ...obj(input) });
     if (!res?.ok) console.warn('[realtime-action] verb=%s rejected: %s', verb, res?.spoken, { input });
-    return res?.spoken || 'Done.';
+    return res?.spoken || '完了しました。';
   } catch (e) {
     console.error('[realtime-action] verb=%s threw:', verb, e, { input });
     const msg = e instanceof Error ? e.message : 'an unknown error';
-    return `I couldn't do that (${msg}).`;
+    return `実行できませんでした（${msg}）。`;
   }
 }
 
@@ -164,17 +164,17 @@ export function realtimeActionTools(): ReturnType<typeof tool>[] {
         try {
           const a = obj(input);
           const taskId = str(a.taskId);
-          if (!taskId) return 'I need a task id to wait on.';
+          if (!taskId) return '待機するタスクのIDが必要です。';
           const secs = typeof a.timeoutSeconds === 'number' && a.timeoutSeconds > 0 ? Math.min(a.timeoutSeconds, 600) : 120;
           const res = await window.cth.realtimeWaitFor(taskId, secs * 1000);
           if (res && 'timedOut' in res && res.timedOut) {
-            return `That one's still running after the wait — I'll let you know the moment it finishes.`;
+            return `待機時間内ではまだ実行中でした。終わり次第お知らせします。`;
           }
-          return (res && 'summary' in res && res.summary) || 'That task completed.';
+          return (res && 'summary' in res && res.summary) || 'そのタスクは完了しました。';
         } catch (e) {
           console.error('[realtime-action] wait_for threw:', e);
           const msg = e instanceof Error ? e.message : 'an unknown error';
-          return `I couldn't wait on that (${msg}).`;
+          return `待機できませんでした（${msg}）。`;
         }
       }
     }),
@@ -387,16 +387,16 @@ export function realtimeActionTools(): ReturnType<typeof tool>[] {
       execute: async (input) => {
         if (typeof window.cth?.realtimeActionConfirm !== 'function') {
           console.error('[realtime-action] window.cth.realtimeActionConfirm is not available — restart the app.');
-          return 'Voice actions are not available in this build yet — try restarting the app.';
+          return 'このビルドでは音声操作はまだ利用できません。アプリを再起動してください。';
         }
         try {
           const res = await window.cth.realtimeActionConfirm({ phrase: str(obj(input).phrase) });
           if (!res?.ok) console.warn('[realtime-action] confirm rejected: %s', res?.spoken, { input });
-          return res?.spoken || 'Done.';
+          return res?.spoken || '完了しました。';
         } catch (e) {
           console.error('[realtime-action] confirm threw:', e, { input });
           const msg = e instanceof Error ? e.message : 'an unknown error';
-          return `I couldn't confirm that (${msg}).`;
+          return `確認できませんでした（${msg}）。`;
         }
       }
     }),
@@ -407,10 +407,10 @@ export function realtimeActionTools(): ReturnType<typeof tool>[] {
       execute: async () => {
         try {
           const res = await window.cth?.realtimeActionCancel?.();
-          return res?.spoken || 'Cancelled.';
+          return res?.spoken || 'キャンセルしました。';
         } catch (e) {
           console.error('[realtime-action] cancel threw:', e);
-          return 'Cancelled.';
+          return 'キャンセルしました。';
         }
       }
     })

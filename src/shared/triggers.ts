@@ -28,9 +28,9 @@
 export type TriggerMode = 'strict' | 'allow-all' | 'communication-only';
 
 export const TRIGGER_MODES: { value: TriggerMode; label: string; blurb: string }[] = [
-  { value: 'strict', label: 'strict', blurb: 'Ask me before anything reaches the hive.' },
-  { value: 'allow-all', label: 'allow all', blurb: 'Messages, directives and communication all flow.' },
-  { value: 'communication-only', label: 'communication only', blurb: 'Chatter flows; directives need my approval.' }
+  { value: 'strict', label: '厳格', blurb: 'ハイブに何かが届く前に必ず承認を求めます。' },
+  { value: 'allow-all', label: 'すべて許可', blurb: 'メッセージ・ディレクティブ・通信がすべて通ります。' },
+  { value: 'communication-only', label: '通信のみ', blurb: '連絡は通ります。ディレクティブには承認が必要です。' }
 ];
 
 export const DEFAULT_TRIGGER_MODE: TriggerMode = 'strict';
@@ -177,14 +177,14 @@ export const DEFAULT_WEBHOOK_SCHEMA_OBJECT = {
   type: 'object',
   required: ['message'],
   properties: {
-    message: { type: 'string', description: 'What you want the orchestrator to know or do.' },
-    title: { type: 'string', description: 'Short label for the kanban card.' },
+    message: { type: 'string', description: 'オーケストレーターに伝えたいこと・実行してほしいこと。' },
+    title: { type: 'string', description: 'かんばんカードの短いラベル。' },
     kind: {
       type: 'string',
       enum: ['directive', 'communication'],
-      description: 'directive = asks the hive to act; communication = informational.'
+      description: 'directive = ハイブへの実行依頼。communication = 情報連絡。'
     },
-    from: { type: 'string', description: 'Who is sending, for the trigger history.' }
+    from: { type: 'string', description: '送信者名（トリガー履歴に表示されます）。' }
   }
 } as const;
 
@@ -213,9 +213,9 @@ export const DEFAULT_ORG_TRIGGER: OrgTriggerConfig = {
 
 /** Copy shown under the org key field. Kept here so Settings and Triggers agree. */
 export const CLONE_NODE_BLURB =
-  'Set an organisation key and your teammates can message your clone node — the copy of '
-  + 'Munder Difflin running on your machine. Each teammate runs their own, so an org key '
-  + 'is how two installs find each other.';
+  '組織キーを設定すると、チームメイトがあなたのクローンノード — あなたのマシンで動いている '
+  + 'Munder Difflin のコピー — にメッセージを送れるようになります。各メンバーが自分のインスタンスを '
+  + '持っているので、組織キーは2つのインストールが互いを見つけるための手段です。';
 
 /* ──────────────────────────── trigger history ────────────────────────────── */
 

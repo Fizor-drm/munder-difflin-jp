@@ -62,7 +62,7 @@ export function usePtyParser(agentId: string) {
       // No new tool calls for ~4 s → assume the model went idle
       updateAgent(agentId, {
         status: 'idle',
-        action: 'awaiting',
+        action: '待機中',
         carrying: undefined,
         currentStation: 'desk'
       });
@@ -155,21 +155,21 @@ export function usePtyParser(agentId: string) {
       if (isGod) {
         updateAgent(agentId, {
           status: 'blocked',
-          action: 'waiting on you',
+          action: 'あなたの応答待ち',
           currentStation: 'mailbox',
           blockReason: {
-            summary: 'Waiting for your reply',
-            detail: 'Claude is waiting for input. Check the terminal for the exact prompt.',
+            summary: '返答を待っています',
+            detail: 'Claudeが入力を待っています。正確なプロンプトはターミナルで確認してください。',
             actions: [
-              { label: 'Approve', kind: 'approve', send: 'y\r' },
-              { label: 'Deny',    kind: 'deny',    send: 'n\r' }
+              { label: '承認', kind: 'approve', send: 'y\r' },
+              { label: '拒否',  kind: 'deny',    send: 'n\r' }
             ]
           }
         });
       } else {
         updateAgent(agentId, {
           status: 'waiting',
-          action: 'waiting on god',
+          action: 'godの応答待ち',
           currentStation: 'desk',
           blockReason: undefined
         });

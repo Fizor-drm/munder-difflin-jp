@@ -8,14 +8,14 @@ export interface McpDefaultsSettingsProps {
 
 const TIER_ORDER: McpTier[] = ['safe-readonly', 'write', 'secret'];
 const TIER_LABEL: Record<McpTier, string> = {
-  'safe-readonly': 'Safe & Read-Only (on by default)',
-  'write': 'Write Access (consent required)',
-  'secret': 'Requires Secret / API Key (consent required)'
+  'safe-readonly': '安全・読み取り専用（デフォルトでオン）',
+  'write': '書き込みアクセス（同意が必要）',
+  'secret': 'シークレット / APIキーが必要（同意が必要）'
 };
 const TIER_NOTE: Record<McpTier, string> = {
-  'safe-readonly': 'These servers read data only, need no secrets, and are scoped to the agent workspace. They are enabled for every new agent.',
-  'write': 'These servers can mutate state beyond the workspace. Off by default — enable only after reviewing.',
-  'secret': 'These servers require an API key or credentials. Off by default — add your credentials and enable after consent.'
+  'safe-readonly': 'これらのサーバーはデータの読み取りのみを行い、シークレットも不要で、エージェントのワークスペースにスコープされます。新しいエージェントごとに有効になります。',
+  'write': 'これらのサーバーはワークスペース外の状態を変更できます。デフォルトはオフです — 内容を確認してから有効にしてください。',
+  'secret': 'これらのサーバーにはAPIキーや認証情報が必要です。デフォルトはオフです — 認証情報を追加し、同意のうえ有効化してください。'
 };
 
 const labelStyle: React.CSSProperties = {
@@ -38,10 +38,10 @@ export function McpDefaultsSettings({ config }: McpDefaultsSettingsProps) {
       await window.cth.updateConfig({
         mcpDefaults: { ...(config.mcpDefaults ?? {}), [id]: { enabled: next } }
       });
-      setNote(`${id}: ${next ? 'enabled' : 'disabled'}`);
+      setNote(`${id}: ${next ? '有効' : '無効'}`);
       setTimeout(() => setNote(''), 1800);
     } catch {
-      setNote('could not save');
+      setNote('保存できませんでした');
       setTimeout(() => setNote(''), 2000);
     }
   };
@@ -51,11 +51,11 @@ export function McpDefaultsSettings({ config }: McpDefaultsSettingsProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div>
-        <div style={{ ...labelStyle, marginBottom: 6 }}>Default MCP servers</div>
+        <div style={{ ...labelStyle, marginBottom: 6 }}>デフォルトMCPサーバー</div>
         <span style={{ fontSize: 12, lineHeight: '16px', color: 'var(--cth-ink-500)' }}>
-          These servers are merged into each new agent's session settings. Safe servers are on by
-          default; write/secret servers are off until you consent. Changes take effect on the next
-          agent spawn — running agents are not affected.
+          これらのサーバーは、新しく作成される各エージェントのセッション設定にマージされます。安全なサーバーは
+          デフォルトでオン、書き込み/シークレットサーバーは同意するまでオフです。変更は次回のエージェント
+          スポーン時に反映され、実行中のエージェントには影響しません。
         </span>
       </div>
 
@@ -125,7 +125,7 @@ export function McpDefaultsSettings({ config }: McpDefaultsSettingsProps) {
                         textTransform: 'uppercase'
                       }}
                     >
-                      {on ? 'on' : 'off'}
+                      {on ? 'オン' : 'オフ'}
                     </button>
                   </div>
                 );

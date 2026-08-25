@@ -52,7 +52,7 @@ export function WebhooksSection({ onSummary }: { onSummary?: (s: string) => void
   }, [setHooks]);
 
   useEffect(() => {
-    onSummary?.(hooks.length === 0 ? 'none' : `${hooks.length} · ${status.running ? 'live' : 'offline'}`);
+    onSummary?.(hooks.length === 0 ? 'なし' : `${hooks.length} · ${status.running ? '稼働中' : '停止中'}`);
   }, [hooks, status.running, onSummary]);
 
   /** Update the shared mirror; optionally write it through. Main sanitises what
@@ -86,12 +86,11 @@ export function WebhooksSection({ onSummary }: { onSummary?: (s: string) => void
   return (
     <>
       <Muted>
-        Anyone holding a URL and its secret can post work in. Each endpoint carries its own secret,
-        so revoking one caller leaves the others alone.
+        URLとシークレットを持つ誰でも作業を投稿できます。各エンドポイントが固有のシークレットを持つため、ある呼び出し元を無効化しても他の呼び出し元には影響しません。
       </Muted>
       <div style={{ height: 8 }} />
 
-      {hooks.length === 0 && <Muted>No endpoints yet.</Muted>}
+      {hooks.length === 0 && <Muted>エンドポイントはまだありません。</Muted>}
       {hooks.map((w) => (
         <WebhookRow
           key={w.id}
@@ -105,9 +104,9 @@ export function WebhooksSection({ onSummary }: { onSummary?: (s: string) => void
 
       <div style={{ marginTop: 8 }}>
         <PixelButton variant="secondary" size="sm" onClick={() => { void add(); }} disabled={minting}>
-          {minting ? 'minting…' : 'add webhook'}
+          {minting ? '作成中…' : 'Webhookを追加'}
         </PixelButton>
-        <Hint>A new endpoint starts switched off. Copy its URL and secret, then turn it on.</Hint>
+        <Hint>新しいエンドポイントはオフの状態で作成されます。URLとシークレットをコピーしてからオンにしてください。</Hint>
       </div>
     </>
   );
@@ -180,25 +179,25 @@ function WebhookRow({ hook, url, serverRunning, onPatch, onDelete }: {
       <SubHeader
         open={open}
         onToggle={() => setOpen((o) => !o)}
-        title={hook.name || 'unnamed'}
-        sub={<>{modeLabel} · {url ? 'reachable' : serverRunning ? 'no URL yet' : 'server offline'}</>}
+        title={hook.name || '名称未設定'}
+        sub={<>{modeLabel} · {url ? '到達可能' : serverRunning ? 'URL未発行' : 'サーバー停止中'}</>}
         right={<Toggle on={hook.enabled} onClick={() => onPatch({ enabled: !hook.enabled })} />}
       />
 
       {open && (
         <div style={{ marginTop: 4 }}>
-          <Field label="NAME">
+          <Field label="名前">
             {/* Mirror while typing, write through on blur. */}
             <input
               value={hook.name}
               onChange={(e) => onPatch({ name: e.target.value }, false)}
               onBlur={() => onPatch({ name: hook.name })}
-              placeholder="Who calls this"
+              placeholder="呼び出し元の名前"
               style={inputStyle}
             />
           </Field>
 
-          <Field label="POST TO">
+          <Field label="POST先">
             {url ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{
@@ -208,19 +207,19 @@ function WebhookRow({ hook, url, serverRunning, onPatch, onDelete }: {
                   color: 'var(--cth-ink-900)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                 }}>{url}</span>
                 <MiniButton onClick={() => copy('url', url)} tone={copied === 'url' ? 'good' : 'plain'}>
-                  {copied === 'url' ? 'copied' : 'copy'}
+                  {copied === 'url' ? 'コピー済み' : 'コピー'}
                 </MiniButton>
               </div>
             ) : (
               <Hint>
                 {serverRunning
-                  ? 'This endpoint has no public address yet. It appears once the tunnel picks it up.'
-                  : 'The webhook server is not listening, so there is no address to hand out yet.'}
+                  ? 'このエンドポイントにはまだ公開アドレスがありません。トンネルが検出すると表示されます。'
+                  : 'Webhookサーバーが待ち受けていないため、配布できるアドレスがまだありません。'}
               </Hint>
             )}
           </Field>
 
-          <Field label="SECRET">
+          <Field label="シークレット">
             <SecretField
               value={hook.secret}
               revealed={revealed}
@@ -228,31 +227,31 @@ function WebhookRow({ hook, url, serverRunning, onPatch, onDelete }: {
               onCopy={() => copy('secret', hook.secret)}
               copied={copied === 'secret'}
             />
-            <Hint>Callers echo this in the x-md-webhook-secret header.</Hint>
+            <Hint>呼び出し元は x-md-webhook-secret ヘッダーでこの値を送り返します。</Hint>
           </Field>
 
-          <Field label="TRUST">
+          <Field label="信頼モード">
             <ModePicker value={hook.mode} onChange={(mode: TriggerMode) => onPatch({ mode })} />
           </Field>
 
-          <Field label="BODY SCHEMA">
+          <Field label="ボディスキーマ">
             {!schemaOpen && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <MiniButton onClick={() => setSchemaOpen(true)}>edit schema</MiniButton>
+                <MiniButton onClick={() => setSchemaOpen(true)}>スキーマを編集</MiniButton>
                 <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>
-                  what an inbound body must look like
+                  受信ボディが満たすべき形式
                 </span>
               </div>
             )}
             {schemaOpen && (
               <>
                 <JsonEditor value={schemaText} onChange={(v) => { setSchemaText(v); setSchemaError(null); }} />
-                {schemaError && <Callout>Not valid JSON — {schemaError}. Nothing was saved.</Callout>}
+                {schemaError && <Callout>JSONとして不正です（{schemaError}）。保存されていません。</Callout>}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
                   <PixelButton variant="primary" size="sm" onClick={saveSchema}>
-                    {schemaSaved ? 'saved' : 'save schema'}
+                    {schemaSaved ? '保存済み' : 'スキーマを保存'}
                   </PixelButton>
-                  <PixelButton variant="ghost" size="sm" onClick={() => setSchemaOpen(false)}>close</PixelButton>
+                  <PixelButton variant="ghost" size="sm" onClick={() => setSchemaOpen(false)}>閉じる</PixelButton>
                 </div>
               </>
             )}
@@ -260,12 +259,12 @@ function WebhookRow({ hook, url, serverRunning, onPatch, onDelete }: {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10 }}>
             <span style={{ flex: 1 }} />
-            {!confirmDelete && <MiniButton tone="danger" onClick={() => setConfirmDelete(true)}>delete</MiniButton>}
+            {!confirmDelete && <MiniButton tone="danger" onClick={() => setConfirmDelete(true)}>削除</MiniButton>}
             {confirmDelete && (
               <>
-                <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>Sure?</span>
-                <MiniButton tone="danger" onClick={onDelete}>delete it</MiniButton>
-                <MiniButton onClick={() => setConfirmDelete(false)}>keep</MiniButton>
+                <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>本当に削除しますか？</span>
+                <MiniButton tone="danger" onClick={onDelete}>削除する</MiniButton>
+                <MiniButton onClick={() => setConfirmDelete(false)}>保持する</MiniButton>
               </>
             )}
           </div>

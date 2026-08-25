@@ -106,10 +106,10 @@ function buildExchanges(rows: TriggerHistoryEntry[]): Exchange[] {
 function relTime(ms: number): string {
   const past = ms >= 0;
   const a = Math.abs(ms);
-  if (a < 45_000) return 'just now';
+  if (a < 45_000) return 'たった今';
   const mins = Math.round(a / 60_000);
-  const unit = mins < 60 ? `${mins}m` : mins < 1440 ? `${Math.round(mins / 60)}h` : `${Math.round(mins / 1440)}d`;
-  return past ? `${unit} ago` : `in ${unit}`;
+  const unit = mins < 60 ? `${mins}分` : mins < 1440 ? `${Math.round(mins / 60)}時間` : `${Math.round(mins / 1440)}日`;
+  return past ? `${unit}前` : `${unit}後`;
 }
 
 const CLAMP_CHARS = 320;
@@ -175,20 +175,20 @@ function Badge({ fill, line, children }: { fill: string; line: string; children:
 
 function KindBadge({ kind }: { kind: TriggerHistoryEntry['kind'] }) {
   return kind === 'directive'
-    ? <Badge fill="var(--cth-lemon-light)" line="var(--cth-lemon)">directive</Badge>
-    : <Badge fill="var(--cth-sky-light)" line="var(--cth-sky)">communication</Badge>;
+    ? <Badge fill="var(--cth-lemon-light)" line="var(--cth-lemon)">指示</Badge>
+    : <Badge fill="var(--cth-sky-light)" line="var(--cth-sky)">連絡</Badge>;
 }
 
 function DecisionBadge({ decision }: { decision: NonNullable<TriggerHistoryEntry['decision']> }) {
   switch (decision) {
     case 'pending':
-      return <Badge fill="var(--cth-lemon-light)" line="var(--cth-lemon)">needs you</Badge>;
+      return <Badge fill="var(--cth-lemon-light)" line="var(--cth-lemon)">要確認</Badge>;
     case 'approved':
-      return <Badge fill="var(--cth-mint-light)" line="var(--cth-mint)">approved</Badge>;
+      return <Badge fill="var(--cth-mint-light)" line="var(--cth-mint)">承認済み</Badge>;
     case 'rejected':
-      return <Badge fill="var(--cth-coral-light)" line="var(--cth-coral)">rejected</Badge>;
+      return <Badge fill="var(--cth-coral-light)" line="var(--cth-coral)">却下</Badge>;
     default:
-      return <Badge fill="var(--cth-cream-200)" line="var(--cth-ink-300)">auto-allowed</Badge>;
+      return <Badge fill="var(--cth-cream-200)" line="var(--cth-ink-300)">自動許可</Badge>;
   }
 }
 
@@ -213,10 +213,10 @@ function MessageBlock({
         <span style={tinyCaps}>{label}</span>
         <span style={{ ...tinyCaps, flexShrink: 0 }}>{relTime(Date.now() - msg.at)}</span>
       </div>
-      <div style={bodyBox}>{body.trim() ? (expanded ? body : text) : '(empty message)'}</div>
+      <div style={bodyBox}>{body.trim() ? (expanded ? body : text) : '（空のメッセージ）'}</div>
       {clipped && (
         <button type="button" onClick={onToggle} style={linkButton}>
-          {expanded ? 'show less' : `show all ${body.length} characters`}
+          {expanded ? '折りたたむ' : `全文を表示（${body.length}文字）`}
         </button>
       )}
     </div>
@@ -248,8 +248,8 @@ function ExchangeCard({
   // is normal — it is a message still in flight, never a failure.
   const tail = (() => {
     if (pending || ex.answered) return null;
-    if (decision === 'rejected') return 'You turned this down. Nothing was sent to the hive.';
-    return 'No reply yet. Michael has this one.';
+    if (decision === 'rejected') return '却下しました。ハイブには何も送信されていません。';
+    return 'まだ返信はありません。Michaelが対応中です。';
   })();
 
   return (
@@ -259,19 +259,19 @@ function ExchangeCard({
           background: 'var(--cth-lemon-light)', boxShadow: 'inset 0 0 0 1px var(--cth-lemon)',
           padding: '4px 6px 3px', ...tinyCaps, color: 'var(--cth-ink-900)'
         }}>
-          WAITING FOR YOU
+          判断待ち
         </div>
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, justifyContent: 'space-between' }}>
           <span style={{ ...uiText, ...ellipsis, minWidth: 0 }} title={head.sourceName}>
-            {head.sourceName || 'unnamed source'}
+            {head.sourceName || '名称不明のソース'}
           </span>
           <span style={{ ...tinyCaps, flexShrink: 0 }}>{relTime(Date.now() - ex.latestAt)}</span>
         </div>
         <div style={{ ...muted, ...ellipsis, fontSize: 11 }} title={head.peer}>
-          {hasInbound ? 'from' : 'to'} {head.peer || 'unknown'}
+          {head.peer || '不明'}{hasInbound ? ' から' : ' へ'}
         </div>
         {head.title && (
           <div style={{ ...uiText, ...ellipsis, color: 'var(--cth-ink-700)' }} title={head.title}>
@@ -289,7 +289,7 @@ function ExchangeCard({
         <MessageBlock
           key={m.id}
           msg={m}
-          label={m.direction === 'inbound' ? 'THEY SENT' : hasInbound ? 'WE REPLIED' : 'WE SENT'}
+          label={m.direction === 'inbound' ? '受信' : hasInbound ? '返信' : '送信'}
           expanded={!!expanded[m.id]}
           onToggle={() => toggle(m.id)}
         />
@@ -299,8 +299,8 @@ function ExchangeCard({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <div style={{ ...uiText, fontSize: 11, lineHeight: '16px', color: 'var(--cth-ink-700)' }}>
             {pending.kind === 'directive'
-              ? 'Approve and this goes to Michael, who will put the hive to work on it. Reject and it is dropped — nothing runs.'
-              : 'Approve and Michael reads this. Reject and it is dropped — nothing runs.'}
+              ? '承認するとMichaelに渡され、ハイブがこの作業に取りかかります。却下すると破棄され、何も実行されません。'
+              : '承認するとMichaelがこの内容を読みます。却下すると破棄され、何も実行されません。'}
           </div>
           <div style={{ display: 'flex', gap: 6 }}>
             <PixelButton
@@ -308,18 +308,18 @@ function ExchangeCard({
               size="sm"
               disabled={!!busy[pending.id]}
               onClick={() => onDecide(pending.id, 'approved')}
-              title="Send this message through to Michael"
+              title="このメッセージをMichaelへ送り届けます"
             >
-              {busy[pending.id] ? 'one sec…' : 'approve'}
+              {busy[pending.id] ? '処理中…' : '承認'}
             </PixelButton>
             <PixelButton
               variant="secondary"
               size="sm"
               disabled={!!busy[pending.id]}
               onClick={() => onDecide(pending.id, 'rejected')}
-              title="Drop this message. Nothing is sent"
+              title="このメッセージを破棄します。何も送信されません"
             >
-              reject
+              却下
             </PixelButton>
           </div>
         </div>
@@ -328,7 +328,7 @@ function ExchangeCard({
       {tail && <div style={{ ...muted, fontSize: 11 }}>{tail}</div>}
 
       {taskId && (
-        <div style={{ ...tinyCaps, ...ellipsis }} title={taskId}>TASK {taskId}</div>
+        <div style={{ ...tinyCaps, ...ellipsis }} title={taskId}>タスク {taskId}</div>
       )}
     </div>
   );
@@ -348,13 +348,13 @@ function EmptyState({ title, body }: { title: string; body: string }) {
 const SECTIONS: { key: Source; label: string; blurb: string }[] = [
   {
     key: 'webhook',
-    label: 'Webhooks',
-    blurb: 'Everything posted to your webhook endpoints, next to what Michael sent back.'
+    label: 'Webhook',
+    blurb: 'Webhookエンドポイントに投稿されたすべての内容と、Michaelが返した内容を並べて表示します。'
   },
   {
     key: 'org',
-    label: 'Organization',
-    blurb: 'Messages from your teammates’ clone nodes, next to what Michael sent back.'
+    label: '組織',
+    blurb: 'チームメイトのクローンノードからのメッセージと、Michaelが返した内容を並べて表示します。'
   }
 ];
 
@@ -398,11 +398,11 @@ export function TriggerHistoryTab() {
     call({ id, decision })
       .then((res) => {
         if (res && res.ok === false) {
-          setError(res.error || 'That did not go through. Try again.');
+          setError(res.error || '送信できませんでした。もう一度お試しください。');
           load();
         }
       })
-      .catch(() => { setError('That did not go through. Try again.'); load(); })
+      .catch(() => { setError('送信できませんでした。もう一度お試しください。'); load(); })
       .finally(() => setBusy((b) => { const n = { ...b }; delete n[id]; return n; }));
   }, [load]);
 
@@ -411,7 +411,7 @@ export function TriggerHistoryTab() {
     setConfirmClear(false);
     if (!call) return;
     setEntries((rows) => rows.filter((r) => r.source !== source));
-    call(source).catch(() => { setError('Could not clear it. Try again.'); load(); });
+    call(source).catch(() => { setError('削除できませんでした。もう一度お試しください。'); load(); });
   }, [source, load]);
 
   const counts = useMemo(() => {
@@ -488,8 +488,8 @@ export function TriggerHistoryTab() {
             padding: '6px 8px', ...uiText, fontSize: 11, lineHeight: '16px'
           }}>
             {pendingCount === 1
-              ? 'One message is held, waiting on your yes or no.'
-              : `${pendingCount} messages are held, waiting on your yes or no.`}
+              ? 'メッセージ1件が保留中です。承認または却下を待っています。'
+              : `${pendingCount}件のメッセージが保留中です。承認または却下を待っています。`}
           </div>
         )}
 
@@ -503,17 +503,17 @@ export function TriggerHistoryTab() {
         {exchanges.length === 0 ? (
           source === 'org' ? (
             <EmptyState
-              title="Nothing here yet, and nothing is broken."
-              body={'Teammate messaging is not built yet. You can set an org key and pick a mode '
-                + 'today, but no one’s clone node can reach yours until the transport ships. '
-                + 'When it does, their messages and our replies land here.'}
+              title="まだ何もありません。故障ではありません。"
+              body={'チームメイトメッセージングはまだ実装されていません。今日の時点で組織キーの設定やモードの選択はできますが、'
+                + '通信機能が提供されるまで、他の人のクローンノードからあなたのノードには届きません。'
+                + '提供開始後は、相手のメッセージとこちらの返信がここに表示されます。'}
             />
           ) : (
             <EmptyState
-              title="No webhook messages yet."
-              body={'When something posts to one of your endpoints, it lands here with Michael’s '
-                + 'reply underneath. Nothing has called in so far. Add an endpoint under Webhooks to '
-                + 'get a URL you can hand out.'}
+              title="Webhookメッセージはまだありません。"
+              body={'エンドポイントに何かが投稿されると、Michaelの返信とともにここに表示されます。'
+                + '今のところ呼び出しはありません。Webhookセクションでエンドポイントを追加すると、'
+                + '配布できるURLが発行されます。'}
             />
           )
         ) : (
@@ -534,13 +534,12 @@ export function TriggerHistoryTab() {
             {confirmClear ? (
               <>
                 <div style={{ ...muted, fontSize: 11, lineHeight: '16px' }}>
-                  Delete all {counts[source].total} {section.label.toLowerCase()} messages? The record
-                  is gone for good.
+                  {section.label.toLowerCase()}のメッセージ{counts[source].total}件をすべて削除しますか？記録は元に戻せません。
                 </div>
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <PixelButton variant="destructive" size="sm" onClick={clear}>delete them</PixelButton>
+                  <PixelButton variant="destructive" size="sm" onClick={clear}>削除する</PixelButton>
                   <PixelButton variant="ghost" size="sm" onClick={() => setConfirmClear(false)}>
-                    keep them
+                    保持する
                   </PixelButton>
                 </div>
               </>
@@ -550,9 +549,9 @@ export function TriggerHistoryTab() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setConfirmClear(true)}
-                  title="Delete this section’s history"
+                  title="このセクションの履歴を削除します"
                 >
-                  clear history
+                  履歴をクリア
                 </PixelButton>
               </div>
             )}

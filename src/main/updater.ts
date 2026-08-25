@@ -342,11 +342,11 @@ export function initAutoUpdater(getWebContents: () => WebContents | null): void 
     }
   });
   ipcMain.handle('update:checkNow', async () => {
-    if (!app.isPackaged) return { ok: false, error: 'dev build — updates are only checked in packaged apps' };
+    if (!app.isPackaged) return { ok: false, error: '開発ビルド — アップデートの確認はパッケージ版でのみ行われます' };
     return runCheck();
   });
   ipcMain.handle('update:download', async () => {
-    if (!app.isPackaged) return { ok: false, error: 'dev build — updates are only downloaded in packaged apps' };
+    if (!app.isPackaged) return { ok: false, error: '開発ビルド — アップデートのダウンロードはパッケージ版でのみ行われます' };
     return runDownload();
   });
   /** Re-serve the last known status to a freshly loaded window. */
@@ -363,7 +363,7 @@ export function initAutoUpdater(getWebContents: () => WebContents | null): void 
    * `{ok:false}` and can never fabricate an update for a real user.
    */
   ipcMain.handle('update:simulate', (_evt, opts: unknown) => {
-    if (app.isPackaged) return { ok: false, error: 'simulate is dev-only' };
+    if (app.isPackaged) return { ok: false, error: 'シミュレートは開発環境専用です' };
     const o = (opts ?? {}) as { state?: string; version?: string; notes?: string; drop?: boolean };
     const version = typeof o.version === 'string' && o.version ? o.version : '9.9.9';
     // `drop: true` previews the centered release page built from the default

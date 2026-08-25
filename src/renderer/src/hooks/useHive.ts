@@ -406,12 +406,12 @@ export function useHive(config: HarnessConfig | null): void {
         name: 'Michael',
         character: 'michael',
         accent: 'lemon',
-        description: 'god — runs the floor, triages requests, escalates only critical calls to you',
+        description: 'god — フロアを統括し、依頼を振り分けます。重要な判断だけあなたに確認します',
         project: 'hive',
         tmuxTarget: '',
         cwd: config.harnessHome!,
         status: 'idle',
-        action: 'running the floor',
+        action: 'フロアを統括中',
         progress: 0,
         currentStation: 'desk',
         ptyId: GOD_PTY,
@@ -472,12 +472,12 @@ export function useHive(config: HarnessConfig | null): void {
       // pty-stream parser only refines the on-floor action/station).
       if (e.event === 'PreCompact') {
         // #5C — agent entered /compact; show it's boxing up context, not frozen.
-        if (!breakerArmed) updateAgent(e.agentId, { status: 'compacting', action: 'compacting context', carrying: undefined });
+        if (!breakerArmed) updateAgent(e.agentId, { status: 'compacting', action: 'コンテキスト圧縮中', carrying: undefined });
       } else if (e.event === 'PostCompact') {
-        if (!breakerArmed) updateAgent(e.agentId, { status: 'working', action: 'resumed', carrying: undefined });
+        if (!breakerArmed) updateAgent(e.agentId, { status: 'working', action: '再開', carrying: undefined });
       } else if (e.event === 'PreToolUse' && e.tool) {
         const m = stationForTool(e.tool);
-        if (!breakerArmed) updateAgent(e.agentId, { status: 'working', currentStation: m.station, carrying: m.carry, action: `using ${e.tool}` });
+        if (!breakerArmed) updateAgent(e.agentId, { status: 'working', currentStation: m.station, carrying: m.carry, action: `${e.tool} を使用中` });
         useStore.getState().bumpToolCount(e.agentId); // usage proxy for the command center
       } else if (e.event === 'PostToolUse' || e.event === 'UserPromptSubmit') {
         // A turn is in progress (prompt submitted / tool just finished) — keep
@@ -485,22 +485,22 @@ export function useHive(config: HarnessConfig | null): void {
         if (!breakerArmed) updateAgent(e.agentId, { status: 'working' });
       } else if (e.event === 'PreInvocation') {
         // Antigravity (agy): the model is being called — it's thinking/working.
-        if (!breakerArmed) updateAgent(e.agentId, { status: 'working', action: 'thinking' });
+        if (!breakerArmed) updateAgent(e.agentId, { status: 'working', action: '思考中' });
       } else if (e.event === 'PostInvocation') {
         // agy's per-turn boundary. Unlike Claude, agy's Stop fires only on process
         // EXIT, so without this an agy worker would never register as idle and the
         // inbox-wake nudge (idle-only) could never reach it — its mail would sit
         // undrained. Treat it as idle; a follow-up tool/turn re-sets working.
-        if (!breakerArmed) updateAgent(e.agentId, { status: 'idle', action: 'idle', carrying: undefined });
+        if (!breakerArmed) updateAgent(e.agentId, { status: 'idle', action: 'アイドル', carrying: undefined });
       } else if (e.event === 'Stop' || e.event === 'SubagentStop') {
         // A blocked Stop means the agent is being re-engaged to process its
         // inbox — it's NOT idle, so keep it working until it genuinely stops.
         if (e.blocked) {
-          if (!breakerArmed) updateAgent(e.agentId, { status: 'working', action: 'reading inbox', carrying: undefined });
+          if (!breakerArmed) updateAgent(e.agentId, { status: 'working', action: '受信箱を確認中', carrying: undefined });
         } else {
           // A genuine stop clears any breaker override — the run is over.
           breakerLevel.current[e.agentId] = 'healthy';
-          updateAgent(e.agentId, { status: 'idle', action: 'idle', carrying: undefined });
+          updateAgent(e.agentId, { status: 'idle', action: 'アイドル', carrying: undefined });
         }
       } else if (e.event === 'Notification' && !breakerArmed) {
         // Claude Code fires Notification for two very different situations:
@@ -525,7 +525,7 @@ export function useHive(config: HarnessConfig | null): void {
           updateAgent(e.agentId, { status: self.isGod ? 'blocked' : 'waiting' });
         } else {
           // Idle notification — responded, nothing to do. Linger, don't flag.
-          updateAgent(e.agentId, { status: 'idle', action: 'idle', carrying: undefined });
+          updateAgent(e.agentId, { status: 'idle', action: 'アイドル', carrying: undefined });
         }
       }
     });
@@ -541,7 +541,7 @@ export function useHive(config: HarnessConfig | null): void {
       const { updateAgent, agents } = useStore.getState();
       if (!agents.some((a) => a.id === s.agentId)) return;
       if (s.level === 'constrained' || s.level === 'stopped') {
-        updateAgent(s.agentId, { status: 'looping', action: s.reason || 'breaker armed', carrying: undefined });
+        updateAgent(s.agentId, { status: 'looping', action: s.reason || 'サーキットブレーカー作動中', carrying: undefined });
       }
       // 'healthy'/'steering' clear the pin; the next hook event refreshes status.
     });
@@ -651,7 +651,7 @@ export function useHive(config: HarnessConfig | null): void {
         if ((bootGraceUntil.current[a.id] ?? 0) > now) continue;
         const last = lastOut[a.ptyId];
         if (typeof last === 'number' && last > 0 && now - last > QUIESCE_IDLE_MS) {
-          updateAgent(a.id, { status: 'idle', action: 'idle', carrying: undefined });
+          updateAgent(a.id, { status: 'idle', action: 'アイドル', carrying: undefined });
         }
       }
     }, QUIESCE_POLL_MS);
@@ -969,7 +969,7 @@ export function useHive(config: HarnessConfig | null): void {
       void window.cth.slackReply({
         channel: msg.channel,
         thread_ts: msg.thread_ts,
-        text: ':hourglass_flowing_sand: *Received.* Your request has been queued — the team is on it and will reply here when done.'
+        text: ':hourglass_flowing_sand: *受付完了。* リクエストをキューに入れました。チームが対応し、完了したらこちらで返信します。'
       });
     });
   }, [config?.onboardingComplete]);
@@ -1020,12 +1020,12 @@ export function useHive(config: HarnessConfig | null): void {
         name: rec.name || rec.id,
         character,
         accent: askedAccent ?? SPAWN_ACCENTS[h],
-        description: rec.role || 'a fresh harness',
+        description: rec.role || '新規ハーネス',
         project,
         tmuxTarget: '',
         cwd: rec.cwd,
         status: 'idle',
-        action: 'starting up',
+        action: '起動中',
         progress: 0,
         currentStation: 'desk',
         ptyId: rec.id,
@@ -1202,7 +1202,7 @@ export function useHive(config: HarnessConfig | null): void {
         });
         if (res.ok) {
           reviving.current[deadId] = Date.now(); // re-stamp so the debounce covers the spawn
-          useStore.getState().updateAgent(a.id, { status: 'idle', action: 'revived after sleep' });
+          useStore.getState().updateAgent(a.id, { status: 'idle', action: 'スリープから復帰' });
         } else {
           delete reviving.current[deadId]; // let a later power:resume retry it
           console.error('[autorevive] respawn failed for', a.id, res.error);

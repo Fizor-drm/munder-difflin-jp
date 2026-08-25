@@ -46,7 +46,7 @@ const BASE_TOOLS: ToolSpec[] = [
     bin: 'uv',
     label: 'uv',
     kind: 'prerequisite',
-    why: 'Installs and runs mempalace. A self-contained Python toolchain — it does not touch any Python you already have.',
+    why: 'MemPalace のインストールと実行に必要。自己完結したPythonツールチェーンで、既存のPython環境には一切触れません。',
     essential: true,
     install: {
       posix: 'curl -LsSf https://astral.sh/uv/install.sh | sh',
@@ -61,20 +61,20 @@ const BASE_TOOLS: ToolSpec[] = [
     bin: null, // presence comes from MemoryStatus.available, not a PATH probe
     label: 'MemPalace — semantic memory',
     kind: 'memory',
-    why: 'Meaning-based recall across everything your agents have learned. Without it they still keep plain markdown notes, but cannot search them by meaning.',
+    why: 'エージェントが学んだすべてを意味ベースで検索・想起。なくてもMarkdownメモは残りますが、意味で検索はできません。',
     essential: true,
     install: {
       posix: 'uv tool install mempalace',
       win32: 'uv tool install mempalace'
     },
-    note: 'Needs uv first.'
+    note: '先に uv が必要です。'
   },
   {
     id: 'git',
     bin: 'git',
     label: 'git',
     kind: 'prerequisite',
-    why: "Worktrees let agents work in parallel without fighting over one checkout, and the hive keeps its own history in git.",
+    why: "ワークツリーにより、エージェントが1つのチェックアウトを奪い合わず並列作業できるように。ハイブ自身の履歴もgitに記録されます。",
     essential: true,
     install: {
       posix: 'xcode-select --install   # macOS · or: sudo apt install git',
@@ -87,13 +87,13 @@ const BASE_TOOLS: ToolSpec[] = [
     bin: 'node',
     label: 'Node.js',
     kind: 'prerequisite',
-    why: 'Runs the npm-installed agent engines (OpenCode, and Claude Code on machines without the native build).',
+    why: 'npm製エージェントエンジン（OpenCode、およびネイティブビルドがないマシンでのClaude Code）の実行に必要。',
     essential: false,
     // Deliberately no scripted command: the app already ships a checksum-verified
     // Node installer (nodeInstall.ts) that runs automatically when an engine needs
     // one. Printing a rival curl|sh here would compete with it.
     install: { posix: '', win32: '' },
-    note: 'The app installs this for you when an engine needs it — nothing to do by hand.',
+    note: 'エンジンが必要とするときアプリが自動でインストールします — 手動での作業はありません。',
     docsUrl: 'https://nodejs.org'
   }
 ];
@@ -111,7 +111,7 @@ export function toolCatalog(): ToolSpec[] {
       bin: p.defaultCommand,
       label: p.label,
       kind: 'engine' as const,
-      why: `Agent engine — ${p.defaultCommand}.`,
+      why: `エージェントエンジン — ${p.defaultCommand}。`,
       // Claude Code is the recommended engine and the only one the floor assumes
       // by default, so it is the one engine "set up everything" will install.
       essential: p.id === 'claude',

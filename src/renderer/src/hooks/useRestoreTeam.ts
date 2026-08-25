@@ -105,7 +105,7 @@ export function useRestoreTeam(config?: HarnessConfig | null): RestoreTeamState 
             // No spawn recipe (an old entry persisted before `command`, with no
             // config to rebuild one). Keep it restorable and SAY why rather than
             // silently dropping it — silent removal read as "nothing happened".
-            failures.push(`${a.name}: no saved command`);
+            failures.push(`${a.name}: 保存されたコマンドがありません`);
             return null;
           }
           const [exe, ...args] = tokenizeCommand(command);
@@ -158,7 +158,7 @@ export function useRestoreTeam(config?: HarnessConfig | null): RestoreTeamState 
                 archived: false,
                 status: 'idle',
                 // Surface the worktree fallback on the floor card; otherwise normal.
-                action: worktreeGone ? 'worktree gone — using base repo' : 'starting up',
+                action: worktreeGone ? 'ワークツリー消失 — 基本リポジトリを使用' : '起動中',
                 // The worktree is no longer on disk — drop it so this agent is treated
                 // as a plain base-cwd agent going forward (a future restore won't keep
                 // re-probing a dead path).
@@ -180,7 +180,7 @@ export function useRestoreTeam(config?: HarnessConfig | null): RestoreTeamState 
           } else {
             // Leave it restorable so the user can retry — but record WHY so the
             // outcome is shown on the floor, not buried in the devtools console.
-            failures.push(`${a.name}: ${res.error ?? 'spawn failed'}`);
+            failures.push(`${a.name}: ${res.error ?? '起動に失敗しました'}`);
             console.error('[restore] spawn failed for', a.id, res.error);
           }
         } catch (e) {
@@ -200,10 +200,10 @@ export function useRestoreTeam(config?: HarnessConfig | null): RestoreTeamState 
       restoring = false;
       // ALWAYS surface a result so the button can never look inert.
       const parts: string[] = [];
-      if (restored) parts.push(`restored ${restored}`);
-      if (alreadyLive) parts.push(`${alreadyLive} already live`);
-      if (failures.length) parts.push(`${failures.length} failed — ${failures.join('; ')}`);
-      note = parts.length ? parts.join(' · ') : 'nothing to restore';
+      if (restored) parts.push(`${restored} 件を復元`);
+      if (alreadyLive) parts.push(`${alreadyLive} 件は既に稼働中`);
+      if (failures.length) parts.push(`${failures.length} 件失敗 — ${failures.join('; ')}`);
+      note = parts.length ? parts.join(' · ') : '復元するものはありません';
       emit();
     }
   };

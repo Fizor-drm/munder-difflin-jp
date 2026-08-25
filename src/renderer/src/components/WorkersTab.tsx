@@ -56,7 +56,7 @@ function StatusBadge({ w }: { w: WorkerSnapshot }) {
       background: releasing ? 'var(--cth-ink-700)' : 'var(--cth-green, #2f8f4e)',
       boxShadow: releasing ? 'none' : 'inset 0 0 0 1px var(--cth-ink-100)'
     }}>
-      {releasing ? 'stopping' : 'working'}
+      {releasing ? '停止中' : '作業中'}
     </span>
   );
 }
@@ -90,18 +90,18 @@ export function WorkersTab() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: '12px 14px 16px', overflow: 'auto' }}>
       <div>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-          <span style={sectionHead}>Live workers</span>
+          <span style={sectionHead}>起動中のワーカー</span>
           <span style={{ fontFamily: 'var(--cth-font-mono)', fontSize: 11, color: 'var(--cth-ink-700)' }}>
             {live.length} / {max}
           </span>
         </div>
         <p style={{ fontFamily: 'var(--cth-font-ui)', fontSize: 11, color: 'var(--cth-ink-700)', margin: '2px 0 8px' }}>
-          Isolated workers Michael spins up to handle Slack messages — they run to completion, reply in-thread, then tear down.
+          Slackメッセージを処理するため Michael が起動する分離ワーカーです。完了まで実行し、スレッドに返信した後、破棄されます。
         </p>
 
         {live.length === 0 ? (
           <div style={{ ...card, color: 'var(--cth-ink-700)', fontFamily: 'var(--cth-font-ui)', fontSize: 12 }}>
-            No workers running right now.
+            現在稼働中のワーカーはありません。
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -115,7 +115,7 @@ export function WorkersTab() {
                       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
                     }}>{w.name}</span>
                     {w.hasSlack && (
-                      <span title="replies to a Slack thread" style={{
+                      <span title="Slackスレッドに返信" style={{
                         fontFamily: 'var(--cth-font-mono)', fontSize: 10, color: 'var(--cth-ink-700)',
                         boxShadow: 'inset 0 0 0 1px var(--cth-ink-100)', padding: '0 5px'
                       }}>slack</span>
@@ -125,18 +125,18 @@ export function WorkersTab() {
                     onClick={() => stop(w.workerId)}
                     disabled={w.releasing || !!stopping[w.workerId]}
                   >
-                    {w.releasing || stopping[w.workerId] ? 'stopping…' : 'stop'}
+                    {w.releasing || stopping[w.workerId] ? '停止中…' : '停止'}
                   </PixelButton>
                 </div>
                 <div style={metaRow}>
-                  <span title="worker / PTY id">{w.workerId}</span>
-                  <span title="base branch the worktree was cut from">base: {w.baseBranch}</span>
-                  <span title="time since spawn">up {relAge(w.ageMs)}</span>
-                  <span title="time since last terminal output">
-                    {w.idleMs === null ? 'pty gone' : `idle ${relAge(w.idleMs)}`}
+                  <span title="ワーカー / PTY ID">{w.workerId}</span>
+                  <span title="ワークツリーの基点ブランチ">基点: {w.baseBranch}</span>
+                  <span title="起動からの経過時間">稼働 {relAge(w.ageMs)}</span>
+                  <span title="最後のターミナル出力からの経過時間">
+                    {w.idleMs === null ? 'PTY消失' : `アイドル ${relAge(w.idleMs)}`}
                   </span>
-                  <span title="cumulative tokens (input+output+cache)">
-                    tokens {fmtTokens(w.tokensUsed)}{w.tokenCap !== null ? ` / ${fmtTokens(w.tokenCap)}` : ' · uncapped'}
+                  <span title="累計トークン数（入力+出力+キャッシュ）">
+                    トークン {fmtTokens(w.tokensUsed)}{w.tokenCap !== null ? ` / ${fmtTokens(w.tokenCap)}` : ' · 上限なし'}
                   </span>
                 </div>
               </div>
@@ -147,9 +147,9 @@ export function WorkersTab() {
 
       {preserved.length > 0 && (
         <div>
-          <span style={sectionHead}>Preserved worktrees ({preserved.length})</span>
+          <span style={sectionHead}>保持中のワークツリー（{preserved.length}）</span>
           <p style={{ fontFamily: 'var(--cth-font-ui)', fontSize: 11, color: 'var(--cth-ink-700)', margin: '2px 0 8px' }}>
-            Finished workers whose worktree held un-integrated work — kept (never auto-discarded) and auto-reclaimed once the work lands in its base branch.
+            終了したワーカーのうち、未統合の変更が残るワークツリーを保持したものです（自動破棄されません）。作業が基点ブランチに取り込まれると自動的に回収されます。
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {preserved.map((p) => (
@@ -159,8 +159,8 @@ export function WorkersTab() {
                 </div>
                 <div style={metaRow}>
                   <span style={{ wordBreak: 'break-all' }}>{p.wtPath}</span>
-                  <span>base: {p.baseBranch}</span>
-                  <span>kept {relAge(Math.max(0, Date.now() - p.preservedAt))} ago</span>
+                  <span>基点: {p.baseBranch}</span>
+                  <span>保持開始から {relAge(Math.max(0, Date.now() - p.preservedAt))}</span>
                 </div>
               </div>
             ))}

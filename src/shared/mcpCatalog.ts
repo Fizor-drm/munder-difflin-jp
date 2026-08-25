@@ -54,7 +54,7 @@ export const MCP_CATALOG: McpCatalogEntry[] = [
   {
     id: 'sequential-thinking',
     label: 'Sequential Thinking',
-    description: 'Structured step-by-step reasoning scratchpad. No I/O, no secrets.',
+    description: '構造化された段階的思考のためのスクラッチパッド。I/Oも秘密情報も扱いません。',
     spec: { command: 'npx', args: ['-y', '@modelcontextprotocol/server-sequential-thinking'] },
     tier: 'safe-readonly',
     defaultEnabled: true
@@ -62,7 +62,7 @@ export const MCP_CATALOG: McpCatalogEntry[] = [
   {
     id: 'time',
     label: 'Time',
-    description: 'Current time and timezone conversions.',
+    description: '現在時刻とタイムゾーンの変換。',
     // Reference time server ships as Python. // TODO-verify transport (uvx vs an npm port)
     spec: { command: 'uvx', args: ['mcp-server-time'] },
     tier: 'safe-readonly',
@@ -71,7 +71,7 @@ export const MCP_CATALOG: McpCatalogEntry[] = [
   {
     id: 'fetch',
     label: 'Fetch',
-    description: 'Fetch a URL and return its content as markdown (read-only HTTP GET).',
+    description: 'URLを取得して内容をmarkdownで返します（読み取り専用のHTTP GET）。',
     // Reference fetch server ships as Python. // TODO-verify transport (uvx vs an npm port)
     spec: { command: 'uvx', args: ['mcp-server-fetch'] },
     tier: 'safe-readonly',
@@ -80,7 +80,7 @@ export const MCP_CATALOG: McpCatalogEntry[] = [
   {
     id: 'context7',
     label: 'Context7 Docs',
-    description: 'Up-to-date library/framework documentation lookups.',
+    description: '常に最新のライブラリ/フレームワークドキュメントを検索。',
     spec: { command: 'npx', args: ['-y', '@upstash/context7-mcp'] },
     tier: 'safe-readonly',
     defaultEnabled: true
@@ -88,7 +88,7 @@ export const MCP_CATALOG: McpCatalogEntry[] = [
   {
     id: 'filesystem',
     label: 'Filesystem (cwd)',
-    description: 'Read/edit files within the agent workspace only (scoped to cwd at spawn).',
+    description: 'エージェントのワークスペース内のファイルのみ読み書き（スポーン時にcwdへスコープ）。',
     // The trailing arg is the allowed root — Workstream 3 replaces this placeholder
     // with the agent cwd at merge time so it is NEVER whole-disk.
     spec: { command: 'npx', args: ['-y', '@modelcontextprotocol/server-filesystem', '<cwd>'] },
@@ -98,7 +98,7 @@ export const MCP_CATALOG: McpCatalogEntry[] = [
   {
     id: 'git',
     label: 'Git (cwd)',
-    description: 'Inspect git status/log/diff for the workspace repo (scoped to cwd at spawn).',
+    description: 'ワークスペースリポジトリのgit status/log/diffを確認（スポーン時にcwdへスコープ）。',
     // Reference git server ships as Python; `--repository <cwd>` is set at merge time.
     // TODO-verify transport (uvx vs an npm port).
     spec: { command: 'uvx', args: ['mcp-server-git', '--repository', '<cwd>'] },
@@ -110,7 +110,7 @@ export const MCP_CATALOG: McpCatalogEntry[] = [
   {
     id: 'github-token',
     label: 'GitHub',
-    description: 'Read/write GitHub issues, PRs, and repos. Requires a personal access token.',
+    description: 'GitHubのissue・PR・リポジトリの読み書き。パーソナルアクセストークンが必要です。',
     spec: {
       command: 'npx',
       args: ['-y', '@modelcontextprotocol/server-github'],
@@ -122,7 +122,7 @@ export const MCP_CATALOG: McpCatalogEntry[] = [
   {
     id: 'db',
     label: 'Database',
-    description: 'Query a SQL database. Requires a connection string.',
+    description: 'SQLデータベースを照会。接続文字列が必要です。',
     // TODO-verify exact server package for the user's DB engine (Postgres assumed).
     spec: {
       command: 'npx',
@@ -135,7 +135,7 @@ export const MCP_CATALOG: McpCatalogEntry[] = [
   {
     id: 'email-calendar',
     label: 'Email & Calendar',
-    description: 'Read/send mail and read/write calendar events. Requires account credentials.',
+    description: 'メールの読み取り/送信とカレンダーイベントの読み書き。アカウント認証情報が必要です。',
     // TODO-verify provider package (Gmail/Google Calendar assumed).
     spec: { command: 'npx', args: ['-y', '@modelcontextprotocol/server-gsuite'], env: { GOOGLE_OAUTH_TOKEN: '' } },
     tier: 'secret',
@@ -144,7 +144,7 @@ export const MCP_CATALOG: McpCatalogEntry[] = [
   {
     id: 'search-with-key',
     label: 'Web Search',
-    description: 'Keyed web search. Requires a search-provider API key.',
+    description: 'APIキー必須のWeb検索。検索プロバイダーのAPIキーが必要です。',
     // TODO-verify provider package (Brave Search assumed).
     spec: { command: 'npx', args: ['-y', '@modelcontextprotocol/server-brave-search'], env: { BRAVE_API_KEY: '' } },
     tier: 'secret',

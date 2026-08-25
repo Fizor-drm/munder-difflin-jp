@@ -32,44 +32,44 @@ interface Feature {
 const FEATURES: Feature[] = [
   {
     icon: 'mcp',
-    label: 'ELEVEN ENGINES, ONE OFFICE',
-    desc: 'Claude Code, Codex, Grok, Kimi, Antigravity, Qwen, OpenCode, Crush, pi, Copilot & Cursor — live agents on one floor.',
-    descPlain: 'Eleven AI assistants — Claude, Codex, Cursor, Gemini, Grok and more — working side by side in one shared office.',
+    label: '11のエンジン、1つのオフィス',
+    desc: 'Claude Code、Codex、Grok、Kimi、Antigravity、Qwen、OpenCode、Crush、pi、Copilot、Cursor — 1つのフロアで動くエージェント。',
+    descPlain: '11のAIアシスタント — Claude、Codex、Cursor、Gemini、Grokなど — が1つの共有オフィスで並んで作業します。',
     tint: 'var(--cth-lilac-light)', edge: 'var(--cth-lilac)'
   },
   {
     icon: 'gear',
-    label: 'MICHAEL IS YOUR CLONE',
-    desc: 'Your clone runs the floor — triages requests, routes tasks, and escalates only what needs you.',
-    descPlain: 'Your clone, Michael, takes your requests, hands work to the right agent, and only interrupts you when it matters.',
+    label: 'Michaelはあなたのクローン',
+    desc: 'クローンがフロアを取り仕切ります — 依頼を仕分けし、タスクを割り当て、本当にあなたの判断が必要なものだけ持ち上げます。',
+    descPlain: 'クローンのMichaelがあなたの依頼を受け、適切なエージェントへ仕事を渡します。重要な時だけあなたに連絡します。',
     tint: 'var(--cth-sky-light)', edge: 'var(--cth-sky)'
   },
   {
     icon: 'web',
-    label: 'LONG-TERM MEMORY',
-    desc: 'Each agent keeps notes, mined into a shared, searchable MemPalace.',
-    descPlain: "Agents remember what they've done, so they don't start from scratch every time.",
+    label: '長期メモリ',
+    desc: '各エージェントがメモを残し、共有・検索可能なMemPalaceに蓄積します。',
+    descPlain: 'エージェントは自分の作業を記憶しているので、毎回ゼロから始めません。',
     tint: 'var(--cth-mint-light)', edge: 'var(--cth-mint)'
   },
   {
     icon: 'terminal',
-    label: 'COMMAND CENTER',
-    desc: 'Terminal · Floor · Memory · Activity · Tasks · Triggers in one control surface.',
-    descPlain: "One dashboard to watch the work, the agents' memory, tasks, and triggers.",
+    label: 'コマンドセンター',
+    desc: 'ターミナル・フロア・メモリ・アクティビティ・タスク・トリガーを1つの画面に。',
+    descPlain: '作業状況、エージェントのメモリ、タスク、トリガーを1つのダッシュボードで確認できます。',
     tint: 'var(--cth-lemon-light)', edge: 'var(--cth-lemon)'
   },
   {
     icon: 'pause',
-    label: 'GUARDRAILS',
-    desc: 'Per-agent token budgets, a steer→constrain→stop circuit breaker, and human approvals.',
-    descPlain: 'Spending limits and safety stops keep agents in check — and they can ask you before big actions.',
+    label: 'ガードレール',
+    desc: 'エージェントごとのトークン予算、steer→constrain→stopのサーキットブレーカー、人間による承認。',
+    descPlain: '使用量の上限と安全ストップでエージェントを管理 — 大きな操作の前にあなたに確認を求めます。',
     tint: 'var(--cth-coral-light)', edge: 'var(--cth-coral)'
   },
   {
     icon: 'sparkle',
-    label: 'READY-MADE HIRES',
-    desc: 'Grab a pre-configured agent from the Agent Gallery and spawn it in one click.',
-    descPlain: 'Hire a ready-made agent from the gallery in one click — no setup needed.',
+    label: 'すぐ使える採用',
+    desc: 'Agent Galleryから設定済みのエージェントを選び、ワンクリックで起動できます。',
+    descPlain: 'ギャラリーから用意されたエージェントをワンクリックで採用 — 設定は不要です。',
     tint: 'var(--cth-peach-light)', edge: 'var(--cth-peach)'
   }
 ];
@@ -81,8 +81,8 @@ const PROVIDER_BLURB: Partial<Record<AgentProvider, string>> = {
   claude: 'Claude Code — Anthropic',
   codex: 'Codex — OpenAI',
   antigravity: 'Antigravity — Google Gemini',
-  qwen: 'Qwen — runs a local Qwen model on your machine',
-  cursor: 'Cursor Agent CLI — uses your Cursor credits (Luna, Composer, …)'
+  qwen: 'Qwen — お使いのマシン上でQwenモデルをローカル実行します',
+  cursor: 'Cursor Agent CLI — Cursorのクレジットを使用します(Luna、Composerなど)'
 };
 
 export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
@@ -185,17 +185,17 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     setBusy(true);
     setError(undefined);
     const harnessHome = home.trim(); // whitespace-only is not a folder
-    if (!harnessHome) { setError('Pick a harness home folder first.'); setBusy(false); setStep('home'); return; }
+    if (!harnessHome) { setError('先にハーネスホームのフォルダを選択してください。'); setBusy(false); setStep('home'); return; }
     // The orchestrator step already refuses to advance on this, but a late probe
     // result can change the answer after the user has moved on. Never write a
     // godProvider that is known to be unable to boot.
     if (engineBlocked) {
-      setError(`${providerPreset(godProvider).label} is not installed. Install it and press "check again", or pick another engine.`);
+      setError(`${providerPreset(godProvider).label}がインストールされていません。インストールして「再チェック」を押すか、別のエンジンを選んでください。`);
       setBusy(false); setStep('orchestrator'); return;
     }
     const ensure = await window.cth.ensureHarnessHome(harnessHome);
     if (!ensure.ok) {
-      setError(ensure.error ?? 'could not create harness home');
+      setError(ensure.error ?? 'ハーネスホームを作成できませんでした');
       setBusy(false);
       return;
     }
@@ -236,13 +236,13 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         <PixelPanel
           variant="dialog"
           title={
-            step === 'persona' ? 'WELCOME TO MUNDER DIFFLIN'
-            : step === 'welcome' ? 'MEET YOUR OFFICE'
-            : step === 'home' ? (plain ? 'STEP 1 OF 4 · A HOME FOR THE APP' : 'STEP 1 OF 4 · HARNESS HOME')
-            : step === 'orchestrator' ? (plain ? "STEP 2 OF 4 · YOUR CLONE" : "STEP 2 OF 4 · YOUR CLONE'S ENGINE")
-            : step === 'repos' ? (plain ? 'STEP 3 OF 4 · YOUR PROJECTS' : 'STEP 3 OF 4 · YOUR REPOS')
-            : step === 'permissions' ? 'STEP 4 OF 4 · PERMISSIONS & RELIABILITY'
-            : 'ALL SET'
+            step === 'persona' ? 'MUNDER DIFFLINへようこそ'
+            : step === 'welcome' ? 'オフィスをご紹介'
+            : step === 'home' ? (plain ? 'ステップ1/4 · アプリのホームフォルダ' : 'ステップ1/4 · ハーネスホーム')
+            : step === 'orchestrator' ? (plain ? 'ステップ2/4 · あなたのクローン' : 'ステップ2/4 · クローンのエンジン')
+            : step === 'repos' ? (plain ? 'ステップ3/4 · プロジェクト' : 'ステップ3/4 · リポジトリ')
+            : step === 'permissions' ? 'ステップ4/4 · 権限と信頼性'
+            : '準備完了'
           }
           noPadding
         >
@@ -261,33 +261,32 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   </div>
                   <div>
                     <div style={{ fontFamily: 'var(--cth-font-display)', fontSize: 12, lineHeight: '18px' }}>
-                      A CLONE OF YOU, WORKING 24/7
+                      24時間働く、あなたのクローン
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--cth-ink-700)', lineHeight: '19px' }}>
-                      Munder Difflin turns the CLI agent you already use into a clone of you —
-                      one that runs an office of long-running agents and keeps working while
-                      you're away. It manages everything around them: context, memory, tasks,
-                      triggers, environment, files, and integrations.
-                      <span style={{ color: 'var(--cth-ink-500)' }}> Everything runs on this machine.</span>
+                      Munder Difflinは、いつも使っているCLIエージェントを「あなたのクローン」に変えます。
+                      長時間動き続けるエージェントのオフィスを運営し、あなたが不在の間も働き続けます。
+                      コンテキスト、メモリ、タスク、トリガー、環境、ファイル、連携など、周辺的一切を管理します。
+                      <span style={{ color: 'var(--cth-ink-500)' }}> すべてこのマシン上で動作します。</span>
                     </div>
                   </div>
                 </div>
 
                 <div style={{ fontFamily: 'var(--cth-font-display)', fontSize: 10, color: 'var(--cth-ink-700)' }}>
-                  FIRST — WHO ARE YOU? (we'll tailor the setup)
+                  まず — あなたはどちら？(回答に合わせて案内を調整します)
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <PersonaCard
                     icon="code"
-                    title="I'M TECHNICAL"
-                    desc="I write code or work in a terminal. Show me CLI commands, flags, and model ids."
+                    title="技術者です"
+                    desc="コードを書く、またはターミナルで仕事をしています。CLIコマンド、フラグ、モデルIDを見せてください。"
                     selected={audience === 'technical'}
                     onClick={() => { setAudience('technical'); setError(undefined); }}
                   />
                   <PersonaCard
                     icon="sparkle"
-                    title="I'M NON-TECHNICAL"
-                    desc="I'm in marketing, sales, ops, or just starting out. Explain things in plain language."
+                    title="非技術者です"
+                    desc="マーケティング、営業、運用など、プログラミングは初心者です。わかりやすい言葉で説明してください。"
                     selected={audience === 'non-technical'}
                     onClick={() => { setAudience('non-technical'); setError(undefined); }}
                   />
@@ -310,11 +309,11 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     <div style={{
                       fontFamily: 'var(--cth-font-display)',
                       fontSize: 12, lineHeight: '18px'
-                    }}>YOUR CLONE AND THE FLOOR IT RUNS</div>
+                    }}>あなたのクローンと、そのクローンが動くフロア</div>
                     <div style={{ fontSize: 12, color: 'var(--cth-ink-700)', lineHeight: '18px' }}>
                       {plain
-                        ? "Your clone runs a small office of AI workers, and you watch it all from one screen. Here's what's inside:"
-                        : "Your clone coordinates a hive of AI coding agents — persistent, watchable, all local. Here's what's inside:"}
+                        ? 'クローンがAIワーカーの小さなオフィスを運営し、その様子を1つの画面で見守れます。中身はこちら:'
+                        : 'クローンがAIコーディングエージェントの群れを統括します — 常駐・監視可能・すべてローカル。中身はこちら:'}
                     </div>
                   </div>
                 </div>
@@ -354,22 +353,21 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
               <>
                 {plain ? (
                   <p style={{ margin: 0, lineHeight: '22px' }}>
-                    Create a new, empty folder for the app to call home. Everything the app
-                    remembers — its own settings and your agents' memory — is stored here.
-                    Something like{' '}
+                    アプリのホームとなる新しい空フォルダを作成してください。アプリが記憶するすべて —
+                    設定やエージェントのメモリ — はここに保存されます。{' '}
                     <code style={{ fontFamily: 'var(--cth-font-mono)', background: 'var(--cth-paper-100)', padding: '0 4px' }}>
                       ~/HarnessAgents
                     </code>{' '}
-                    works well. We'll create it for you if it doesn't exist.
+                    のような場所がおすすめです。存在しなければこちらで作成します。
                   </p>
                 ) : (
                   <p style={{ margin: 0, lineHeight: '22px' }}>
-                    Pick a folder where the harness will keep its own files — agent metadata,
-                    logs, and any new repos you create from here. Something like{' '}
+                    ハーネスが自分のファイルを置くフォルダを選択してください — エージェントのメタデータ、ログ、
+                    ここから作成した新しいリポジトリなど。{' '}
                     <code style={{ fontFamily: 'var(--cth-font-mono)', background: 'var(--cth-paper-100)', padding: '0 4px' }}>
                       ~/HarnessAgents
                     </code>{' '}
-                    is a fine default. We'll create it if it doesn't exist.
+                    で問題ありません。存在しなければ作成します。
                   </p>
                 )}
                 <div style={{ display: 'flex', gap: 8 }}>
@@ -381,14 +379,14 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   />
                   <PixelButton variant="secondary" size="md" onClick={pickHome}>
                     <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>
-                      <Icon name="folder" /> {plain ? 'create / pick' : 'pick'}
+                      <Icon name="folder" /> {plain ? '作成 / 選択' : '選択'}
                     </span>
                   </PixelButton>
                 </div>
                 <div style={{ fontSize: 12, color: 'var(--cth-ink-500)' }}>
                   {plain
-                    ? "You won't need to open this folder day-to-day — it's just where the app keeps its notes so nothing is lost when you restart."
-                    : 'Think of this as the "town hall." The harness pins agent state there so sessions can be picked back up after a restart.'}
+                    ? '日常的にこのフォルダを開く必要はありません — アプリが記録をここに保管し、再起動しても何も失われないためのものです。'
+                    : 'ここは「庁舎」のようなものです。ハーネスがエージェントの状態をここに固定するので、再起動後もセッションを再開できます。'}
                 </div>
               </>
             )}
@@ -397,14 +395,13 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
               <>
                 <p style={{ margin: 0, lineHeight: '22px' }}>
                   {plain ? (
-                    <><strong>Michael is your clone</strong> — he reads your requests, breaks
-                    them into tasks, and hands them to the right agent. He's the boss of the
-                    floor; you're still the boss of him. Choose which AI engine powers him.</>
+                    <><strong>Michaelはあなたのクローン</strong> — あなたの依頼を読み、タスクに分解し、
+                    適切なエージェントへ渡します。フロアのボスですが、そのボスはあなたです。
+                    彼を動かすAIエンジンを選んでください。</>
                   ) : (
-                    <><strong>Michael is your clone</strong> — the boss of the floor you just
-                    met. He triages your requests, assigns tasks, and manages the team, while
-                    escalating anything that genuinely needs you. Pick the engine and model that
-                    power him; give him a longer-context, higher-capability model.</>
+                    <><strong>Michaelはあなたのクローン</strong> — 先ほど会ったフロアのボスです。依頼を仕分けし、
+                    タスクを割り当て、チームを管理しながら、本当にあなたの判断が必要なものだけ報告してきます。
+                    彼を動かすエンジンとモデルを選んでください。長いコンテキストと高性能なモデルを推奨します。</>
                   )}
                 </p>
 
@@ -417,19 +414,18 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   <span style={{ flexShrink: 0, marginTop: 1 }}><Icon name="sparkle" /></span>
                   <span>
                     {plain ? (
-                      <>A <strong>CLI agent</strong> is an AI coding assistant that runs on your
-                      computer — popular ones are Claude Code (Anthropic), Codex (OpenAI) and
-                      Antigravity (Google Gemini). <strong>Your clone</strong> is the always-on
-                      one that runs your whole office. We recommend Claude Code on Opus 4.8 (1M).
-                      You can add or switch the others later.</>
+                      <>
+                      <strong>CLIエージェント</strong>とは、あなたのコンピュータ上で動くAIコーディングアシスタントです。
+                      定番はClaude Code(Anthropic)、Codex(OpenAI)、Antigravity(Google Gemini)。
+                      <strong>クローン</strong>は、オフィス全体を動かす常駐の存在です。
+                      Claude Code(Opus 4.8・1M)を推奨します。他は後から追加・切り替えできます。</>
                     ) : (
-                      <>Each option is a <strong>CLI engine</strong> (Claude Code, Codex,
-                      Antigravity/Gemini, or a local proxy like Qwen). Engines marked
-                      INSTALLED are already on this machine; INSTALLS ON FIRST RUN means the app
-                      sets it up when Michael first starts.
-                      <strong> Your clone</strong> (Michael) is the engine that orchestrates the whole
-                      hive. Recommended: Claude Code · Opus 4.8 · 1M. Other providers can be wired
-                      per agent later.</>
+                      <>各選択肢は<strong>CLIエンジン</strong>です(Claude Code、Codex、
+                      Antigravity/Gemini、Qwenなどのローカルプロキシ)。「INSTALLED」表示のものは
+                      このマシンに既にあります。「INSTALLS ON FIRST RUN」はMichael初回起動時に
+                      アプリがセットアップすることを意味します。
+                      <strong> クローン</strong>(Michael)は群れ全体を統括するエンジンです。
+                      推奨: Claude Code · Opus 4.8 · 1M。他のプロバイダーは後からエージェント単位で設定できます。</>
                     )}
                   </span>
                 </div>
@@ -495,7 +491,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                             background: 'var(--cth-lemon)',
                             boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
                             fontFamily: 'var(--cth-font-display)', flexShrink: 0
-                          }}>RECOMMENDED</span>
+                          }}>おすすめ</span>
                         )}
                       </label>
                     );
@@ -510,18 +506,18 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     <span>{engineAvailabilityMessage(selectedEngine, providerPreset(godProvider).label)}</span>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                       <PixelButton variant="secondary" size="sm" onClick={() => { void probeEngines(); }} disabled={probing}>
-                        {probing ? 'checking...' : 'check again'}
+                        {probing ? '確認中...' : '再チェック'}
                       </PixelButton>
                       {selectedEngine.docsUrl && (
                         <PixelButton variant="ghost" size="sm" onClick={() => { void window.cth.openExternal(selectedEngine.docsUrl!); }}>
-                          install instructions
+                          インストール手順
                         </PixelButton>
                       )}
                     </div>
                   </div>
                 )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <div style={{ fontSize: 12, color: 'var(--cth-ink-500)' }}>Model</div>
+                  <div style={{ fontSize: 12, color: 'var(--cth-ink-500)' }}>モデル</div>
                   <select
                     value={godModel ?? ''}
                     onChange={(e) => setGodModel(e.target.value || undefined)}
@@ -532,7 +528,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     ))}
                   </select>
                   <div style={{ fontSize: 12, color: 'var(--cth-ink-500)' }}>
-                    This only sets Michael's engine. You can run other providers per agent later.
+                    ここではMichaelのエンジンだけを設定します。他のプロバイダーは後からエージェントごとに実行できます。
                   </div>
                 </div>
               </>
@@ -542,13 +538,14 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
               <>
                 <p style={{ margin: 0, lineHeight: '22px' }}>
                   {plain ? (
-                    <>Add your <strong>projects</strong>. A project is simply a folder — it can hold
-                    code, documents, notes, or any files you want your agents to work with. You can
-                    create a brand-new folder or pick an existing one, and add more anytime.</>
+                    <>
+                    <strong>プロジェクト</strong>を追加してください。プロジェクトは単なるフォルダです —
+                    コード、ドキュメント、メモ、エージェントに扱ってほしいファイルなど何でも入れられます。
+                    新しいフォルダを作っても既存のものを選んでもよく、いつでも追加できます。</>
                   ) : (
-                    <>Add the repos you want your agents to work in. Each folder becomes a
-                    <strong> project</strong> (a room on the floor) — multiple agents can share one.
-                    You can add more later.</>
+                    <>エージェントに作業させてきたいリポジトリを追加してください。各フォルダが
+                    <strong> プロジェクト</strong>(フロアの1部屋)になり、複数のエージェントで共有できます。
+                    後からいくらでも追加できます。</>
                   )}
                 </p>
                 <div style={{
@@ -564,8 +561,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       textAlign: 'center'
                     }}>
                       {plain
-                        ? 'No projects added yet. Optional — you can add one later.'
-                        : 'No repos added yet. Optional, but recommended.'}
+                        ? 'まだプロジェクトはありません。省略可能 — 後から追加できます。'
+                        : 'まだリポジトリはありません。省略可能ですが、追加をおすすめします。'}
                     </div>
                   )}
                   {repos.map((r) => (
@@ -589,7 +586,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                 </div>
                 <PixelButton variant="secondary" size="md" onClick={pickRepo}>
                   <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-                    <Icon name="plus" /> {plain ? 'add a project' : 'add a repo'}
+                    <Icon name="plus" /> {plain ? 'プロジェクトを追加' : 'リポジトリを追加'}
                   </span>
                 </PixelButton>
               </>
@@ -602,7 +599,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     bypassPermissions / codex --dangerously-bypass-approvals-and-sandbox,
                     etc.; off → each engine's ask-first default. */}
                 <div style={{ fontFamily: 'var(--cth-font-display)', fontSize: 10, color: 'var(--cth-ink-700)' }}>
-                  HOW MUCH CAN AGENTS DO ON THEIR OWN?
+                  エージェントにどこまで自律的に任せますか？
                 </div>
                 <label style={{
                   display: 'flex', alignItems: 'center', gap: 10,
@@ -619,41 +616,41 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   />
                   <div>
                     <div style={{ fontFamily: 'var(--cth-font-display)', fontSize: 10, lineHeight: '14px' }}>
-                      {plain ? 'LET AGENTS WORK ON THEIR OWN' : 'WORK AUTONOMOUSLY (AUTO MODE)'}
+                      {plain ? 'エージェントに自主的に作業させる' : '自律的に作業(AUTO MODE)'}
                     </div>
                     <div style={{ fontSize: 13, color: 'var(--cth-ink-700)' }}>
                       {plain
                         ? (autoMode
-                            ? 'On. Agents carry out tasks without stopping to ask — the smoothest experience.'
-                            : 'Off. Agents pause and ask you before changing files or running commands.')
+                            ? 'オン。エージェントは確認せずにタスクを進めるので、最もスムーズです。'
+                            : 'オフ。エージェントはファイル変更やコマンド実行の前に、あなたに確認します。')
                         : (autoMode
-                            ? 'On. Agents never pause — Claude runs bypassPermissions, Codex bypasses approvals + sandbox, etc.'
-                            : 'Off. Each agent asks before edits / shell commands (Claude default, codex -a untrusted, …).')}
+                            ? 'オン。エージェントは止まりません — ClaudeはbypassPermissions、Codexは承認+サンドボックスをバイパス、など。'
+                            : 'オフ。各エージェントは編集・シェルコマンドの前に確認します(Claudeのデフォルト、codex -a untrusted など)。')}
                     </div>
                   </div>
                 </label>
                 <div style={{ fontSize: 12, color: 'var(--cth-ink-500)' }}>
                   {plain
-                    ? 'Best when agents work in their own projects. You can change this later, including for individual agents.'
-                    : 'The right default for the "control room" experience; a foot-gun on production repos. Override per agent in the Add Agent dialog.'}
+                    ? 'エージェントが自分のプロジェクト内で作業する場合に最適です。後から、エージェント単位でも変更できます。'
+                    : '「コントロールルーム」体験にはこれが正しいデフォルトです。本番リポジトリでは危険なので、Add Agentダイアログでエージェント単位で上書きしてください。'}
                 </div>
 
                 <div style={{ height: 1, background: 'var(--cth-ink-300)', margin: '2px 0' }} />
 
                 {/* RELIABILITY — keeping work firing while you're away. */}
                 <div style={{ fontFamily: 'var(--cth-font-display)', fontSize: 10, color: 'var(--cth-ink-700)' }}>
-                  KEEP THINGS RUNNING WHILE YOU'RE AWAY
+                  あなたの不在中も作業を回し続ける
                 </div>
                 <p style={{ margin: 0, lineHeight: '20px', fontSize: 12, color: 'var(--cth-ink-700)' }}>
                   {plain
-                    ? 'Your agents keep working on a schedule and in live terminals, even when you step away. These settings keep you in the loop and keep things running.'
-                    : 'Your agents keep working on a schedule and in live terminals. If your Mac fully sleeps those timers pause and catch up the moment you\'re back — nothing is lost, it may just run late.'}
+                    ? '離席していても、エージェントはスケジュールやライブターミナルで作業を続けます。これらの設定で状況を把握し、動き続けさせられます。'
+                    : 'エージェントはスケジュールとライブターミナルで作業を続けます。Macが完全にスリープするとタイマーは一時停止しますが、復帰時すぐに追いつきます — 失われるものはなく、遅れるだけです。'}
                 </p>
 
                 <ToggleRow
                   icon="clock"
-                  label="KEEP WORKING WHILE AWAY"
-                  desc="Strong keep-alive: stops your Mac from sleeping while an agent is live, so schedules and terminals fire on time even when you step away. Uses more battery — best on power. Off by default."
+                  label="離席中も作業を続ける"
+                  desc="強力なキープアライブ: エージェントの稼働中はMacのスリープを防ぎ、離席中でもスケジュールやターミナルが時間通りに動きます。バッテリーを多く消費するため電源接続時におすすめ。デフォルトはオフ。"
                   on={strongKeepalive}
                   tint="var(--cth-mint-light)"
                   edge="var(--cth-mint)"
@@ -662,8 +659,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
                 <ToggleRow
                   icon="bell"
-                  label="DESKTOP NOTIFICATIONS"
-                  desc="Get pinged when an agent needs you or a terminal needs reviving — even while you're away. macOS asks permission the first time one fires."
+                  label="デスクトップ通知"
+                  desc="エージェントがあなたを必要としたり、ターミナルの復旧が必要になったりしたときに通知します — 離席中でも届きます。macOSでは初回に許可を求められます。"
                   on={notifications}
                   tint="var(--cth-peach-light)"
                   edge="var(--cth-peach)"
@@ -672,8 +669,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
                 <ToggleRow
                   icon="play"
-                  label="OPEN AT LOGIN"
-                  desc="Relaunch the harness after a reboot so scheduled missions resume on their own. No prompt — applies immediately."
+                  label="ログイン時に起動"
+                  desc="再起動後にハーネスを自動で再起動し、予定されたミッションを自分で再開できるようにします。確認なし — 即座に適用されます。"
                   on={openAtLogin}
                   tint="var(--cth-sky-light)"
                   edge="var(--cth-sky)"
@@ -682,8 +679,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
                 <ToggleRow
                   icon="info"
-                  label="SHARE ANONYMOUS USAGE STATS"
-                  desc="A handful of anonymous events (app opened, agent spawned, feature used) that help improve Munder Difflin — never prompts, code, file paths, or agent output. Full list in TELEMETRY.md; change anytime in Settings."
+                  label="匿名の使用統計を共有"
+                  desc="Munder Difflin改善のための匿名イベント(アプリ起動、エージェント起動、機能利用など)のみ。プロンプト、コード、ファイルパス、エージェントの出力は決して送信しません。一覧はTELEMETRY.md、設定はいつでも変更できます。"
                   on={shareStats}
                   tint="var(--cth-lemon-light)"
                   edge="var(--cth-lemon)"
@@ -706,20 +703,19 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <div>
                       <div style={{ fontFamily: 'var(--cth-font-display)', fontSize: 10, lineHeight: '14px', marginBottom: 3 }}>
-                        STAY AWAKE ON POWER (MANUAL)
+                        電源接続中はスリープさせない(手動)
                       </div>
                       <div style={{ fontSize: 12, lineHeight: '16px', color: 'var(--cth-ink-700)' }}>
-                        macOS only lets you set this one yourself. In Battery → Options,
-                        turn on “Prevent automatic sleeping when the display is off” (on
-                        power adapter) so timers keep firing with the display asleep.
-                        Without a sleep-preventing setting the Mac still truly sleeps —
-                        work survives and catches up on wake.
+                        この項目だけはmacOSの仕様上、自分で設定する必要があります。バッテリー → オプションで、
+                        (電源アダプター使用時に)「ディスプレイがオフのときに自動的にスリープしない」をオンにすると、
+                        ディスプレイがスリープ中でもタイマーが動き続けます。
+                        スリープ防止の設定がないとMacは本当にスリープします — 作業は失われず、復帰時に再開します。
                       </div>
                     </div>
                     <PixelButton variant="secondary" size="sm"
                       onClick={() => openSettings('x-apple.systempreferences:com.apple.preference.battery')}>
                       <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-                        <Icon name="arrow-right" /> open Battery settings
+                        <Icon name="arrow-right" /> バッテリー設定を開く
                       </span>
                     </PixelButton>
                   </div>
@@ -744,12 +740,12 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
               <div style={{ display: 'flex', gap: 8 }}>
                 {step !== 'persona' && step !== 'welcome' && (
                   <PixelButton variant="ghost" size="md" onClick={() => setStep(prevStep(step))} disabled={busy}>
-                    back
+                    戻る
                   </PixelButton>
                 )}
                 {step === 'welcome' && (
                   <PixelButton variant="ghost" size="md" onClick={() => setStep('persona')} disabled={busy}>
-                    back
+                    戻る
                   </PixelButton>
                 )}
                 {step !== 'permissions' && (
@@ -761,14 +757,14 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       // lives in finish(), so an empty field walks you through all
                       // four steps and then bounces you back to step 1 to be told.
                       if (step === 'home' && !home.trim()) {
-                        setError('Pick a harness home folder first.');
+                        setError('先にハーネスホームのフォルダを選択してください。');
                         return;
                       }
                       // Same idea for the engine: refuse here, with the reason on
                       // screen, instead of letting a pick that cannot boot through
                       // to a Michael that never starts.
                       if (step === 'orchestrator' && engineBlocked) {
-                        setError(`${providerPreset(godProvider).label} is not installed. Install it and press "check again", or pick another engine.`);
+                        setError(`${providerPreset(godProvider).label}がインストールされていません。インストールして「再チェック」を押すか、別のエンジンを選んでください。`);
                         return;
                       }
                       setError(undefined);
@@ -776,12 +772,12 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     }}
                     disabled={(step === 'persona' && !audience) || (step === 'orchestrator' && engineBlocked)}
                   >
-                    {step === 'welcome' ? 'set it up' : 'next'}
+                    {step === 'welcome' ? 'セットアップ開始' : '次へ'}
                   </PixelButton>
                 )}
                 {step === 'permissions' && (
                   <PixelButton variant="primary" size="md" onClick={finish} disabled={busy}>
-                    {busy ? 'saving...' : 'finish'}
+                    {busy ? '保存中...' : '完了'}
                   </PixelButton>
                 )}
               </div>

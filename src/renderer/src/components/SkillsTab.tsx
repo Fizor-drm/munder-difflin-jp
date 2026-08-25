@@ -61,7 +61,7 @@ export function SkillsTab({ agentCwd }: { agentCwd?: string }) {
       setCatalogMeta({ stale: res.stale, error: res.error, fetchedAt: res.fetchedAt });
     } catch {
       setCatalog([]);
-      setCatalogMeta({ stale: true, error: 'could not reach the catalog', fetchedAt: 0 });
+      setCatalogMeta({ stale: true, error: 'カタログに接続できませんでした', fetchedAt: 0 });
     } finally { setBusy(false); }
   }, []);
 
@@ -118,13 +118,13 @@ export function SkillsTab({ agentCwd }: { agentCwd?: string }) {
     try {
       const res = await window.cth.skillsInstall(c.url, c.name);
       if (res.ok) {
-        setAction((a) => ({ ...a, [c.url]: { done: 'Installed' } }));
+        setAction((a) => ({ ...a, [c.url]: { done: 'インストール済み' } }));
         void loadLocal(); // the installed pane must reflect it immediately
       } else {
         setAction((a) => ({ ...a, [c.url]: { error: res.error } }));
       }
     } catch (e) {
-      setAction((a) => ({ ...a, [c.url]: { error: e instanceof Error ? e.message : 'install failed' } }));
+      setAction((a) => ({ ...a, [c.url]: { error: e instanceof Error ? e.message : 'インストールに失敗しました' } }));
     }
   };
 
@@ -134,9 +134,9 @@ export function SkillsTab({ agentCwd }: { agentCwd?: string }) {
     try {
       const res = await window.cth.skillsUninstall(sk.path);
       if (res.ok) { setAction((a) => { const n = { ...a }; delete n[sk.path]; return n; }); void loadLocal(); }
-      else setAction((a) => ({ ...a, [sk.path]: { error: res.error ?? 'could not remove it' } }));
+      else setAction((a) => ({ ...a, [sk.path]: { error: res.error ?? '削除できませんでした' } }));
     } catch (e) {
-      setAction((a) => ({ ...a, [sk.path]: { error: e instanceof Error ? e.message : 'uninstall failed' } }));
+      setAction((a) => ({ ...a, [sk.path]: { error: e instanceof Error ? e.message : 'アンインストールに失敗しました' } }));
     }
   };
 
@@ -169,15 +169,15 @@ export function SkillsTab({ agentCwd }: { agentCwd?: string }) {
         padding: 10, borderBottom: '1px solid var(--cth-ink-300)'
       }}>
         <button onClick={() => setMode('installed')} style={tabBtn('installed', 'installed')}>
-          installed{local ? ` (${local.length})` : ''}
+          インストール済み{local ? ` (${local.length})` : ''}
         </button>
         <button onClick={() => setMode('browse')} style={tabBtn('browse', 'browse')}>
-          browse{catalog ? ` (${catalog.length})` : ''}
+          カタログ{catalog ? ` (${catalog.length})` : ''}
         </button>
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={mode === 'installed' ? 'Search installed skills…' : 'Search the skills catalog…'}
+          placeholder={mode === 'installed' ? 'インストール済みスキルを検索…' : 'スキルカタログを検索…'}
           style={{
             flex: 1, minWidth: 140, padding: '4px 8px',
             background: 'var(--cth-paper-100)', color: 'var(--cth-ink-900)',
@@ -189,7 +189,7 @@ export function SkillsTab({ agentCwd }: { agentCwd?: string }) {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            title="Categories as published by the catalog"
+            title="カタログで公開されているカテゴリ"
             style={{
               padding: '4px 6px', maxWidth: 210,
               background: 'var(--cth-paper-100)', color: 'var(--cth-ink-900)',
@@ -197,7 +197,7 @@ export function SkillsTab({ agentCwd }: { agentCwd?: string }) {
               fontFamily: 'var(--cth-font-ui)', fontSize: 12
             }}
           >
-            <option value="all">all categories</option>
+            <option value="all">すべてのカテゴリ</option>
             {categories.map(([c, n]) => <option key={c} value={c}>{c} ({n})</option>)}
           </select>
         )}
@@ -212,7 +212,7 @@ export function SkillsTab({ agentCwd }: { agentCwd?: string }) {
               fontFamily: 'var(--cth-font-ui)', fontSize: 12
             }}
           >
-            <option value="all">all publishers</option>
+            <option value="all">すべての公開元</option>
             {owners.map(([o, n]) => <option key={o} value={o}>{o} ({n})</option>)}
           </select>
         )}
@@ -221,18 +221,18 @@ export function SkillsTab({ agentCwd }: { agentCwd?: string }) {
           size="sm"
           onClick={() => (mode === 'installed' ? void loadLocal() : void loadCatalog(true))}
           disabled={busy}
-        >{busy ? 'loading…' : 'refresh'}</PixelButton>
+        >{busy ? '読み込み中…' : '更新'}</PixelButton>
       </div>
 
       {/* Body */}
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 10 }}>
         {mode === 'installed' ? (
-          local === null ? <Muted>Scanning…</Muted>
+          local === null ? <Muted>スキャン中…</Muted>
           : shownLocal.length === 0 ? (
             <Muted>
               {local.length === 0
-                ? 'No skills installed yet. Open Browse to see what is available.'
-                : 'Nothing matches that search.'}
+                ? 'まだスキルがインストールされていません。カタログを開いて確認できます。'
+                : '検索に一致するものはありません。'}
             </Muted>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -256,28 +256,28 @@ export function SkillsTab({ agentCwd }: { agentCwd?: string }) {
                   }}>{s.path}</div>
                   <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
                     <button onClick={() => void window.cth.skillsReveal(s.path)} style={actionBtn('quiet')}>
-                      open folder
+                      フォルダを開く
                     </button>
                     {s.scope === 'bundled' ? (
                       // Bundled skills ship inside the app and are re-copied into
                       // every agent on spawn, so "removing" one would silently come
                       // back. Say that instead of offering a button that lies.
                       <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>
-                        ships with the app
+                        アプリ同梱
                       </span>
                     ) : confirming === s.path ? (
                       <>
                         <button onClick={() => void uninstall(s)} style={actionBtn('danger')}>
-                          delete {s.name}?
+                          {s.name} を削除しますか？
                         </button>
-                        <button onClick={() => setConfirming(null)} style={actionBtn('quiet')}>cancel</button>
+                        <button onClick={() => setConfirming(null)} style={actionBtn('quiet')}>キャンセル</button>
                       </>
                     ) : (
                       <button
                         onClick={() => setConfirming(s.path)}
                         disabled={action[s.path]?.busy}
                         style={actionBtn('quiet')}
-                      >{action[s.path]?.busy ? 'removing…' : 'uninstall'}</button>
+                      >{action[s.path]?.busy ? '削除中…' : 'アンインストール'}</button>
                     )}
                     {action[s.path]?.error && (
                       <span style={{ fontSize: 11, color: 'var(--cth-coral)' }}>{action[s.path]?.error}</span>
@@ -287,7 +287,7 @@ export function SkillsTab({ agentCwd }: { agentCwd?: string }) {
               ))}
             </div>
           )
-        ) : catalog === null ? <Muted>Loading the catalog…</Muted>
+        ) : catalog === null ? <Muted>カタログを読み込み中…</Muted>
         : (
           <>
             {catalogMeta?.error && (
@@ -295,12 +295,12 @@ export function SkillsTab({ agentCwd }: { agentCwd?: string }) {
                 marginBottom: 8, padding: 8, fontSize: 12, color: 'var(--cth-ink-900)',
                 background: 'var(--cth-coral-light)', boxShadow: 'inset 0 0 0 1px var(--cth-coral)'
               }}>
-                Showing a cached copy — {catalogMeta.error}.
+                キャッシュを表示中 — {catalogMeta.error}
               </div>
             )}
             <div style={{ fontSize: 11, color: 'var(--cth-ink-500)', marginBottom: 8 }}>
-              {totalMatching} matching{totalMatching > shownCatalog.length ? ` · showing the first ${shownCatalog.length}` : ''}
-              {' · '}curated by abubakarsiddik31/claude-skills-collection
+              一致 {totalMatching} 件{totalMatching > shownCatalog.length ? ` · 先頭 ${shownCatalog.length} 件を表示` : ''}
+              {' · '}提供: abubakarsiddik31/claude-skills-collection
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {shownCatalog.map((s) => (
@@ -321,12 +321,12 @@ export function SkillsTab({ agentCwd }: { agentCwd?: string }) {
                       disabled={!!action[s.url]?.busy || !!action[s.url]?.done}
                       style={actionBtn(action[s.url]?.done ? 'quiet' : 'primary')}
                     >
-                      {action[s.url]?.busy ? 'installing…' : action[s.url]?.done ?? 'install'}
+                      {action[s.url]?.busy ? 'インストール中…' : action[s.url]?.done ?? 'インストール'}
                     </button>
                     <button
                       onClick={() => void window.cth.openExternal(s.url)}
                       style={actionBtn('quiet')}
-                    >learn more</button>
+                    >詳細を見る</button>
                     {action[s.url]?.error && (
                       <span style={{ fontSize: 11, color: 'var(--cth-coral)', flex: 1, minWidth: 0 }}>
                         {action[s.url]?.error}

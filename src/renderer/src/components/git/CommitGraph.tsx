@@ -56,11 +56,11 @@ const BEND = 8;
 
 function relTime(ms: number): string {
   const delta = Math.max(0, Date.now() / 1000 - ms / 1000);
-  if (delta < 60) return `${Math.round(delta)}s`;
-  if (delta < 3600) return `${Math.round(delta / 60)}m`;
-  if (delta < 86400) return `${Math.round(delta / 3600)}h`;
-  if (delta < 86400 * 30) return `${Math.round(delta / 86400)}d`;
-  return `${Math.round(delta / (86400 * 30))}mo`;
+  if (delta < 60) return `${Math.round(delta)}秒`;
+  if (delta < 3600) return `${Math.round(delta / 60)}分`;
+  if (delta < 86400) return `${Math.round(delta / 3600)}時間`;
+  if (delta < 86400 * 30) return `${Math.round(delta / 86400)}日`;
+  return `${Math.round(delta / (86400 * 30))}ヶ月`;
 }
 
 /** Strip git's decoration noise down to something chip-sized. */
@@ -157,7 +157,7 @@ export function CommitGraph({ commits, currentBranch, onCommitClick }: CommitGra
           <div
             key={c.sha}
             onClick={onCommitClick ? () => onCommitClick(c.sha) : undefined}
-            title={`${c.shortSha} · ${c.subject}\n${c.author} · ${relTime(c.time * 1000)} ago`}
+            title={`${c.shortSha} · ${c.subject}\n${c.author} · ${relTime(c.time * 1000)}前`}
             style={{
               height: ROW_H,
               display: 'flex',

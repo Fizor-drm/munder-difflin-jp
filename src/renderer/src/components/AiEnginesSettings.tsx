@@ -28,10 +28,10 @@ const BACKENDS: Array<{ id: string; label: string; envVar: string }> = [
 
 /** CLI engines that take a per-provider local base-URL + default model. */
 const CLIS: Array<{ id: AgentProvider; label: string; hint: string }> = [
-  { id: 'opencode', label: 'OpenCode', hint: 'http://localhost:11434/v1 (Ollama) — injected as a local provider' },
-  { id: 'crush', label: 'Crush', hint: 'OpenAI-compatible endpoint — used as the proxy upstream' },
-  { id: 'pi', label: 'Pi', hint: 'local models are file-based (models.json); base-URL reserved' },
-  { id: 'qwen', label: 'Qwen', hint: 'OpenAI-compatible endpoint — used as the proxy upstream' }
+  { id: 'opencode', label: 'OpenCode', hint: 'http://localhost:11434/v1（Ollama）— ローカルプロバイダーとして注入されます' },
+  { id: 'crush', label: 'Crush', hint: 'OpenAI互換エンドポイント — プロキシの上流として使用されます' },
+  { id: 'pi', label: 'Pi', hint: 'ローカルモデルはファイルベース（models.json）。ベースURLは予約済み' },
+  { id: 'qwen', label: 'Qwen', hint: 'OpenAI互換エンドポイント — プロキシの上流として使用されます' }
 ];
 
 const inputStyle: CSSProperties = {
@@ -97,17 +97,17 @@ export function AiEnginesSettings({ config }: { config: HarnessConfig }) {
       if (r.ok) {
         setHasKey((s) => ({ ...s, [backend]: true }));
         setDraftKey((s) => ({ ...s, [backend]: '' }));
-        setNote((s) => ({ ...s, [backend]: 'saved' }));
+        setNote((s) => ({ ...s, [backend]: '保存しました' }));
         // OpenAI key gates Talk — mirror presence to the store so the warning clears now.
         if (backend === 'openai') setHasOpenAiKey(true);
-      } else setNote((s) => ({ ...s, [backend]: r.error ?? 'failed' }));
+      } else setNote((s) => ({ ...s, [backend]: r.error ?? '失敗しました' }));
     } catch (e) { setNote((s) => ({ ...s, [backend]: e instanceof Error ? e.message : String(e) })); }
   };
   const clearKey = async (backend: string) => {
     try {
       await window.cth.providerKeyClear(backend);
       setHasKey((s) => ({ ...s, [backend]: false }));
-      setNote((s) => ({ ...s, [backend]: 'cleared' }));
+      setNote((s) => ({ ...s, [backend]: 'クリアしました' }));
       // OpenAI key gates Talk — clearing it disables Talk; reflect that immediately.
       if (backend === 'openai') setHasOpenAiKey(false);
     } catch { /* noop */ }
@@ -127,34 +127,34 @@ export function AiEnginesSettings({ config }: { config: HarnessConfig }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div>
-        <div style={headStyle}>AI ENGINE PROVIDERS (BYOK)</div>
+        <div style={headStyle}>AIエンジンプロバイダー（BYOK）</div>
         <div style={{ fontSize: 12, color: 'var(--cth-ink-700)', lineHeight: '18px' }}>
-          API keys + local endpoints for the OpenCode, Crush, pi.dev and Qwen engines.
-          Keys are stored <strong>write-only</strong> (encrypted at rest; never shown again)
-          and used only when those engines spawn. Claude Code and Codex use their own login.
+          OpenCode、Crush、pi.dev、Qwenエンジン用のAPIキーとローカルエンドポイントです。
+          キーは<strong>書き込み専用</strong>で保存され（保存時は暗号化、再度表示されることはありません）、
+          それらのエンジンのスポーン時にのみ使用されます。Claude CodeとCodexは独自のログインを使用します。
         </div>
       </div>
 
       {/* Backend API keys (write-only) */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <div style={headStyle}>API KEYS</div>
+        <div style={headStyle}>APIキー</div>
         {BACKENDS.map((b) => (
           <div key={b.id} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <label style={labelStyle}>
-              {b.label} {hasKey[b.id] ? '· set ✓' : ''} <span style={{ opacity: 0.6 }}>({b.envVar})</span>
+              {b.label} {hasKey[b.id] ? '· 設定済み ✓' : ''} <span style={{ opacity: 0.6 }}>({b.envVar})</span>
             </label>
             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
               <input
                 type="password"
                 autoComplete="off"
-                placeholder={hasKey[b.id] ? '•••••••• (stored — type to replace)' : `paste ${b.label} key`}
+                placeholder={hasKey[b.id] ? '•••••••• （保存済み — 入力すると置き換わります）' : `${b.label}キーを貼り付け`}
                 value={draftKey[b.id] ?? ''}
                 onChange={(e) => setDraftKey((s) => ({ ...s, [b.id]: e.target.value }))}
                 style={inputStyle}
               />
-              <PixelButton variant="secondary" size="sm" onClick={() => saveKey(b.id)}>Save</PixelButton>
+              <PixelButton variant="secondary" size="sm" onClick={() => saveKey(b.id)}>保存</PixelButton>
               {hasKey[b.id] && (
-                <PixelButton variant="secondary" size="sm" onClick={() => clearKey(b.id)}>Clear</PixelButton>
+                <PixelButton variant="secondary" size="sm" onClick={() => clearKey(b.id)}>クリア</PixelButton>
               )}
             </div>
             {note[b.id] && <div style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>{note[b.id]}</div>}
@@ -164,7 +164,7 @@ export function AiEnginesSettings({ config }: { config: HarnessConfig }) {
 
       {/* Per-CLI local endpoint + default model */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <div style={headStyle}>LOCAL ENDPOINT · DEFAULT MODEL (PER ENGINE)</div>
+        <div style={headStyle}>ローカルエンドポイント · デフォルトモデル（エンジン別）</div>
         {CLIS.map((c) => (
           <div key={c.id} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -172,13 +172,13 @@ export function AiEnginesSettings({ config }: { config: HarnessConfig }) {
             </label>
             <div style={{ display: 'flex', gap: 6 }}>
               <input
-                placeholder={`base-URL — ${c.hint}`}
+                placeholder={`ベースURL — ${c.hint}`}
                 defaultValue={baseUrls[c.id] ?? ''}
                 onBlur={(e) => saveBaseUrl(c.id, e.target.value)}
                 style={inputStyle}
               />
               <input
-                placeholder="default model (provider/model)"
+                placeholder="デフォルトモデル（provider/model）"
                 defaultValue={models[c.id] ?? ''}
                 onBlur={(e) => saveModel(c.id, e.target.value)}
                 style={{ ...inputStyle, maxWidth: 220 }}
@@ -188,18 +188,18 @@ export function AiEnginesSettings({ config }: { config: HarnessConfig }) {
         ))}
         {/* Local-setup guides (ondev-c part-3) — link the two how-to blogs. */}
         <div style={{ fontSize: 12, color: 'var(--cth-ink-700)', lineHeight: '17px' }}>
-          Running open models? Step-by-step guides:{' '}
+          オープンモデルを実行しますか？ 手順ガイド:{' '}
           <a
             href={OSS_BLOG_LINKS.openModels}
             onClick={(e) => { e.preventDefault(); void window.cth.openExternal(OSS_BLOG_LINKS.openModels); }}
             style={linkStyle}
-          >run Munder Difflin on open models</a>
+          >オープンモデルでMunder Difflinを動かす</a>
           {' '}·{' '}
           <a
             href={OSS_BLOG_LINKS.macMini}
             onClick={(e) => { e.preventDefault(); void window.cth.openExternal(OSS_BLOG_LINKS.macMini); }}
             style={linkStyle}
-          >set it up on a Mac Mini</a>.
+          >Mac Miniでセットアップする</a>。
         </div>
       </div>
 
@@ -208,10 +208,9 @@ export function AiEnginesSettings({ config }: { config: HarnessConfig }) {
         fontSize: 12, color: 'var(--cth-ink-700)', lineHeight: '17px',
         padding: 8, boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)', background: 'var(--cth-paper-100)'
       }}>
-        ⚠ In <strong>auto mode</strong> these engines run with full filesystem + shell access
-        (no sandbox) — like Claude's bypass mode. Turn auto mode off (General) to make them
-        ask first. Live end-to-end verification with real model calls is pending your keys / a
-        local LLM.
+        ⚠ <strong>autoモード</strong>では、これらのエンジンはファイルシステムとシェルへの完全なアクセス権（サンドボックスなし）で
+        実行されます — Claudeのバイパスモードと同様です。先に確認させるには、autoモードをオフにしてください（一般設定）。
+        実際のモデル呼び出しによるエンドツーエンドの検証は、キーまたはローカルLLMの準備ができ次第行われます。
       </div>
     </div>
   );

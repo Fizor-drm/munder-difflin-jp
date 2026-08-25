@@ -20,12 +20,12 @@ export interface GitTabProps {
 }
 
 function statusLabel(code: string): string {
-  return code === 'M' ? 'modified'
-    : code === 'A' ? 'added'
-    : code === 'D' ? 'deleted'
-    : code === 'R' ? 'renamed'
-    : code === '?' ? 'untracked'
-    : code === 'U' ? 'unmerged'
+  return code === 'M' ? '変更'
+    : code === 'A' ? '追加'
+    : code === 'D' ? '削除'
+    : code === 'R' ? '名前変更'
+    : code === '?' ? '未追跡'
+    : code === 'U' ? '未マージ'
     : code === ' ' ? '' : code;
 }
 
@@ -92,7 +92,7 @@ export function GitTab({ cwd }: GitTabProps) {
         padding: 16, textAlign: 'center', color: 'var(--cth-ink-500)',
         fontFamily: 'var(--cth-font-ui)', fontSize: 14
       }}>
-        Not a git repo.<br />Run <code style={{ fontFamily: 'var(--cth-font-mono)' }}>git init</code> in the agent's terminal.
+        Gitリポジトリではありません。<br />エージェントのターミナルで <code style={{ fontFamily: 'var(--cth-font-mono)' }}>git init</code> を実行してください。
       </div>
     );
   }
@@ -127,7 +127,7 @@ export function GitTab({ cwd }: GitTabProps) {
         )}
         <div style={{ marginLeft: 'auto' }}>
           <PixelButton variant="ghost" size="sm" onClick={refresh} disabled={loading}>
-            {loading ? '...' : 'refresh'}
+            {loading ? '...' : '更新'}
           </PixelButton>
         </div>
       </div>
@@ -145,16 +145,16 @@ export function GitTab({ cwd }: GitTabProps) {
       {/* Body — scrollable, contains status + branches + graph */}
       <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
         {/* Status */}
-        <Section title="status">
+        <Section title="ステータス">
           {status && (
             <>
-              <StatusGroup label="staged" entries={status.staged.map(e => ({ ...e, code: e.index }))} />
-              <StatusGroup label="changes" entries={status.unstaged.map(e => ({ ...e, code: e.worktree }))} />
-              <StatusGroup label="untracked" entries={status.untracked.map(p => ({ path: p, code: '?' }))} />
+              <StatusGroup label="ステージ済み" entries={status.staged.map(e => ({ ...e, code: e.index }))} />
+              <StatusGroup label="変更" entries={status.unstaged.map(e => ({ ...e, code: e.worktree }))} />
+              <StatusGroup label="未追跡" entries={status.untracked.map(p => ({ path: p, code: '?' }))} />
               {status.staged.length === 0 && status.unstaged.length === 0 && status.untracked.length === 0 && (
                 <div style={{
                   padding: '4px 12px', color: 'var(--cth-ink-500)', fontSize: 13
-                }}>working tree clean</div>
+                }}>ワークツリーはクリーンです</div>
               )}
             </>
           )}
@@ -162,7 +162,7 @@ export function GitTab({ cwd }: GitTabProps) {
 
         {/* Branches */}
         {branches && (branches.local.length > 0 || branches.remote.length > 0) && (
-          <Section title="branches">
+          <Section title="ブランチ">
             <div style={{ padding: '0 8px 8px', display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {branches.local.map(b => (
                 <span key={`l-${b}`} style={{
@@ -189,9 +189,9 @@ export function GitTab({ cwd }: GitTabProps) {
         )}
 
         {/* Graph */}
-        <Section title="log">
+        <Section title="ログ">
           {log.length > 0 ? <CommitGraph commits={log} currentBranch={branch} /> : (
-            <div style={{ padding: 12, color: 'var(--cth-ink-500)', fontSize: 12 }}>no commits yet</div>
+            <div style={{ padding: 12, color: 'var(--cth-ink-500)', fontSize: 12 }}>コミットはまだありません</div>
           )}
         </Section>
       </div>
@@ -245,7 +245,7 @@ function StatusGroup({ label, entries }: {
           <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>{statusLabel(e.code)}</span>
           <button
             onClick={() => navigator.clipboard.writeText(e.path).catch(() => {})}
-            title="Copy path"
+            title="パスをコピー"
             style={{
               padding: 0, background: 'transparent', border: 'none',
               cursor: 'pointer', color: 'var(--cth-ink-500)'

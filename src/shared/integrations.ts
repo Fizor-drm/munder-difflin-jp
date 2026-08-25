@@ -242,8 +242,8 @@ export const INTEGRATION_TEMPLATES: IntegrationTemplate[] = [
     label: 'GitHub',
     baseUrl: 'https://api.github.com',
     authType: 'github',
-    secretLabel: 'GitHub personal access token',
-    secretHelp: 'Create a fine-grained or classic PAT at github.com/settings/tokens with the scopes your workers need.',
+    secretLabel: 'GitHub パーソナルアクセストークン',
+    secretHelp: 'github.com/settings/tokens で、ワーカーに必要なスコープを付けた fine-grained または classic のPATを作成してください。',
     docsUrl: 'https://docs.github.com/rest',
     idSuggestion: 'github'
   },
@@ -252,8 +252,8 @@ export const INTEGRATION_TEMPLATES: IntegrationTemplate[] = [
     label: 'Custom REST API',
     baseUrl: '',
     authType: 'bearer',
-    secretLabel: 'API key / token',
-    secretHelp: 'Point baseUrl at any REST API. Choose how its credential is sent: Bearer token, a custom header, or none.',
+    secretLabel: 'APIキー / トークン',
+    secretHelp: 'baseUrl に任意のREST APIを指定します。認証情報の送信方法として、Bearerトークン・カスタムヘッダー・なしから選べます。',
     idSuggestion: 'my-api'
   },
 
@@ -268,8 +268,8 @@ export const INTEGRATION_TEMPLATES: IntegrationTemplate[] = [
     baseUrl: 'https://api.linear.app/graphql',
     authType: 'header',
     authHeader: 'Authorization',
-    secretLabel: 'Linear API key',
-    secretHelp: 'Linear → Settings → Security & access → Personal API keys. Sent verbatim in Authorization (no "Bearer"). Every call POSTs to /graphql.',
+    secretLabel: 'Linear APIキー',
+    secretHelp: 'Linear → Settings → Security & access → Personal API keys で発行。Authorization にそのまま送信されます（"Bearer" なし）。全リクエストは /graphql へPOSTされます。',
     docsUrl: 'https://developers.linear.app/docs/graphql/working-with-the-graphql-api',
     idSuggestion: 'linear'
   },
@@ -279,8 +279,8 @@ export const INTEGRATION_TEMPLATES: IntegrationTemplate[] = [
     baseUrl: 'https://your-domain.atlassian.net/rest/api/3',
     authType: 'header',
     authHeader: 'Authorization',
-    secretLabel: 'Authorization header (Basic …)',
-    secretHelp: 'Basic auth: paste "Basic " + base64("<email>:<api-token>"). Token at id.atlassian.com → Security → API tokens. Replace your-domain with your Atlassian site.',
+    secretLabel: 'Authorization ヘッダー（Basic …）',
+    secretHelp: 'Basic認証: "Basic " + base64("<メールアドレス>:<APIトークン>") を貼り付けてください。トークンは id.atlassian.com → Security → API tokens で発行。your-domain は自分のAtlassianサイトに置き換えてください。',
     docsUrl: 'https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/',
     idSuggestion: 'jira'
   },
@@ -289,8 +289,8 @@ export const INTEGRATION_TEMPLATES: IntegrationTemplate[] = [
     label: 'Notion',
     baseUrl: 'https://api.notion.com/v1',
     authType: 'bearer',
-    secretLabel: 'Notion internal integration token',
-    secretHelp: 'notion.so/my-integrations → Internal Integration Secret; share target pages/DBs with it. Every request also needs header "Notion-Version: 2022-06-28" (worker sends it per request).',
+    secretLabel: 'Notion 内部インテグレーショントークン',
+    secretHelp: 'notion.so/my-integrations → Internal Integration Secret で取得し、対象のページ/DBを共有してください。全リクエストにヘッダー "Notion-Version: 2022-06-28" も必要です（ワーカーがリクエストごとに送信します）。',
     docsUrl: 'https://developers.notion.com/reference/intro',
     idSuggestion: 'notion'
   },
@@ -299,8 +299,8 @@ export const INTEGRATION_TEMPLATES: IntegrationTemplate[] = [
     label: 'Stripe',
     baseUrl: 'https://api.stripe.com/v1',
     authType: 'bearer',
-    secretLabel: 'Stripe secret key',
-    secretHelp: 'dashboard.stripe.com → Developers → API keys → Secret key (sk_live_/sk_test_). Restricted keys recommended. Bodies are form-encoded, not JSON.',
+    secretLabel: 'Stripe シークレットキー',
+    secretHelp: 'dashboard.stripe.com → Developers → API keys → Secret key（sk_live_/sk_test_）。制限付きキーを推奨。ボディはJSONではなくフォームエンコードされます。',
     docsUrl: 'https://stripe.com/docs/api',
     idSuggestion: 'stripe'
   },
@@ -310,8 +310,8 @@ export const INTEGRATION_TEMPLATES: IntegrationTemplate[] = [
     baseUrl: 'https://your-domain.atlassian.net/wiki/api/v2',
     authType: 'header',
     authHeader: 'Authorization',
-    secretLabel: 'Authorization header (Basic …)',
-    secretHelp: 'Basic auth: paste "Basic " + base64("<email>:<api-token>") (same Atlassian token as Jira). Replace your-domain with your site.',
+    secretLabel: 'Authorization ヘッダー（Basic …）',
+    secretHelp: 'Basic認証: "Basic " + base64("<メールアドレス>:<APIトークン>") を貼り付けてください（Jiraと同じAtlassianトークン）。your-domain は自分のサイトに置き換えてください。',
     docsUrl: 'https://developer.atlassian.com/cloud/confluence/rest/v2/intro/',
     idSuggestion: 'confluence'
   },
@@ -320,8 +320,8 @@ export const INTEGRATION_TEMPLATES: IntegrationTemplate[] = [
     label: 'Sentry',
     baseUrl: 'https://sentry.io/api/0',
     authType: 'bearer',
-    secretLabel: 'Sentry auth token',
-    secretHelp: 'sentry.io → Settings → Auth Tokens. Org-scoped routes carry your org slug in the path, e.g. /organizations/<org>/issues/.',
+    secretLabel: 'Sentry 認証トークン',
+    secretHelp: 'sentry.io → Settings → Auth Tokens で発行。組織スコープのルートにはパスに組織スラッグが入ります（例: /organizations/<org>/issues/）。',
     docsUrl: 'https://docs.sentry.io/api/',
     idSuggestion: 'sentry'
   },
@@ -330,8 +330,8 @@ export const INTEGRATION_TEMPLATES: IntegrationTemplate[] = [
     label: 'HubSpot',
     baseUrl: 'https://api.hubapi.com',
     authType: 'bearer',
-    secretLabel: 'HubSpot private app token',
-    secretHelp: 'HubSpot → Settings → Integrations → Private Apps → create app → Access token (scopes crm.objects.*).',
+    secretLabel: 'HubSpot プライベートアプリトークン',
+    secretHelp: 'HubSpot → Settings → Integrations → Private Apps → アプリ作成 → Access token（スコープ crm.objects.*）。',
     docsUrl: 'https://developers.hubspot.com/docs/api/crm/understanding-the-crm',
     idSuggestion: 'hubspot'
   }

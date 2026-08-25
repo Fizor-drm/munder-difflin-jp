@@ -20,34 +20,34 @@ interface ToolSample {
 
 const TOOL_SAMPLES: ToolSample[] = [
   {
-    tool: 'Read', what: 'reading SPEC.md',
-    lines: ['\x1b[36m● Read\x1b[0m SPEC.md', '   read 412 lines.'],
-    thought: "Pulling up the spec so I can confirm the state machine before touching the implementation."
+    tool: 'Read', what: 'SPEC.md を読み込み中',
+    lines: ['\x1b[36m● Read\x1b[0m SPEC.md', '   412 行を読み取り。'],
+    thought: '実装に手を入れる前に、スペックを確認してステートマシンを把握しておく。'
   },
   {
-    tool: 'Edit', what: 'editing PixelPanel.tsx',
+    tool: 'Edit', what: 'PixelPanel.tsx を編集中',
     lines: ['\x1b[36m● Edit\x1b[0m src/renderer/src/components/PixelPanel.tsx', '   +14 / -3'],
-    thought: "Tightening up the panel border math — the inner stroke was a pixel off in inset mode."
+    thought: 'パネルのボーダー計算を詰めている。inset モードで内側のストロークが1ピクセルずれていた。'
   },
   {
-    tool: 'Bash', what: 'running tests',
-    lines: ['\x1b[36m● Bash\x1b[0m npm test', '   ✓ 24 passed'],
-    thought: "Running the renderer suite to make sure nothing regressed before I move on."
+    tool: 'Bash', what: 'テスト実行中',
+    lines: ['\x1b[36m● Bash\x1b[0m npm test', '   ✓ 24 件成功'],
+    thought: '次に進む前に、レンダラのテストスイートを回して退化がないか確かめる。'
   },
   {
-    tool: 'WebFetch', what: 'fetching docs',
+    tool: 'WebFetch', what: 'ドキュメント取得中',
     lines: ['\x1b[36m● WebFetch\x1b[0m https://docs.example.com/hooks', '   ok 200 (1.2kb)'],
-    thought: "Grabbing the hooks doc to double-check the PreToolUse payload shape — my memory of the field names is hazy."
+    thought: 'hooks のドキュメントを取って PreToolUse ペイロードの構造を再確認する。フィールド名はうろ覚えだからな。'
   },
   {
-    tool: 'Glob', what: 'searching for skill files',
-    lines: ['\x1b[36m● Glob\x1b[0m **/*.skill.md', '   23 matches'],
-    thought: "Enumerating all the skill files so I can walk each one and look for stale script paths."
+    tool: 'Glob', what: 'スキルファイルを検索中',
+    lines: ['\x1b[36m● Glob\x1b[0m **/*.skill.md', '   23 件一致'],
+    thought: 'スキルファイルを全部列挙して、古いスクリプトパスが残っていないか1つずつ見ていく。'
   },
   {
-    tool: 'TodoWrite', what: 'updating the todo board',
-    lines: ['\x1b[36m● TodoWrite\x1b[0m 4 items'],
-    thought: "Splitting the remaining work into four discrete tasks so I can track them as I go."
+    tool: 'TodoWrite', what: 'タスクボード更新中',
+    lines: ['\x1b[36m● TodoWrite\x1b[0m 4 項目'],
+    thought: '残りの作業を4つのタスクに分割して、進めながら追跡できるようにする。'
   }
 ];
 
@@ -73,7 +73,7 @@ function stepAgent(agent: Agent) {
       const station = STATION_BY_TOOL[sample.tool];
       updateAgent(agent.id, {
         status: 'thinking',
-        action: `heading to ${station}`,
+        action: `${STATION_LABEL[station]}へ移動`,
         currentStation: station,
         progress: 1
       });
@@ -108,7 +108,7 @@ function stepAgent(agent: Agent) {
     if (Math.random() < 0.5) {
       updateAgent(agent.id, {
         status: 'thinking',
-        action: 'heading back to desk',
+        action: 'デスクに戻る',
         currentStation: 'desk',
         progress: Math.min(agent.progress + 1, 8)
       });
@@ -118,7 +118,7 @@ function stepAgent(agent: Agent) {
       const station = STATION_BY_TOOL[sample.tool];
       updateAgent(agent.id, {
         status: 'thinking',
-        action: `heading to ${station}`,
+        action: `${STATION_LABEL[station]}へ移動`,
         currentStation: station,
         progress: Math.min(agent.progress + 1, 8)
       });
@@ -128,6 +128,17 @@ function stepAgent(agent: Agent) {
 }
 
 const MOCK_ACTS = ['request', 'inform', 'propose', 'query', 'agree'] as const;
+
+/** Station enum → 表示用ラベル（フロアのアクション表示用） */
+const STATION_LABEL: Record<StationKind, string> = {
+  shelf: '本棚',
+  terminal: 'ターミナル',
+  web: 'Web',
+  board: 'ボード',
+  mailbox: 'メールボックス',
+  mcp: 'MCP',
+  desk: 'デスク'
+};
 
 /** Occasionally fire a synthetic agent-to-agent message so the office floor's
  *  envelope-handoff animation is visible in demo mode (no live hive routing
@@ -160,9 +171,9 @@ export function startMockLoop() {
       if (a.status === 'thinking' && a.currentStation === 'desk' && Math.random() < 0.4) {
         updateAgent(a.id, {
           status: 'idle',
-          action: 'awaiting',
+          action: '待機中',
           carrying: undefined,
-          recentAssistantText: 'Done with that one. What next?',
+          recentAssistantText: 'この作業は完了。次は何をしましょう？',
           recentTextTs: Date.now()
         });
       }

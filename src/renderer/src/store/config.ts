@@ -184,7 +184,7 @@ export const CODEX_MODELS: ModelOption[] = [
   // No `--model` flag at all — whatever the CLI itself defaults to. NOT the
   // harness's `config.defaultModel`; the pickers mark that one separately, and
   // labelling both "default" is what made the two impossible to tell apart.
-  { id: undefined, label: 'CLI default' },
+  { id: undefined, label: 'CLI デフォルト' },
   { id: 'gpt-5.6-sol', label: 'GPT-5.6 Sol' },
   { id: 'gpt-5.6-terra', label: 'GPT-5.6 Terra' },
   { id: 'gpt-5.6-luna', label: 'GPT-5.6 Luna' }
@@ -200,7 +200,7 @@ export const ANTIGRAVITY_MODELS: ModelOption[] = [
   // No `--model` flag at all — whatever the CLI itself defaults to. NOT the
   // harness's `config.defaultModel`; the pickers mark that one separately, and
   // labelling both "default" is what made the two impossible to tell apart.
-  { id: undefined, label: 'CLI default' },
+  { id: undefined, label: 'CLI デフォルト' },
   { id: 'Gemini 3.1 Pro (High)', label: 'Gemini 3.1 Pro · High' },
   { id: 'Gemini 3.1 Pro (Low)', label: 'Gemini 3.1 Pro · Low' },
   { id: 'Gemini 3.5 Flash (High)', label: 'Gemini 3.5 Flash · High' },
@@ -214,7 +214,7 @@ export const ANTIGRAVITY_MODELS: ModelOption[] = [
 /** Stable model aliases accepted by the official Google Gemini CLI. The aliases
  *  intentionally follow the CLI instead of pinning preview model ids that drift. */
 export const GEMINI_MODELS: ModelOption[] = [
-  { id: undefined, label: 'CLI default' },
+  { id: undefined, label: 'CLI デフォルト' },
   { id: 'auto', label: 'Auto' },
   { id: 'pro', label: 'Pro' },
   { id: 'flash', label: 'Flash' },
@@ -225,7 +225,7 @@ export const GEMINI_MODELS: ModelOption[] = [
  *  driving an OpenAI-compatible endpoint. Starting suggestions only (editable
  *  command field). // TODO-verify the live list (`qwen` model ids). */
 export const QWEN_MODELS: ModelOption[] = [
-  { id: undefined, label: 'default' },
+  { id: undefined, label: 'デフォルト' },
   { id: 'qwen3-coder-plus', label: 'Qwen3 Coder Plus' },
   { id: 'qwen3-coder', label: 'Qwen3 Coder' },
   { id: 'qwen-max', label: 'Qwen Max' }
@@ -242,44 +242,44 @@ export const OPENCODE_MODELS: ModelOption[] = [
   // both "default" is what made the two impossible to tell apart. This is now the
   // PRESELECTED entry for OpenCode, because a BYOK slug the user holds no key for
   // fails silently — see the recommendedOrchestratorModel note in agentProvider.ts.
-  { id: undefined, label: 'CLI default' },
+  { id: undefined, label: 'CLI デフォルト' },
   { id: 'anthropic/claude-sonnet-4-5', label: 'Claude Sonnet 4.5 (Anthropic)' },
   { id: 'anthropic/claude-haiku-4-5', label: 'Claude Haiku 4.5 (Anthropic)' },
   { id: 'openai/gpt-5', label: 'GPT-5 (OpenAI)' },
   { id: 'openai/gpt-5-mini', label: 'GPT-5 mini (OpenAI)' },
   { id: 'openrouter/anthropic/claude-sonnet-4.5', label: 'Claude Sonnet 4.5 (OpenRouter)' },
   { id: 'google/gemini-2.5-pro', label: 'Gemini 2.5 Pro (Google)' },
-  { id: 'local/llama3', label: 'Local · OpenAI-compatible (set base-URL)' }
+  { id: 'local/llama3', label: 'ローカル · OpenAI互換（Base URLを設定）' }
 ];
 
 /** Models offered when an agent runs on Crush (`crush`). Crush's `--model` takes a
  *  `provider/model-id` slug; free-text editable (Crush accepts arbitrary slugs).
  *  // TODO-verify exact live ids (humanQA). */
 export const CRUSH_MODELS: ModelOption[] = [
-  { id: undefined, label: 'Crush default (config)' },
+  { id: undefined, label: 'Crush の設定に従う' },
   { id: 'anthropic/claude-sonnet-4-5', label: 'Claude Sonnet 4.5 (Anthropic)' },
   { id: 'anthropic/claude-opus-4-1', label: 'Claude Opus (Anthropic)' },
   { id: 'openai/gpt-4o', label: 'GPT-4o (OpenAI)' },
   { id: 'openai/o3', label: 'o3 (OpenAI)' },
   { id: 'gemini/gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
-  { id: 'openrouter/auto', label: 'OpenRouter (auto)' },
+  { id: 'openrouter/auto', label: 'OpenRouter（自動）' },
   // OpenAI-wire local slug so traffic routes through the proxy (the harness overrides
   // the `openai` provider's base_url → loopback → your configured Crush base-URL).
   // An `ollama/*` slug would bypass the proxy (Dwight verify-crush NIT-2).
-  { id: 'openai/local', label: 'Local · OpenAI-compatible (set base-URL)' }
+  { id: 'openai/local', label: 'ローカル · OpenAI互換（Base URLを設定）' }
 ];
 
 /** Models offered when an agent runs on Pi (`pi`). Pi's `--model` takes a
  *  `provider/model` slug (thinking via a `:high` suffix). Curated BYOK suggestions;
  *  free-text editable. // TODO-verify exact live slugs (humanQA). */
 export const PI_MODELS: ModelOption[] = [
-  { id: undefined, label: 'default' },
+  { id: undefined, label: 'デフォルト' },
   { id: 'anthropic/claude-sonnet-4-5', label: 'Claude Sonnet 4.5 (Anthropic)' },
   { id: 'anthropic/claude-opus-4-1', label: 'Claude Opus (Anthropic)' },
   { id: 'openai/gpt-5', label: 'GPT-5 (OpenAI)' },
   { id: 'google/gemini-2.5-pro', label: 'Gemini 2.5 Pro (Google)' },
   { id: 'groq/llama-3.3-70b', label: 'Llama 3.3 70B (Groq)' },
-  { id: 'local/llama3', label: 'Local · OpenAI-compatible (set base-URL)' }
+  { id: 'local/llama3', label: 'ローカル · OpenAI互換（Base URLを設定）' }
 ];
 
 /** Models offered when an agent runs on GitHub Copilot (`copilot`). Copilot's
@@ -287,8 +287,8 @@ export const PI_MODELS: ModelOption[] = [
  *  suggestions and the command field stays editable. // TODO-verify exact live ids
  *  (the /model picker is the source of truth; they drift). */
 export const COPILOT_MODELS: ModelOption[] = [
-  { id: undefined, label: 'default (Claude Sonnet 4.5)' },
-  { id: 'auto', label: 'Auto (Copilot picks)' },
+  { id: undefined, label: 'デフォルト (Claude Sonnet 4.5)' },
+  { id: 'auto', label: '自動（Copilotが選択）' },
   { id: 'claude-sonnet-4.5', label: 'Claude Sonnet 4.5' },
   { id: 'claude-sonnet-4', label: 'Claude Sonnet 4' },
   { id: 'gpt-5.4', label: 'GPT-5.4' },
@@ -300,9 +300,9 @@ export const COPILOT_MODELS: ModelOption[] = [
  *  high-context default for Michael; other entries are curated quick-picks —
  *  the command field stays editable for any live slug. */
 export const CURSOR_MODELS: ModelOption[] = [
-  { id: undefined, label: 'CLI default (auto)' },
-  { id: 'auto', label: 'Auto' },
-  { id: 'gpt-5.6-luna-high', label: 'GPT-5.6 Luna 1M High (cheap)' },
+  { id: undefined, label: 'CLI デフォルト（自動）' },
+  { id: 'auto', label: '自動' },
+  { id: 'gpt-5.6-luna-high', label: 'GPT-5.6 Luna 1M High（低コスト）' },
   { id: 'gpt-5.6-sol-medium', label: 'GPT-5.6 Sol 1M' },
   { id: 'gpt-5.6-sol-high', label: 'GPT-5.6 Sol 1M High' },
   { id: 'composer-2.5', label: 'Composer 2.5' },
@@ -317,7 +317,7 @@ export const GROK_MODELS: ModelOption[] = [
   // No `--model` flag at all — whatever the CLI itself defaults to. NOT the
   // harness's `config.defaultModel`; the pickers mark that one separately, and
   // labelling both "default" is what made the two impossible to tell apart.
-  { id: undefined, label: 'CLI default' },
+  { id: undefined, label: 'CLI デフォルト' },
   { id: 'grok-4.6', label: 'Grok 4.6' },
   { id: 'grok-4.5', label: 'Grok 4.5' }
 ];
@@ -327,7 +327,7 @@ export const KIMI_MODELS: ModelOption[] = [
   // No `--model` flag at all — whatever the CLI itself defaults to. NOT the
   // harness's `config.defaultModel`; the pickers mark that one separately, and
   // labelling both "default" is what made the two impossible to tell apart.
-  { id: undefined, label: 'CLI default' },
+  { id: undefined, label: 'CLI デフォルト' },
   { id: 'kimi-code/k3', label: 'Kimi K3' },
   { id: 'kimi-code/kimi-for-coding', label: 'Kimi K2.7 Code' },
   { id: 'kimi-code/kimi-for-coding-highspeed', label: 'Kimi K2.7 · HighSpeed' }

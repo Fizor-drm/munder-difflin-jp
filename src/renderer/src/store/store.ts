@@ -474,7 +474,7 @@ function loadPersistedAgents(): Agent[] {
       ...a,
       progress: 0,
       status: 'idle',
-      action: 'reconnecting…',
+      action: '再接続中…',
       currentStation: 'desk',
       carrying: undefined,
       recentTextTs: Date.now(),
@@ -702,7 +702,7 @@ export const useStore = create<State>((set, get) => ({
   renameAgent: async (id, name) => {
     try {
       const result = await window.cth.hiveRenameAgent(id, name);
-      if (!result.ok || !result.name) return { ok: false, error: result.error ?? 'Could not rename agent' };
+      if (!result.ok || !result.name) return { ok: false, error: result.error ?? 'エージェント名を変更できませんでした' };
       const nextName = result.name;
 
       set((s) => {
@@ -718,7 +718,7 @@ export const useStore = create<State>((set, get) => ({
       });
       return { ok: true };
     } catch (error) {
-      return { ok: false, error: error instanceof Error ? error.message : 'Could not rename agent' };
+      return { ok: false, error: error instanceof Error ? error.message : 'エージェント名を変更できませんでした' };
     }
   },
   setAgentNote: (id, note) =>
@@ -788,7 +788,7 @@ export const useStore = create<State>((set, get) => ({
         archived: true,
         ptyId: undefined,
         status: 'idle',
-        action: 'archived',
+        action: 'アーカイブ済み',
         carrying: undefined,
         currentStation: undefined
       };

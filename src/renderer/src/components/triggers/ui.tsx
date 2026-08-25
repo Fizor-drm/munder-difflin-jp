@@ -79,7 +79,7 @@ export function Callout({ children, tone = 'warn' }: { children: ReactNode; tone
 
 /* ─────────────────────────────── controls ────────────────────────────────── */
 
-export function Toggle({ on, onClick, onLabel = 'on', offLabel = 'off' }: {
+export function Toggle({ on, onClick, onLabel = 'オン', offLabel = 'オフ' }: {
   on: boolean; onClick: () => void; onLabel?: string; offLabel?: string;
 }) {
   return (
@@ -266,15 +266,15 @@ export const INTERVAL_OPTS: { ms: number; label: string }[] = [
   { ms: 6 * HOUR, label: '6h' },
   { ms: 12 * HOUR, label: '12h' },
   { ms: DAY, label: '24h' },
-  { ms: WEEK, label: 'weekly' }
+  { ms: WEEK, label: '毎週' }
 ];
 
 /** A truthful label for ANY stored interval, preset or not. Arbitrary intervals
  *  persist now, so the label is computed rather than looked up — a select that
  *  falls back to the nearest preset would quietly lie about the stored value. */
 export function fmtInterval(ms: number): string {
-  if (!Number.isFinite(ms) || ms <= 0) return 'off';
-  if (ms === WEEK) return 'weekly';
+  if (!Number.isFinite(ms) || ms <= 0) return 'オフ';
+  if (ms === WEEK) return '毎週';
   if (ms % WEEK === 0) return `${ms / WEEK}w`;
   if (ms % DAY === 0) return `${ms / DAY}d`;
   if (ms % HOUR === 0) return `${ms / HOUR}h`;
@@ -308,9 +308,9 @@ export function IntervalPicker({ value, onChange, minMs = MINUTE, maxMs = Number
           onChange(Number(v));
         }}
       >
-        {!preset && <option value={CUSTOM}>{fmtInterval(value)} (custom)</option>}
+        {!preset && <option value={CUSTOM}>{fmtInterval(value)}（カスタム）</option>}
         {opts.map((o) => <option key={o.ms} value={String(o.ms)}>{o.label}</option>)}
-        {preset && <option value={CUSTOM}>custom…</option>}
+        {preset && <option value={CUSTOM}>カスタム…</option>}
       </Select>
       {showCustom && (
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
@@ -325,7 +325,7 @@ export function IntervalPicker({ value, onChange, minMs = MINUTE, maxMs = Number
             }}
             style={{ ...monoInputStyle, width: 68, padding: '3px 5px' }}
           />
-          <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>min</span>
+          <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>分</span>
         </span>
       )}
     </div>
@@ -386,8 +386,8 @@ export function SecretField({ value, revealed, onReveal, onCopy, copied, placeho
         onBlur={onBlur}
         style={{ ...monoInputStyle, flex: 1, minWidth: 0, padding: '4px 6px' }}
       />
-      <MiniButton onClick={onReveal}>{revealed ? 'hide' : 'show'}</MiniButton>
-      {onCopy && <MiniButton onClick={onCopy} tone={copied ? 'good' : 'plain'}>{copied ? 'copied' : 'copy'}</MiniButton>}
+      <MiniButton onClick={onReveal}>{revealed ? '隠す' : '表示'}</MiniButton>
+      {onCopy && <MiniButton onClick={onCopy} tone={copied ? 'good' : 'plain'}>{copied ? 'コピー済み' : 'コピー'}</MiniButton>}
     </div>
   );
 }
@@ -451,7 +451,7 @@ export function WeeklyPicker({ value, onChange }: {
         })}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }}>at</span>
+        <span style={{ fontSize: 11, color: 'var(--cth-ink-500)' }} />
         {/* A native time field, so typing 0930 works and the value is already
             the HH:MM the schedule stores. Minute granularity, not 5-minute
             steps: "09:47 on Tuesdays" is a legitimate thing to want. */}
@@ -465,10 +465,10 @@ export function WeeklyPicker({ value, onChange }: {
           style={{ ...inputStyle, width: 108, padding: '3px 6px' }}
         />
         <span style={{ flex: 1 }} />
-        <MiniButton onClick={() => setDays(same([1, 2, 3, 4, 5]) ? [] : [1, 2, 3, 4, 5])}>weekdays</MiniButton>
-        <MiniButton onClick={() => setDays(same([0, 1, 2, 3, 4, 5, 6]) ? [] : [0, 1, 2, 3, 4, 5, 6])}>every day</MiniButton>
+        <MiniButton onClick={() => setDays(same([1, 2, 3, 4, 5]) ? [] : [1, 2, 3, 4, 5])}>平日</MiniButton>
+        <MiniButton onClick={() => setDays(same([0, 1, 2, 3, 4, 5, 6]) ? [] : [0, 1, 2, 3, 4, 5, 6])}>毎日</MiniButton>
       </div>
-      {value.days.length === 0 && <Hint>Pick at least one day, or this will never run.</Hint>}
+      {value.days.length === 0 && <Hint>曜日を1つ以上選んでください。選ばないと実行されません。</Hint>}
     </div>
   );
 }
@@ -497,8 +497,8 @@ export function SchedulePicker({ intervalMs, weekly, onInterval, onWeekly }: {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <div style={{ display: 'flex', gap: 4 }}>
-        <button type="button" style={tab(!weekly)} onClick={() => onWeekly(null)}>every…</button>
-        <button type="button" style={tab(!!weekly)} onClick={() => onWeekly(weekly ?? DEFAULT_WEEKLY)}>on days…</button>
+        <button type="button" style={tab(!weekly)} onClick={() => onWeekly(null)}>間隔で…</button>
+        <button type="button" style={tab(!!weekly)} onClick={() => onWeekly(weekly ?? DEFAULT_WEEKLY)}>曜日で…</button>
       </div>
       {weekly
         ? <WeeklyPicker value={weekly} onChange={onWeekly} />

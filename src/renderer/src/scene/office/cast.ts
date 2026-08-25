@@ -25,21 +25,21 @@ export interface CastMember {
 
 /** Selectable roster, in display order. */
 export const OFFICE_CAST: CastMember[] = [
-  { name: 'michael',  displayName: 'Michael',  shirt: '#5a6b8c', blurb: "World's best boss" },
-  { name: 'jim',      displayName: 'Jim',      shirt: '#6fa8dc', blurb: 'Salesman, prankster' },
-  { name: 'pam',      displayName: 'Pam',      shirt: '#9caf88', blurb: 'Receptionist, artist' },
-  { name: 'dwight',   displayName: 'Dwight',   shirt: '#b89b3e', blurb: 'Assistant (to the) RM' },
-  { name: 'kevin',    displayName: 'Kevin',    shirt: '#4a7ab5', blurb: 'Accounting' },
-  { name: 'angela',   displayName: 'Angela',   shirt: '#8a86a6', blurb: 'Head of accounting' },
-  { name: 'oscar',    displayName: 'Oscar',    shirt: '#7a4b6b', blurb: 'Accountant' },
-  { name: 'stanley',  displayName: 'Stanley',  shirt: '#8c5a4b', blurb: 'Sales, crossword' },
-  { name: 'phyllis',  displayName: 'Phyllis',  shirt: '#b08bbf', blurb: 'Sales' },
-  { name: 'andy',     displayName: 'Andy',     shirt: '#6fae6f', blurb: 'Cornell, a cappella' },
-  { name: 'kelly',    displayName: 'Kelly',    shirt: '#d16ba5', blurb: 'Customer service' },
-  { name: 'ryan',     displayName: 'Ryan',     shirt: '#3a3a44', blurb: 'The temp' },
-  { name: 'toby',     displayName: 'Toby',     shirt: '#9a8c5a', blurb: 'Human resources' },
-  { name: 'creed',    displayName: 'Creed',    shirt: '#6b7a4b', blurb: 'Quality assurance' },
-  { name: 'meredith', displayName: 'Meredith', shirt: '#b5544a', blurb: 'Supplier relations' },
+  { name: 'michael',  displayName: 'Michael',  shirt: '#5a6b8c', blurb: '世界一のボス' },
+  { name: 'jim',      displayName: 'Jim',      shirt: '#6fa8dc', blurb: '営業、いたずら好き' },
+  { name: 'pam',      displayName: 'Pam',      shirt: '#9caf88', blurb: '受付、絵描き' },
+  { name: 'dwight',   displayName: 'Dwight',   shirt: '#b89b3e', blurb: '地域マネージャー補佐' },
+  { name: 'kevin',    displayName: 'Kevin',    shirt: '#4a7ab5', blurb: '経理' },
+  { name: 'angela',   displayName: 'Angela',   shirt: '#8a86a6', blurb: '経理責任者' },
+  { name: 'oscar',    displayName: 'Oscar',    shirt: '#7a4b6b', blurb: '経理担当' },
+  { name: 'stanley',  displayName: 'Stanley',  shirt: '#8c5a4b', blurb: '営業、クロスワード' },
+  { name: 'phyllis',  displayName: 'Phyllis',  shirt: '#b08bbf', blurb: '営業' },
+  { name: 'andy',     displayName: 'Andy',     shirt: '#6fae6f', blurb: 'コーネル、アカペラ' },
+  { name: 'kelly',    displayName: 'Kelly',    shirt: '#d16ba5', blurb: 'カスタマーサービス' },
+  { name: 'ryan',     displayName: 'Ryan',     shirt: '#3a3a44', blurb: '臨時スタッフ' },
+  { name: 'toby',     displayName: 'Toby',     shirt: '#9a8c5a', blurb: '人事' },
+  { name: 'creed',    displayName: 'Creed',    shirt: '#6b7a4b', blurb: '品質保証' },
+  { name: 'meredith', displayName: 'Meredith', shirt: '#b5544a', blurb: 'サプライヤー担当' },
 ];
 
 export const CAST_BY_NAME: Record<OfficeCharacterName, CastMember> =

@@ -22,9 +22,9 @@ import { useStore } from '@/store/store';
 import { setupPrompt, type ToolStatus, type ToolKind } from '../../../shared/toolCatalog';
 
 const SECTIONS: { kind: ToolKind; title: string; blurb: string }[] = [
-  { kind: 'prerequisite', title: 'Prerequisites', blurb: 'The groundwork everything else builds on.' },
-  { kind: 'memory', title: 'Memory layer', blurb: 'Meaning-based recall across everything your agents learn.' },
-  { kind: 'engine', title: 'Agent engines', blurb: 'The CLIs your agents run on. You need whichever ones you actually use — not all of them.' }
+  { kind: 'prerequisite', title: '前提ツール', blurb: '他のすべての土台となるもの。' },
+  { kind: 'memory', title: 'メモリ層', blurb: 'エージェントが学んだすべてにまたがる、意味ベースの想起。' },
+  { kind: 'engine', title: 'エージェントエンジン', blurb: 'エージェントが動くCLI。実際に使うものだけが必要 — 全部は不要です。' }
 ];
 
 function StatusChip({ tool }: { tool: ToolStatus }) {
@@ -37,7 +37,7 @@ function StatusChip({ tool }: { tool: ToolStatus }) {
       boxShadow: `inset 0 0 0 1px ${ready ? 'var(--cth-mint)' : 'var(--cth-ink-300)'}`,
       color: 'var(--cth-ink-900)'
     }}>
-      {ready ? 'READY' : tool.essential ? 'MISSING' : 'NOT SET UP'}
+      {ready ? '準備完了' : tool.essential ? '未インストール' : '未設定'}
     </span>
   );
 }
@@ -60,7 +60,7 @@ function ToolRow({ tool }: { tool: ToolStatus }) {
           {tool.label.toUpperCase()}
         </span>
         {tool.essential && !tool.found && (
-          <span style={{ fontSize: 10, color: 'var(--cth-ink-500)', flexShrink: 0 }}>recommended</span>
+          <span style={{ fontSize: 10, color: 'var(--cth-ink-500)', flexShrink: 0 }}>推奨</span>
         )}
         <StatusChip tool={tool} />
       </div>
@@ -93,7 +93,7 @@ function ToolRow({ tool }: { tool: ToolStatus }) {
               background: 'var(--cth-cream-200)', boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
               border: 'none', cursor: 'pointer', color: 'var(--cth-ink-900)'
             }}
-          >{copied ? 'copied' : 'copy'}</button>
+          >{copied ? 'コピー済み' : 'コピー'}</button>
         </div>
       )}
 
@@ -105,7 +105,7 @@ function ToolRow({ tool }: { tool: ToolStatus }) {
               href={tool.docsUrl}
               onClick={(e) => { e.preventDefault(); void window.cth.openExternal(tool.docsUrl!); }}
               style={{ color: 'var(--cth-ink-700)' }}
-            >docs →</a>
+            >ドキュメント →</a>
           )}
         </div>
       )}
@@ -148,15 +148,15 @@ export function SetupPanel({ onDone }: { onDone?: () => void } = {}) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 200 }}>
-          <div style={{ fontFamily: 'var(--cth-font-display)', fontSize: 12 }}>PREREQUISITES</div>
+          <div style={{ fontFamily: 'var(--cth-font-display)', fontSize: 12 }}>前提ツール</div>
           <div style={{ fontSize: 12, color: 'var(--cth-ink-500)', marginTop: 2 }}>
             {tools === null
-              ? 'Checking what is installed…'
-              : `${readyCount} of ${tools.length} ready${missingEssential.length ? ` · ${missingEssential.length} recommended missing` : ''}`}
+              ? 'インストール状況を確認中…'
+              : `${tools.length}個中${readyCount}個が準備完了${missingEssential.length ? ` · 推奨ツールが${missingEssential.length}個不足` : ''}`}
           </div>
         </div>
         <PixelButton variant="ghost" size="md" onClick={() => void refresh()} disabled={busy}>
-          {busy ? 'checking…' : 're-check'}
+          {busy ? '確認中…' : '再チェック'}
         </PixelButton>
       </div>
 
@@ -169,8 +169,8 @@ export function SetupPanel({ onDone }: { onDone?: () => void } = {}) {
       }}>
         <div style={{ flex: 1, minWidth: 220, fontSize: 12, color: 'var(--cth-ink-700)', lineHeight: 1.5 }}>
           {missingEssential.length
-            ? <>Michael can install the {missingEssential.length} missing recommended {missingEssential.length === 1 ? 'tool' : 'tools'} for you. This fills in his dispatch box — nothing runs until you press dispatch.</>
-            : <>Everything recommended is installed. Individual engines above are optional — set up only the ones you use.</>}
+            ? <>不足している推奨ツール{missingEssential.length}個をMichaelがインストールできます。ディスパッチボックスに入力されるだけで、あなたがディスパッチを押すまで何も実行されません。</>
+            : <>推奨ツールはすべてインストール済みです。上の各エンジンは任意 — 使うものだけセットアップしてください。</>}
         </div>
         <PixelButton
           variant="primary"
@@ -179,7 +179,7 @@ export function SetupPanel({ onDone }: { onDone?: () => void } = {}) {
           disabled={missingEssential.length === 0}
         >
           <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>
-            <Icon name="sparkle" /> ask Michael to set up everything
+            <Icon name="sparkle" /> Michaelに一括セットアップを依頼
           </span>
         </PixelButton>
       </div>

@@ -156,13 +156,13 @@ function str(v: unknown): v is string { return typeof v === 'string'; }
 
 function capped(v: unknown, max: number, field: string, errors: string[], required = false): string | undefined {
   if (v === undefined || v === null) {
-    if (required) errors.push(`"${field}" is required`);
+    if (required) errors.push(`"${field}" は必須です`);
     return undefined;
   }
-  if (!str(v)) { errors.push(`"${field}" must be a string`); return undefined; }
+  if (!str(v)) { errors.push(`"${field}" は文字列である必要があります`); return undefined; }
   const t = v.trim();
-  if (required && !t) { errors.push(`"${field}" must not be empty`); return undefined; }
-  if (t.length > max) { errors.push(`"${field}" exceeds ${max} chars`); return undefined; }
+  if (required && !t) { errors.push(`"${field}" を空にすることはできません`); return undefined; }
+  if (t.length > max) { errors.push(`"${field}" が${max}文字を超えています`); return undefined; }
   return t || undefined;
 }
 
@@ -170,12 +170,12 @@ function capped(v: unknown, max: number, field: string, errors: string[], requir
 export function validateHireManifest(raw: unknown): HireValidation {
   const errors: string[] = [];
   if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
-    return { ok: false, errors: ['manifest must be a JSON object'] };
+    return { ok: false, errors: ['manifest は JSON オブジェクトである必要があります'] };
   }
   const o = raw as Record<string, unknown>;
 
   if (o.spec !== HIRE_SPEC_V1) {
-    return { ok: false, errors: [`unsupported spec "${String(o.spec)}" (expected "${HIRE_SPEC_V1}")`] };
+    return { ok: false, errors: [`サポートされていない spec "${String(o.spec)}"（"${HIRE_SPEC_V1}" が必要です）`] };
   }
 
   const name = capped(o.name, 40, 'name', errors, true);
@@ -185,7 +185,7 @@ export function validateHireManifest(raw: unknown): HireValidation {
   const accent = capped(o.accent, 24, 'accent', errors)?.toLowerCase();
   const model = capped(o.model, 80, 'model', errors);
   if (model !== undefined && !MODEL_RE.test(model)) {
-    errors.push('"model" contains disallowed characters (it goes onto the spawn command line; letters, digits, spaces and . _ - ( ) [ ] / : @ + only)');
+    errors.push('"model" に使用できない文字が含まれています（スポーンコマンドに渡されるため、英数字・空白・. _ - ( ) [ ] / : @ + のみ使用できます）');
   }
   const author = capped(o.author, 80, 'author', errors);
   const homepage = capped(o.homepage, 300, 'homepage', errors);
@@ -194,13 +194,13 @@ export function validateHireManifest(raw: unknown): HireValidation {
   if (o.provider !== undefined) {
     const p = str(o.provider) ? (o.provider === 'agy' ? 'antigravity' : o.provider) : o.provider;
     if (str(p) && PROVIDERS.includes(p)) provider = p as HireProvider;
-    else errors.push(`"provider" must be one of ${PROVIDERS.join(', ')} (or "agy")`);
+    else errors.push(`"provider" は ${PROVIDERS.join(', ')} のいずれか（または "agy"）である必要があります`);
   }
 
   let commandFlags: string[] | undefined;
   if (o.commandFlags !== undefined) {
     if (!Array.isArray(o.commandFlags) || o.commandFlags.length > 16) {
-      errors.push('"commandFlags" must be an array of at most 16 items');
+      errors.push('"commandFlags" は最大16項目の配列である必要があります');
     } else {
       commandFlags = [];
       // DEFAULT-DENY: every flag-shaped token must name an allowlisted safe flag;
@@ -210,19 +210,19 @@ export function validateHireManifest(raw: unknown): HireValidation {
       for (let i = 0; i < o.commandFlags.length; i++) {
         const f = o.commandFlags[i];
         if (!str(f) || !FLAG_RE.test(f)) {
-          errors.push(`commandFlags entry ${JSON.stringify(f)} is not a safe flag token`);
+          errors.push(`commandFlags の項目 ${JSON.stringify(f)} は安全なフラグトークンではありません`);
           valueAllowed = false;
           continue;
         }
         // The FIRST entry must be flag-shaped (defense in depth; kept explicit).
         if (i === 0 && !f.startsWith('-')) {
-          errors.push('"commandFlags" must start with a flag (e.g. "--model")');
+          errors.push('"commandFlags" はフラグで始まる必要があります（例: "--model"）');
           valueAllowed = false;
           continue;
         }
         if (f.startsWith('-')) {
           if (!isSafeFlag(f)) {
-            errors.push(`commandFlags entry ${JSON.stringify(f)} is not in the shared-hire safe-flag list — for safety a shared hire may only embed known-harmless flags (${[...SAFE_FLAG_NAMES].join(', ')}). If you need this flag, add it by hand in the command field after importing.`);
+            errors.push(`commandFlags の項目 ${JSON.stringify(f)} は共有採用の安全フラグ一覧に含まれていません — 安全のため、共有採用に埋め込めるのは無害なことが保証されたフラグのみです（${[...SAFE_FLAG_NAMES].join(', ')}）。このフラグが必要な場合は、インポート後にコマンド欄へ手動で追加してください。`);
             valueAllowed = false;
             continue;
           }
@@ -230,7 +230,7 @@ export function validateHireManifest(raw: unknown): HireValidation {
           valueAllowed = !f.includes('='); // a `--flag value` form may take one value next
         } else {
           if (!valueAllowed) {
-            errors.push(`commandFlags entry ${JSON.stringify(f)} is not allowed here (a value may only follow an allowed flag such as "--model")`);
+            errors.push(`commandFlags の項目 ${JSON.stringify(f)} をこの位置に置くことはできません（値を置けるのは "--model" など許可されたフラグの直後だけです）`);
             continue;
           }
           commandFlags.push(f);
@@ -244,7 +244,7 @@ export function validateHireManifest(raw: unknown): HireValidation {
   let capabilities: string[] | undefined;
   if (o.capabilities !== undefined) {
     if (!Array.isArray(o.capabilities) || o.capabilities.length > 12) {
-      errors.push('"capabilities" must be an array of at most 12 items');
+      errors.push('"capabilities" は最大12項目の配列である必要があります');
     } else {
       capabilities = o.capabilities.filter(str).map(c => c.trim().slice(0, 40)).filter(Boolean);
       if (capabilities.length === 0) capabilities = undefined;
@@ -254,27 +254,27 @@ export function validateHireManifest(raw: unknown): HireValidation {
   let isolate: boolean | undefined;
   if (o.isolate !== undefined) {
     if (typeof o.isolate === 'boolean') isolate = o.isolate;
-    else errors.push('"isolate" must be a boolean');
+    else errors.push('"isolate" は真偽値である必要があります');
   }
 
   let tokenCap: number | undefined;
   if (o.tokenCap !== undefined) {
     if (typeof o.tokenCap === 'number' && Number.isInteger(o.tokenCap) && o.tokenCap > 0 && o.tokenCap <= MAX_AGENT_TOKEN_CAP) tokenCap = o.tokenCap;
-    else errors.push('"tokenCap" must be a positive integer (max 1e10)');
+    else errors.push('"tokenCap" は正の整数である必要があります（最大 1e10）');
   }
 
   // skills — allowlist: references into BUNDLED_SKILL_IDS only; max 8
   let skills: string[] | undefined;
   if (o.skills !== undefined) {
     if (!Array.isArray(o.skills) || o.skills.length > 8) {
-      errors.push('"skills" must be an array of at most 8 items');
+      errors.push('"skills" は最大8項目の配列である必要があります');
     } else {
       skills = [];
       for (const s of o.skills) {
-        if (!str(s) || !s.trim()) { errors.push('"skills" entries must be non-empty strings'); continue; }
+        if (!str(s) || !s.trim()) { errors.push('"skills" の項目は空でない文字列である必要があります'); continue; }
         const id = s.trim();
         if (!BUNDLED_SKILL_IDS.has(id)) {
-          errors.push(`"skills" entry ${JSON.stringify(id)} is not a bundled skill id — a hire may only reference the built-in safe skills (${[...BUNDLED_SKILL_IDS].join(', ')})`);
+          errors.push(`"skills" の項目 ${JSON.stringify(id)} はバンドルされたスキルIDではありません — 採用で参照できるのは内蔵の安全なスキルのみです（${[...BUNDLED_SKILL_IDS].join(', ')}）`);
         } else {
           skills.push(id);
         }
@@ -288,15 +288,15 @@ export function validateHireManifest(raw: unknown): HireValidation {
   const consentRequired: string[] = [];
   if (o.mcpServers !== undefined) {
     if (!Array.isArray(o.mcpServers) || o.mcpServers.length > 8) {
-      errors.push('"mcpServers" must be an array of at most 8 items');
+      errors.push('"mcpServers" は最大8項目の配列である必要があります');
     } else {
       mcpServers = [];
       for (const s of o.mcpServers) {
-        if (!str(s) || !s.trim()) { errors.push('"mcpServers" entries must be non-empty strings'); continue; }
+        if (!str(s) || !s.trim()) { errors.push('"mcpServers" の項目は空でない文字列である必要があります'); continue; }
         const id = s.trim();
         const entry = mcpCatalogEntry(id);
         if (!entry) {
-          errors.push(`"mcpServers" entry ${JSON.stringify(id)} is not a known catalog id — a hire may only reference built-in MCP servers`);
+          errors.push(`"mcpServers" の項目 ${JSON.stringify(id)} は既知のカタログIDではありません — 採用で参照できるのは内蔵のMCPサーバーのみです`);
         } else {
           mcpServers.push(id);
           if (entry.tier !== 'safe-readonly') consentRequired.push(id);
@@ -306,7 +306,7 @@ export function validateHireManifest(raw: unknown): HireValidation {
     }
   }
 
-  if (homepage && !homepage.startsWith('https://')) errors.push('"homepage" must be https');
+  if (homepage && !homepage.startsWith('https://')) errors.push('"homepage" は https である必要があります');
 
   if (errors.length > 0 || !name) return { ok: false, errors };
   return {

@@ -14,12 +14,12 @@ import type { ThemeId } from '@/scene/office/themeRegistry';
 // whole pipeline (modal → delete cast → persist → re-seat) is exercisable now.
 interface ThemeMeta { id: ThemeId; label: string; blurb: string; built: boolean; swatch: string; }
 const THEME_META: ThemeMeta[] = [
-  { id: 'office',        label: 'The Office',         blurb: 'Dunder Mifflin — the original floor', built: true,  swatch: '#6b5a4a' },
-  { id: 'friends',       label: 'Friends',            blurb: 'Central Perk coffee house',           built: false, swatch: '#9a5a32' },
-  { id: 'brooklyn99',    label: 'Brooklyn Nine-Nine', blurb: 'The 99th precinct bullpen',           built: true,  swatch: '#3a5a7a' },
-  { id: 'siliconvalley', label: 'Silicon Valley',     blurb: 'The Hacker Hostel',                   built: false, swatch: '#4a6a4a' },
-  { id: 'got',           label: 'Game of Thrones',    blurb: 'The Red Keep throne room',            built: false, swatch: '#6a2630' },
-  { id: 'hogwarts',      label: 'Harry Potter',       blurb: 'Hogwarts great hall',                 built: false, swatch: '#39305a' },
+  { id: 'office',        label: 'The Office',         blurb: 'Dunder Mifflin — 元祖のフロア', built: true,  swatch: '#6b5a4a' },
+  { id: 'friends',       label: 'Friends',            blurb: 'Central Perkのコーヒーハウス',           built: false, swatch: '#9a5a32' },
+  { id: 'brooklyn99',    label: 'Brooklyn Nine-Nine', blurb: '99分署のデスクエリア',           built: true,  swatch: '#3a5a7a' },
+  { id: 'siliconvalley', label: 'Silicon Valley',     blurb: 'Hacker Hostel',                   built: false, swatch: '#4a6a4a' },
+  { id: 'got',           label: 'Game of Thrones',    blurb: '赤の王城の玉座の間', built: false, swatch: '#6a2630' },
+  { id: 'hogwarts',      label: 'Harry Potter',       blurb: 'ホグワーツの大広間',                 built: false, swatch: '#39305a' },
 ];
 
 /** Settings "Office Theme" section: an experimental flag toggle + a 6-card
@@ -78,9 +78,9 @@ export function OfficeThemePicker({ config }: { config: HarnessConfig }) {
       setCurrent(id);
       setOfficeTheme(id); // → OfficeFloor rebuilds the scene on the new map/cast
       const meta = THEME_META.find((t) => t.id === id);
-      if (meta && !meta.built) setNote(`${meta.label} isn't built yet — showing the office for now.`);
+      if (meta && !meta.built) setNote(`${meta.label}は未実装です — 現在はオフィスを表示しています。`);
     } catch (e) {
-      setNote(`Switch aborted — a terminal wouldn't close: ${e instanceof Error ? e.message : String(e)}`);
+      setNote(`切り替えを中止しました — ターミナルが閉じませんでした: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
       setBusy(false);
       setPending(null);
@@ -95,21 +95,21 @@ export function OfficeThemePicker({ config }: { config: HarnessConfig }) {
         fontFamily: 'var(--cth-font-display)', fontSize: 8, lineHeight: '12px',
         color: 'var(--cth-ink-500)', textTransform: 'uppercase', marginBottom: 10
       }}>
-        Office Theme
+        オフィステーマ
       </div>
 
       {/* Experimental feature flag */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <span style={{ fontSize: 13, lineHeight: '20px', color: 'var(--cth-ink-900)' }}>
-            TV-show office themes <span style={{ color: 'var(--cth-ink-500)' }}>(experimental)</span>
+            TVショーのオフィステーマ <span style={{ color: 'var(--cth-ink-500)' }}>(実験的)</span>
           </span>
           <span style={{ fontSize: 12, lineHeight: '16px', color: 'var(--cth-ink-500)' }}>
-            Re-skin the pixel office as a TV show. Switching starts a fresh cast.
+            ピクセルオフィスをTVショー風に変更します。切り替えるとキャストが新しくなります。
           </span>
         </div>
         <PixelButton variant={enabled ? 'primary' : 'secondary'} size="sm" onClick={toggleFlag}>
-          {enabled ? 'on' : 'off'}
+          {enabled ? 'オン' : 'オフ'}
         </PixelButton>
       </div>
 
@@ -144,12 +144,12 @@ export function OfficeThemePicker({ config }: { config: HarnessConfig }) {
                     </span>
                     {isCurrent && (
                       <span style={{ fontFamily: 'var(--cth-font-display)', fontSize: 7, color: 'var(--cth-mint)', textTransform: 'uppercase' }}>
-                        current
+                        使用中
                       </span>
                     )}
                     {!t.built && !isCurrent && (
                       <span style={{ fontFamily: 'var(--cth-font-display)', fontSize: 7, color: 'var(--cth-ink-500)', textTransform: 'uppercase' }}>
-                        soon
+                        近日公開
                       </span>
                     )}
                   </span>
@@ -194,7 +194,7 @@ function ThemeSwitchConfirmModal({
 }) {
   const n = agents.length;
   const working = agents.filter((a) => a.status && !['idle', 'success', 'error'].includes(a.status)).length;
-  const godName = useStore.getState().agents.find((a) => a.isGod)?.name ?? 'the orchestrator';
+  const godName = useStore.getState().agents.find((a) => a.isGod)?.name ?? 'オーケストレーター';
 
   return (
     <div
@@ -205,7 +205,7 @@ function ThemeSwitchConfirmModal({
       }}
     >
       <div onClick={(e) => e.stopPropagation()} style={{ width: 480, maxWidth: '92vw' }}>
-        <PixelPanel variant="dialog" title={`SWITCH OFFICE TO "${label.toUpperCase()}"?`} noPadding>
+        <PixelPanel variant="dialog" title={`オフィスを「${label.toUpperCase()}」に切り替えますか？`} noPadding>
           <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
               <div style={{
@@ -221,28 +221,28 @@ function ThemeSwitchConfirmModal({
                   fontFamily: 'var(--cth-font-display)', fontSize: 12, lineHeight: '20px',
                   color: 'var(--cth-ink-900)', marginBottom: 4,
                 }}>
-                  STARTS A FRESH CAST
+                  キャストを一新します
                 </div>
                 <div style={{ fontSize: 15, lineHeight: '22px', color: 'var(--cth-ink-700)' }}>
-                  Your <strong>{n} current agent{n === 1 ? '' : 's'}</strong> will be deleted — their terminals close and any in-progress work stops. Only <strong>{godName}</strong> carries over.
+                  現在の<strong>{n}人のエージェント</strong>は削除されます — ターミナルが閉じられ、進行中の作業も停止します。引き継がれるのは<strong>{godName}</strong>のみです。
                   {working > 0 && (
                     <span style={{ display: 'block', marginTop: 6, color: 'var(--cth-coral)' }}>
-                      ⚠ {working} agent{working === 1 ? ' is' : 's are'} still working.
+                      ⚠ {working}人のエージェントが作業中です。
                     </span>
                   )}
                 </div>
                 <div style={{ fontSize: 12, lineHeight: '16px', color: 'var(--cth-ink-500)', marginTop: 8 }}>
-                  This can't be undone.
+                  この操作は元に戻せません。
                 </div>
               </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <PixelButton variant="secondary" size="md" onClick={onCancel} disabled={busy}>
-                cancel
+                キャンセル
               </PixelButton>
               <PixelButton variant="destructive" size="md" onClick={onConfirm} disabled={busy}>
-                {busy ? 'switching…' : `delete ${n} & switch`}
+                {busy ? '切り替え中…' : `${n}件を削除して切り替え`}
               </PixelButton>
             </div>
           </div>

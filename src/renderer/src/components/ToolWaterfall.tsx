@@ -28,16 +28,16 @@ export function ToolWaterfall({ agentId }: { agentId: string }) {
           <>
             <span><strong>${sample.usd.toFixed(2)}</strong></span>
             <span style={{ color: 'var(--cth-ink-700)' }}>
-              fresh {fmtTokens(sample.input + sample.cacheCreation)}t
+              新規 {fmtTokens(sample.input + sample.cacheCreation)}t
             </span>
             <span style={{ color: 'var(--cth-sky)' }}>
-              cache {fmtTokens(sample.cacheRead)}t ({Math.round(cacheFraction(sample) * 100)}%)
+              キャッシュ {fmtTokens(sample.cacheRead)}t ({Math.round(cacheFraction(sample) * 100)}%)
             </span>
             {sample.model && <span style={{ color: 'var(--cth-ink-500)' }}>{sample.model}</span>}
-            <span style={{ color: 'var(--cth-ink-500)' }}>{fmtTokens(totalTokens(sample))}t total</span>
+            <span style={{ color: 'var(--cth-ink-500)' }}>合計 {fmtTokens(totalTokens(sample))}t</span>
           </>
         ) : (
-          <span style={{ color: 'var(--cth-ink-500)' }}>no live telemetry yet — spawn / respawn this agent to instrument it</span>
+          <span style={{ color: 'var(--cth-ink-500)' }}>テレメトリ未取得 — このエージェントをスポーン/再スポーンすると計測されます</span>
         )}
       </div>
 
@@ -45,7 +45,7 @@ export function ToolWaterfall({ agentId }: { agentId: string }) {
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 10 }}>
         {recent.length === 0 && (
           <div style={{ fontSize: 12, color: 'var(--cth-ink-500)' }}>
-            No tool calls captured yet. Each tool the agent runs appears here with its real duration.
+            ツール呼び出しはまだありません。エージェントが実行した各ツールが実際の所要時間つきで表示されます。
           </div>
         )}
         {recent.map((s, i) => {
@@ -58,7 +58,7 @@ export function ToolWaterfall({ agentId }: { agentId: string }) {
               </span>
               <div style={{ flex: 1, height: 12, background: 'var(--cth-paper-100)', boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)' }}>
                 <div
-                  title={s.error ? `${s.tool}: ${s.error}` : `${s.tool} · ${s.durationMs}ms · ${ok ? 'ok' : 'failed'}`}
+                  title={s.error ? `${s.tool}: ${s.error}` : `${s.tool} · ${s.durationMs}ms · ${ok ? '成功' : '失敗'}`}
                   style={{ width: `${pct}%`, height: '100%', background: ok ? 'var(--cth-mint)' : 'var(--cth-coral)' }}
                 />
               </div>

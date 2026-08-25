@@ -29,8 +29,8 @@ export function ContextSection({ onSummary }: { onSummary?: (s: string) => void 
 
   useEffect(() => {
     if (!cfg) return;
-    const on = [cfg.compact.enabled ? 'compact' : null, cfg.clear.enabled ? 'clear' : null].filter(Boolean);
-    onSummary?.(on.length ? on.join(' + ') : 'both off');
+    const on = [cfg.compact.enabled ? '圧縮' : null, cfg.clear.enabled ? 'クリア' : null].filter(Boolean);
+    onSummary?.(on.length ? on.join(' + ') : '両方オフ');
   }, [cfg, onSummary]);
 
   // Optimistic + debounced: the controls answer instantly, and a burst of typing
@@ -45,37 +45,35 @@ export function ContextSection({ onSummary }: { onSummary?: (s: string) => void 
     commit({ ...cfg, [key]: { ...cfg[key], ...fields } });
   };
 
-  if (!cfg) return <Muted>One sec…</Muted>;
+  if (!cfg) return <Muted>読み込み中…</Muted>;
 
   return (
     <>
       <Muted>
-        A rule fires only when both halves agree: the gap since its last run has passed, AND that
-        agent&apos;s context is at least as full as the bar. A bar of 0% means the clock alone.
+        ルールが発火するのは、両方の条件が揃ったときだけです。前回の実行からの間隔が経過しており、かつそのエージェントのコンテキストがバーの値以上に埋まっていること。バーが0%なら時間だけで発火します。
       </Muted>
       <div style={{ height: 8 }} />
 
       <RuleCard
-        title="Compact"
-        blurb="Summarises the context so the thread keeps going."
+        title="圧縮"
+        blurb="コンテキストを要約してスレッドを続けられるようにします。"
         rule={cfg.compact}
-        messageLabel="EXTRA FOCUS"
-        messageHint="Appended to the provider's compaction command. Empty sends the bare command."
-        messagePlaceholder="What the summary must keep…"
+        messageLabel="追加指示"
+        messageHint="プロバイダーの圧縮コマンドに追記されます。空ならコマンドのみ送信します。"
+        messagePlaceholder="要約に必ず残す内容…"
         onPatch={(fields) => patch('compact', fields)}
       />
 
       <RuleCard
-        title="Clear"
-        blurb="Discards the context. Nothing is summarised."
+        title="クリア"
+        blurb="コンテキストを破棄します。要約は行われません。"
         rule={cfg.clear}
-        messageLabel="COMMAND"
-        messageHint="Sent literally. Empty sends the bare clear command."
+        messageLabel="コマンド"
+        messageHint="入力した内容がそのまま送信されます。空なら素のコマンドを送ります。"
         messagePlaceholder="/clear"
         caution={
           <>
-            Clearing throws context away — it is not a smaller version of compaction. An agent
-            mid-task forgets what it was doing. Leave this off unless you keep context another way.
+            クリアはコンテキストを完全に破棄します。圧縮の縮小版ではありません。タスク実行中のエージェントは何をしていたか忘れます。別の方法でコンテキストを保持していない限り、オフのままにしてください。
           </>
         }
         onPatch={(fields) => patch('clear', fields)}
@@ -111,13 +109,13 @@ function RuleCard({ title, blurb, rule, messageLabel, messageHint, messagePlaceh
       {!open && (
         <Hint>
           {rule.enabled
-            ? <>Every {fmtInterval(rule.everyMs)}, once context passes {rule.minContextPct}%.</>
-            : <>Off.</>}
+            ? <>{fmtInterval(rule.everyMs)}ごと、コンテキストが{rule.minContextPct}%を超えると実行されます。</>
+            : <>オフ。</>}
         </Hint>
       )}
       {open && (
         <div style={{ marginTop: 4 }}>
-          <Field label="NO SOONER THAN EVERY">
+          <Field label="実行間隔（最短）">
             {/* Main clamps a context cadence to 1 minute … 24 hours, so the
                 picker offers exactly that range and never labels a value it
                 cannot actually store. */}
@@ -128,16 +126,16 @@ function RuleCard({ title, blurb, rule, messageLabel, messageHint, messagePlaceh
               maxMs={86_400_000}
             />
           </Field>
-          <Field label="CONTEXT BAR">
+          <Field label="コンテキストバー">
             <PctField value={rule.minContextPct} onChange={(minContextPct) => onPatch({ minContextPct })} />
-            <Hint>How full the window must be before this may run. 0% = time alone.</Hint>
+            <Hint>このルールが実行されるために必要な、ウィンドウの最低充填率。0%なら時間だけで発火します。</Hint>
           </Field>
-          <Field label="BAR ON BIG WINDOWS">
+          <Field label="大きいウィンドウでのバー">
             <PctField
               value={rule.minContextPctLargeWindow}
               onChange={(minContextPctLargeWindow) => onPatch({ minContextPctLargeWindow })}
             />
-            <Hint>Used on ~1M-token windows, where a smaller slice is still an enormous amount of text.</Hint>
+            <Hint>約100万トークンのウィンドウで使用されます。小さな割合でも膨大なテキスト量に相当します。</Hint>
           </Field>
           <Field label={messageLabel}>
             <textarea

@@ -223,7 +223,7 @@ export class HookServer {
       // path bypassed terminal-draft/HITL safety and could spend credits while a
       // user was answering a question. Inbox files remain durable; the renderer
       // wakes the agent later through its guarded idle-only delivery path.
-      this.notify(agentId ?? 'Agent', 'finished — idle');
+      this.notify(agentId ?? 'エージェント', '完了 — アイドル');
       this.emit(agentId, event, p);
       return {};
     }
@@ -300,7 +300,7 @@ export class HookServer {
       (p.notification_type === 'idle' ||
         (p.message ?? '').toLowerCase().includes('waiting for your input'))
     ) {
-      this.notify(agentId ?? 'Agent', p.message ?? 'needs your attention');
+      this.notify(agentId ?? 'エージェント', p.message ?? '確認が必要です');
     }
 
     // Forward everything else to the renderer so avatars reflect real activity.

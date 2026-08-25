@@ -81,42 +81,42 @@ const CHEER_MIN_BUSY_MS = 60_000;
 
 /** What an avatar mutters per errand, picked at random. */
 const ERRAND_THOUGHTS: Record<ErrandKind, readonly string[]> = {
-  water:     ['watering the plants 🌿', 'giving the plants a drink', 'they grow so fast'],
-  window:    ['letting some air in 🍃', 'a bit of fresh air', 'nice breeze today'],
-  dispenser: ['getting some water 💧', 'hydration break', 'staying sharp'],
-  fridge:    ['anything good in the fridge?', 'who took my yogurt?', 'just looking…'],
-  shelf:     ['checking out the shelf 📚', 'anything new in here?', 'so much good stuff'],
-  bin:       ['out with the scrap paper 🗑️', 'desk cleanup day', 'tidying up a little'],
-  smoke:     ['the floor runs itself 🚬', 'boss break.', 'thinking big thoughts 🚬', 'I DECLARE… a break']
+  water:     ['植物に水やり 🌿', '植物にお水をあげる', '育つのが早いなあ'],
+  window:    ['換気しよう 🍃', '新鮮な空気', '今日はいい風'],
+  dispenser: ['お水を一杯 💧', '水分補給', '頭を冴えさせて'],
+  fridge:    ['冷蔵庫に何かあるかな？', '私のヨーグルト誰が食べた？', 'ちょっと見てるだけ…'],
+  shelf:     ['棚を物色中 📚', '新しいのないかな？', 'いいものばかり'],
+  bin:       ['メモくずを捨てる 🗑️', '机まわりを掃除', 'ちょっとずつ片付け'],
+  smoke:     ['オフィスは勝手に回る 🚬', 'ボスの休憩だ。', '大きな構想を練ってる 🚬', '宣言します…休憩を！']
 };
 
 /** What workers blurt out when the boss walks by — performative excellence.
  *  `{done}` is replaced with that worker's REAL done-task count. */
 const SUCK_UP_LINES = [
-  'already shipped {done} tasks, Michael. raise? 🥺',
-  '{done} tasks done this week, boss!',
-  'great vision as always, boss!',
-  'I was JUST about to do exactly that!',
-  'love the tie today, Michael',
-  'working hard, boss! 💪',
-  'best boss ever. genuinely.'
+  '{done}件も完了させました、Michael。昇給を… 🥺',
+  '今週{done}件完了です、ボス！',
+  'いつも見通しが鋭いですね、ボス！',
+  'まさにそれをやろうとしてたところです！',
+  '今日のネクタイ素敵です、Michael',
+  '頑張ってます、ボス！💪',
+  '史上最高のボス。本心です。'
 ] as const;
 
 /** What they actually say once he's out of earshot. */
 const GOSSIP_LINES = [
-  'has he ever actually written code?',
-  "another 'quick sync' that took an hour…",
-  "'world's best boss' — he bought that mug himself",
-  'he pinned MY task as his idea',
-  'the cigar smell, honestly…',
-  'he watered the plant. ONE plant. his own.',
-  "did you hear him? 'I DECLARE… a break'"
+  '彼、実際にコードを書いたことあるの？',
+  'また1時間かかった「軽いすり合わせ」…',
+  '「世界一のボス」— そのマグカップ、自分で買ったやつだよ',
+  '私のタスクを自分のアイデア扱いした',
+  '葉巻の匂い、ほんとにもう…',
+  '水やりしてたんだ。1鉢だけ。自分の鉢を。',
+  '聞いた？ 「宣言します…休憩を！」'
 ] as const;
 
 /** Lines an avatar throws over its shoulder right after finishing a task. */
 const CHEER_LINES = [
-  'done! ✔', 'nailed it', "that's a wrap", 'ship it 🚀', 'another one done',
-  'crushed it', 'in the books'
+  'できた！ ✔', '完璧', 'ひと段落', 'リリース 🚀', 'また一件完了',
+  '余裕だった', 'バッチリ'
 ] as const;
 
 /** Load a texture via an <img> element. Unlike Pixi's Assets.load(), this
@@ -263,9 +263,9 @@ export function OfficeFloor() {
             'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;' +
             'padding:24px;color:#ffd0b5;font-family:monospace;font-size:13px;text-align:center;white-space:pre-wrap;';
           note.textContent =
-            'The office floor lost its GPU context.\n\n' +
-            'Too many terminals are using the GPU at once.\n' +
-            'Close a few agent terminals, or restart the app, to bring it back.';
+            'オフィスのGPUコンテキストが失われました。\n\n' +
+            '同時に多くのターミナルがGPUを使用しています。\n' +
+            'エージェントのターミナルをいくつか閉じるか、アプリを再起動すると復旧します。';
           host.appendChild(note);
         }
       });
@@ -527,7 +527,7 @@ export function OfficeFloor() {
           if (phase === 'toTray') {
             if (cleanCups <= 0) {
               // Rack ran dry — every mug is parked on someone's desk.
-              c.showThought('no clean mugs left…');
+              c.showThought('きれいなマグがない…');
               rt.run = { phase: 'placing', timer: -1 }; // brief sulk, then move on
               return;
             }
@@ -536,11 +536,11 @@ export function OfficeFloor() {
             c.setCarryingCup(true);
             rt.run = { phase: 'taking', timer: 0 };
           } else if (phase === 'toMachine') {
-            c.showThought('brewing a fresh one ☕');
+            c.showThought('淹れたてを抽出中 ☕');
             machineBusy = 2.6;
             rt.run = { phase: 'brewing', timer: 0 };
           } else if (phase === 'toSink') {
-            c.showThought('washing the mug');
+            c.showThought('マグを洗ってます');
             sinkBusy = 2.4;
             rt.run = { phase: 'washing', timer: 0 };
           } else {
@@ -1341,16 +1341,16 @@ export function OfficeFloor() {
             let mv: BoardMove | null = null;
             if (!old && (t.status === 'todo' || t.status === 'blocked')) {
               const actor = actorFor(undefined, true);
-              if (actor) mv = { kind: 'pin', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS[t.status], stand: t.status === 'blocked' ? PIN_STAND : TAKE_STAND, thought: 'pinning a new task 📌' };
+              if (actor) mv = { kind: 'pin', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS[t.status], stand: t.status === 'blocked' ? PIN_STAND : TAKE_STAND, thought: '新しいタスクをピン留め 📌' };
             } else if (oldS !== 'doing' && t.status === 'doing') {
               const actor = actorFor(t.assignee, false);
-              if (actor && actor === t.assignee) mv = { kind: 'take', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.doing, stand: TAKE_STAND, thought: 'grabbing my task' };
+              if (actor && actor === t.assignee) mv = { kind: 'take', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.doing, stand: TAKE_STAND, thought: 'タスクを受け取ります' };
             } else if (t.status === 'done' && oldS !== 'done') {
               const actor = actorFor(old?.assignee ?? t.assignee, false);
-              if (actor) mv = { kind: 'archive', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.done, stand: ARCHIVE_STAND, thought: 'filing it as done ✔' };
+              if (actor) mv = { kind: 'archive', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.done, stand: ARCHIVE_STAND, thought: '完了をファイリング ✔' };
             } else if (t.status === 'blocked' && oldS !== 'blocked') {
               const actor = actorFor(old?.assignee ?? t.assignee, false);
-              if (actor) mv = { kind: 'pin', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.blocked, stand: PIN_STAND, thought: 'this one is stuck 😤' };
+              if (actor) mv = { kind: 'pin', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.blocked, stand: PIN_STAND, thought: 'これが詰まってる 😤' };
             }
             if (mv && !busyActors.has(mv.actorId) && !moveQueue.some((q) => q.actorId === mv!.actorId)) {
               if (!visualTasks.has(t.id) && mv.kind !== 'pin') visualTasks.set(t.id, { status: oldS ?? 'todo', assignee: old?.assignee });
@@ -1513,11 +1513,11 @@ export function OfficeFloor() {
             // agents that need the human).
             c.setStatusGlyph('none');
             c.sitAtDesk(false);
-            c.showThought(liveActivity(agent, 'waiting'), agent.carrying);
+            c.showThought(liveActivity(agent, '待機中'), agent.carrying);
             break;
           case 'blocked':
             c.setStatusGlyph('blocked');
-            c.showThought(liveActivity(agent, 'needs you'));
+            c.showThought(liveActivity(agent, 'あなたの判断が必要です'));
             c.walkToTile(rt.waitTile);
             break;
           case 'compacting':
@@ -1525,14 +1525,14 @@ export function OfficeFloor() {
             // so an agent compacting context reads as busy rather than frozen.
             c.setStatusGlyph('compacting');
             c.sitAtDesk(true);
-            c.showThought(liveActivity(agent, 'compacting context'));
+            c.showThought(liveActivity(agent, 'コンテキスト圧縮中'));
             break;
           case 'looping':
             // #5C — circuit-breaker armed (#6): hold position with the spinning
             // warning glyph so a runaway agent is visible on the floor.
             c.setStatusGlyph('looping');
             c.sitAtDesk(false);
-            c.showThought(liveActivity(agent, 'looping — breaker armed'));
+            c.showThought(liveActivity(agent, 'ループ検知 — ブレーカー作動中'));
             break;
           case 'success':
             c.setStatusGlyph('success');
@@ -1554,14 +1554,14 @@ export function OfficeFloor() {
           default:
             c.setStatusGlyph('none');
             // The god runs the floor from its desk; everyone else wanders when idle.
-            if (agent.isGod) { c.sitAtDesk(true); c.showThought(liveActivity(agent, 'running the floor')); }
+            if (agent.isGod) { c.sitAtDesk(true); c.showThought(liveActivity(agent, 'オフィスを統率中')); }
             else if (finishedWork) {
               // Task done → a quick cheer on the spot, then back to roaming.
               c.startWandering();
               c.cheer();
               c.showThought(CHEER_LINES[Math.floor(Math.random() * CHEER_LINES.length)]);
             }
-            else { c.startWandering(); c.showThought(liveActivity(agent, 'idle')); }
+            else { c.startWandering(); c.showThought(liveActivity(agent, 'アイドル')); }
             break;
         }
       };
@@ -1719,7 +1719,7 @@ export function OfficeFloor() {
       banner.style.cssText =
         'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;' +
         'padding:24px;color:#ffd0b5;font-family:monospace;font-size:13px;text-align:center;white-space:pre-wrap;';
-      banner.textContent = 'OfficeFloor failed to start:\n' + (err?.stack || err?.message || String(err));
+      banner.textContent = 'オフィスの起動に失敗しました:\n' + (err?.stack || err?.message || String(err));
       host.appendChild(banner);
     });
 

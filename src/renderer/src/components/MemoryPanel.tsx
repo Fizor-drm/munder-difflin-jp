@@ -17,8 +17,8 @@ type ModelId = 'minilm' | 'embeddinggemma';
 // Plain-language framing of each model — lead with the benefit the user actually
 // chooses between, not the model's codename.
 const MODELS: { id: ModelId; title: string; detail: string }[] = [
-  { id: 'minilm',         title: 'Fast',         detail: 'English only · ~90 MB' },
-  { id: 'embeddinggemma', title: 'Multilingual', detail: 'all languages · ~300 MB' },
+  { id: 'minilm',         title: '高速',     detail: '英語のみ · 約90MB' },
+  { id: 'embeddinggemma', title: '多言語',   detail: '全言語対応 · 約300MB' },
 ];
 
 /**
@@ -53,23 +53,23 @@ export function MemoryPanel() {
     setResult('');
     try {
       const res = await window.cth.searchMemory(query.trim());
-      setResult(res.ok ? (res.output || 'Nothing matched yet.') : `Couldn't search: ${res.error}`);
+      setResult(res.ok ? (res.output || '一致するものはまだありません。') : `検索できませんでした: ${res.error}`);
     } finally {
       setBusy(false);
     }
   };
 
   const active = status?.active;
-  const pill = active ? `🧠 memory · ${status?.model}` : '🧠 memory';
+  const pill = active ? `🧠 メモリ · ${status?.model}` : '🧠 メモリ';
 
   // One clear state line: is memory working, off, or not set up?
   const state: { dot: string; label: string } = !status?.available
-    ? { dot: 'var(--cth-coral)', label: 'Not set up' }
+    ? { dot: 'var(--cth-coral)', label: '未セットアップ' }
     : !status.enabled
-      ? { dot: 'var(--cth-ink-500)', label: 'Off' }
+      ? { dot: 'var(--cth-ink-500)', label: 'オフ' }
       : status.initialized
-        ? { dot: 'var(--cth-mint)', label: 'On · ready' }
-        : { dot: 'var(--cth-lemon)', label: 'On · getting ready…' };
+        ? { dot: 'var(--cth-mint)', label: 'オン · 準備完了' }
+        : { dot: 'var(--cth-lemon)', label: 'オン · 準備中…' };
 
   const canSearch = !!status?.available && !!status?.enabled;
 
@@ -78,7 +78,7 @@ export function MemoryPanel() {
       {!open ? (
         <button
           onClick={() => { setOpen(true); refreshStatus(); }}
-          title="Search the shared memory your agents build up"
+          title="エージェントが蓄積した共有メモリを検索"
           style={{
             padding: '5px 10px 3px',
             background: active ? 'var(--cth-lemon-light)' : 'var(--cth-cream-200)',
@@ -93,12 +93,12 @@ export function MemoryPanel() {
           {pill}
         </button>
       ) : (
-        <PixelPanel variant="dialog" title="HIVE MEMORY" noPadding>
+        <PixelPanel variant="dialog" title="HIVEメモリ" noPadding>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 14 }}>
 
             {/* What this is — one plain line. */}
             <div style={{ fontSize: 12, color: 'var(--cth-ink-700)', lineHeight: 1.5 }}>
-              What your agents remember across sessions, shared between them. Search it by meaning, not just exact words.
+              セッションをまたいでエージェントが記憶した内容を、エージェント間で共有しています。完全一致だけでなく、意味で検索できます。
             </div>
 
             {/* Status + on/off — the two things the user controls at a glance. */}
@@ -113,7 +113,7 @@ export function MemoryPanel() {
                   size="sm"
                   onClick={toggleEnabled}
                 >
-                  {status.enabled ? 'Turn off' : 'Turn on'}
+                  {status.enabled ? 'オフにする' : 'オンにする'}
                 </PixelButton>
               )}
             </div>
@@ -124,7 +124,7 @@ export function MemoryPanel() {
                 fontSize: 12, color: 'var(--cth-ink-700)', lineHeight: 1.6,
                 background: 'var(--cth-cream-100)', boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)', padding: 10
               }}>
-                Meaning-based search isn't installed yet.
+                意味ベースの検索はまだインストールされていません。
                 {/* The commands used to be inlined here, hardcoded for macOS
                     (`curl … | sh`, `source ~/.zshrc`) — dead text under cmd.exe or
                     PowerShell, on the platform most likely to be missing the tool.
@@ -145,11 +145,11 @@ export function MemoryPanel() {
                       setOpen(false);
                     }}
                   >
-                    set it up in Prerequisites →
+                    Prerequisites でセットアップ →
                   </PixelButton>
                 </div>
                 <div style={{ marginTop: 8, color: 'var(--cth-ink-500)' }}>
-                  Agents still keep plain notes without it.
+                  なくてもエージェントは通常のメモを利用できます。
                 </div>
               </div>
             )}
@@ -158,7 +158,7 @@ export function MemoryPanel() {
             {status?.available && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 <span style={{ fontSize: 11, color: 'var(--cth-ink-500)', fontFamily: 'var(--cth-font-display)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                  Search language
+                  検索言語
                 </span>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {MODELS.map((m) => {
@@ -199,7 +199,7 @@ export function MemoryPanel() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') run(); }}
-                    placeholder="Search by meaning…"
+                    placeholder="意味で検索…"
                     style={{
                       flex: 1, padding: '6px 8px 4px',
                       background: 'var(--cth-paper-100)', border: 'none',
@@ -209,7 +209,7 @@ export function MemoryPanel() {
                     }}
                   />
                   <PixelButton variant="primary" size="sm" onClick={run} disabled={busy}>
-                    {busy ? '…' : 'Search'}
+                    {busy ? '…' : '検索'}
                   </PixelButton>
                 </div>
                 {result && (
@@ -225,7 +225,7 @@ export function MemoryPanel() {
             )}
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--cth-ink-300)', paddingTop: 10 }}>
-              <PixelButton variant="ghost" size="sm" onClick={() => setOpen(false)}>Close</PixelButton>
+              <PixelButton variant="ghost" size="sm" onClick={() => setOpen(false)}>閉じる</PixelButton>
             </div>
           </div>
         </PixelPanel>

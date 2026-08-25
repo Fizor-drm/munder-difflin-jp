@@ -183,11 +183,11 @@ export function AgentStrip({ config }: AgentStripProps) {
                     <span style={{
                       fontFamily: 'var(--cth-font-display)', fontSize: 8, lineHeight: '12px',
                       color: 'var(--cth-ink-500)'
-                    }}>PRIVATE NOTE · {a.name.toUpperCase()}</span>
+                    }}>プライベートメモ · {a.name.toUpperCase()}</span>
                     <button
                       onClick={() => setNoteEditId(null)}
-                      title="Done"
-                      aria-label="Close note editor"
+                      title="閉じる"
+                      aria-label="メモエディターを閉じる"
                       style={{
                         flexShrink: 0, width: 18, height: 18, padding: 0, lineHeight: 1,
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -206,8 +206,8 @@ export function AgentStrip({ config }: AgentStripProps) {
                     value={a.note ?? ''}
                     onChange={(e) => setAgentNote(a.id, e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Escape') setNoteEditId(null); }}
-                    placeholder="one line per bullet…"
-                    aria-label={`Note for ${a.name}`}
+                    placeholder="1行に1項目ずつ…"
+                    aria-label={`${a.name} のメモ`}
                     style={{
                       width: '100%', padding: '6px 8px',
                       border: 'none', outline: 'none', resize: 'none', boxSizing: 'border-box',
@@ -218,7 +218,7 @@ export function AgentStrip({ config }: AgentStripProps) {
                     }}
                   />
                   <span style={{ fontSize: 10, color: 'var(--cth-ink-500)' }}>
-                    one line = one bullet · esc to close
+                    1行 = 1項目 · escで閉じる
                   </span>
                 </div>
               </>
@@ -233,7 +233,7 @@ export function AgentStrip({ config }: AgentStripProps) {
         onClick={() => setAddAgentOpen(true)}
       >
         <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center', whiteSpace: 'nowrap' }}>
-          <Icon name="plus" /> add agent
+          <Icon name="plus" /> エージェント追加
         </span>
       </PixelButton>
       {/* ONE restore control, pinned to the strip's right edge. Busy (manual OR
@@ -246,8 +246,8 @@ export function AgentStrip({ config }: AgentStripProps) {
           ref={restoreBtnRef}
           style={{ alignSelf: 'center', flexShrink: 0, marginLeft: 'auto' }}
           title={restoreBusy
-            ? "Your previous session's agents are being respawned with their original ids, so memory and inboxes reattach."
-            : `Previous session: ${restorableAgents.map((a: Agent) => a.name).join(', ')}`}
+            ? '前回のセッションのエージェントを元のIDで復元しているため、メモリと受信箱が再接続されます。'
+            : `前回のセッション: ${restorableAgents.map((a: Agent) => a.name).join(', ')}`}
         >
           <PixelButton
             variant="primary"
@@ -257,7 +257,7 @@ export function AgentStrip({ config }: AgentStripProps) {
           >
             <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center', whiteSpace: 'nowrap' }}>
               <Icon name="play" />
-              {restoreBusy ? 'restoring your team…' : `restore team (${restorableAgents.length}) ▴`}
+              {restoreBusy ? 'チームを復元中…' : `チームを復元 (${restorableAgents.length}) ▴`}
             </span>
           </PixelButton>
         </span>
@@ -280,8 +280,8 @@ export function AgentStrip({ config }: AgentStripProps) {
             <span style={{
               fontFamily: 'var(--cth-font-display)', fontSize: 8, lineHeight: '12px',
               color: 'var(--cth-ink-500)', textTransform: 'uppercase'
-            }}>
-              previous session
+            }}            >
+              前回のセッション
             </span>
             {/* Per-agent dismiss wires straight to removeRestorableAgent
                 (filters + persistRestorable), so a dismissed agent never
@@ -289,7 +289,7 @@ export function AgentStrip({ config }: AgentStripProps) {
             {restorableAgents.map((a: Agent) => (
               <span
                 key={a.id}
-                title={`${a.name} — restorable from last session`}
+                title={`${a.name} — 前回のセッションから復元可能`}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   height: 26, padding: '0 4px 0 8px',
@@ -306,8 +306,8 @@ export function AgentStrip({ config }: AgentStripProps) {
                 </span>
                 <button
                   onClick={() => useStore.getState().removeRestorableAgent(a.id)}
-                  title={`Dismiss ${a.name} — remove permanently from the restore list`}
-                  aria-label={`Dismiss ${a.name}`}
+                  title={`${a.name} を除外 — 復元リストから完全に削除します`}
+                  aria-label={`${a.name} を除外`}
                   style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     width: 18, height: 18, padding: 0, lineHeight: 1,
@@ -323,7 +323,7 @@ export function AgentStrip({ config }: AgentStripProps) {
               onClick={() => { setRestoreMenuOpen(false); void restoreTeam(); }}
             >
               <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center', whiteSpace: 'nowrap' }}>
-                <Icon name="play" /> restore all ({restorableAgents.length})
+                <Icon name="play" /> すべて復元 ({restorableAgents.length})
               </span>
             </PixelButton>
           </div>

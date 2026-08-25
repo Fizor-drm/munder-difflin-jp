@@ -80,7 +80,7 @@ export function ThreadsPanel({ agentId }: ThreadsPanelProps) {
     return (
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, background: 'var(--cth-paper-200)' }}>
         <p style={{ margin: 0, fontSize: 13, color: 'var(--cth-ink-700)', textAlign: 'center', maxWidth: 280 }}>
-          No conversations yet. Messages this agent receives will appear here as threads.
+          まだ会話はありません。このエージェントが受信したメッセージがスレッドでここに表示されます。
         </p>
       </div>
     );
@@ -134,7 +134,7 @@ export function ThreadsPanel({ agentId }: ThreadsPanelProps) {
                           <button
                             onClick={() => setExpanded(s => ({ ...s, [m.id]: !isExp }))}
                             style={{ marginLeft: 6, border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--cth-sky)', fontFamily: 'var(--cth-font-ui)', fontSize: 12, padding: 0 }}
-                          >{isExp ? 'less' : 'more'}</button>
+                          >{isExp ? '折りたたむ' : '続きを見る'}</button>
                         )}
                       </div>
                     </div>
@@ -145,7 +145,7 @@ export function ThreadsPanel({ agentId }: ThreadsPanelProps) {
                   <textarea
                     value={drafts[thread.conversation] ?? ''}
                     onChange={e => setDrafts(d => ({ ...d, [thread.conversation]: e.target.value }))}
-                    placeholder={`Reply to ${last.from}…`}
+                    placeholder={`${last.from} に返信…`}
                     rows={2}
                     style={{
                       resize: 'vertical', width: '100%', boxSizing: 'border-box', padding: '6px 8px',
@@ -156,7 +156,7 @@ export function ThreadsPanel({ agentId }: ThreadsPanelProps) {
                   />
                   <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <PixelButton size="sm" onClick={() => sendReply(last)} disabled={!(drafts[thread.conversation] ?? '').trim()}>
-                      Send
+                      送信
                     </PixelButton>
                   </div>
                 </div>

@@ -12,6 +12,8 @@ import { ideBarStyle, ideIconBtn as iconBtn, ideTextBtn as textBtn } from './chr
 
 // v0.3.4 markdown preview: per-md-tab view mode, defaulted from the last choice.
 type MdView = 'code' | 'split' | 'preview';
+/** Display labels for MdView values (the values themselves are persisted). */
+const MD_VIEW_LABELS: Record<MdView, string> = { code: 'コード', split: '分割', preview: 'プレビュー' };
 const LS_MD_VIEW = 'cth.ide.mdView';
 const isMarkdown = (rel: string) => /\.(md|markdown)$/i.test(rel);
 function defaultMdView(): MdView {
@@ -51,6 +53,8 @@ interface DiffData {
 }
 
 const tabKey = (mode: TabMode, rel: string) => `${mode}::${rel}`;
+/** Display labels for git rail tabs (the keys drive state comparisons). */
+const RAIL_LABELS: Record<'changes' | 'history' | 'compare', string> = { changes: '変更', history: '履歴', compare: '比較' };
 const basename = (rel: string) => rel.split('/').pop() || rel;
 
 function statusColor(code: string): string {
@@ -385,8 +389,8 @@ export function IdePanel() {
           <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 6, minWidth: 0 }}>
             <span
               title={target.inferred
-                ? `No agent was named when the IDE opened — showing ${target.agent.name}'s workspace (the current selection)`
-                : `${target.agent.name}'s workspace`}
+                ? `IDE を開いたときにエージェントが指定されていなかったため、${target.agent.name} のワークスペースを表示しています（現在の選択）`
+                : `${target.agent.name} のワークスペース`}
               style={{
                 fontFamily: 'var(--cth-font-ui)', fontSize: 13, fontWeight: 600,
                 color: 'var(--cth-ink-900)',
@@ -402,27 +406,27 @@ export function IdePanel() {
             {target.inferred && (
               // Never assert a name we had to guess at. One quiet word is enough
               // to stop someone trusting the wrong agent's directory.
-              <span style={{ fontFamily: 'var(--cth-font-ui)', fontSize: 11, color: 'var(--cth-ink-500)' }}>
-                (assumed)
-              </span>
+                <span style={{ fontFamily: 'var(--cth-font-ui)', fontSize: 11, color: 'var(--cth-ink-500)' }}>
+                  （推定）
+                </span>
             )}
           </span>
         ) : (
           <span style={{ fontFamily: 'var(--cth-font-ui)', fontSize: 13, color: 'var(--cth-ink-500)' }}>
-            no agent
+            エージェントなし
           </span>
         )}
         <span title={root ?? ''} style={{
           fontFamily: 'var(--cth-font-mono)', fontSize: 13, color: 'var(--cth-ink-500)',
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '30vw'
         }}>
-          {root ? basename(root) : 'no workspace'}
+          {root ? basename(root) : 'ワークスペースなし'}
         </span>
         <button
           className="cth-titlebar-nodrag"
           onClick={() => setIdeOpen(false)}
-          title="Close IDE (Esc)"
-          aria-label="Close IDE"
+          title="IDE を閉じる（Esc）"
+          aria-label="IDE を閉じる"
           style={{
             marginLeft: 'auto',
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -442,7 +446,7 @@ export function IdePanel() {
           flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
           textAlign: 'center', color: 'var(--cth-ink-500)', fontFamily: 'var(--cth-font-ui)', fontSize: 16
         }}>
-          No workspace available.<br />Spawn an agent first — the IDE opens on its working directory.
+          ワークスペースがありません。<br />先にエージェントを作成してください。IDE はその作業ディレクトリで開きます。
         </div>
       ) : (
         <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
@@ -460,8 +464,8 @@ export function IdePanel() {
             }}>
               <button
                 onClick={toggleGitRail}
-                title={gitCollapsed ? 'Expand the git panel' : 'Collapse the git panel — more room for the file tree'}
-                aria-label={gitCollapsed ? 'Expand the git panel' : 'Collapse the git panel'}
+                title={gitCollapsed ? 'git パネルを展開' : 'git パネルを折りたたむ — ファイルツリーの領域が広がります'}
+                aria-label={gitCollapsed ? 'git パネルを展開' : 'git パネルを折りたたむ'}
                 aria-expanded={!gitCollapsed}
                 style={{
                   ...iconBtn,
@@ -493,11 +497,11 @@ export function IdePanel() {
                     background: railTab === k && !gitCollapsed ? 'var(--cth-sky-light)' : 'transparent',
                     boxShadow: railTab === k && !gitCollapsed ? 'inset 0 0 0 1px var(--cth-ink-300)' : 'none'
                   }}
-                >{k}</button>
+                >{RAIL_LABELS[k]}</button>
               ))}
               <span style={{ flex: 1 }} />
               {railTab === 'changes' && !gitCollapsed && (
-                <button onClick={() => refreshStatus()} title="Refresh" style={iconBtn}>
+                <button onClick={() => refreshStatus()} title="更新" style={iconBtn}>
                   <Icon name="web" />
                 </button>
               )}
@@ -511,10 +515,10 @@ export function IdePanel() {
                   off the bottom with no way to reach the end. */}
               <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
                 {isRepo === false && (
-                  <div style={{ padding: '6px 12px', fontSize: 12, color: 'var(--cth-ink-500)' }}>not a git repo</div>
+                  <div style={{ padding: '6px 12px', fontSize: 12, color: 'var(--cth-ink-500)' }}>git リポジトリではありません</div>
                 )}
                 {isRepo && changedFiles.length === 0 && (
-                  <div style={{ padding: '6px 12px', fontSize: 12, color: 'var(--cth-ink-500)' }}>working tree clean</div>
+                  <div style={{ padding: '6px 12px', fontSize: 12, color: 'var(--cth-ink-500)' }}>変更はありません</div>
                 )}
                 {changedFiles.map((f) => {
                   const active = activeKey === tabKey('diff', f.path);
@@ -551,7 +555,7 @@ export function IdePanel() {
             )}
             {/* FILES */}
             <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', borderTop: '1px solid var(--cth-ink-300)' }}>
-              <SectionHeader title="files" />
+              <SectionHeader title="ファイル" />
               <div style={{ flex: 1, minHeight: 0 }}>
                 <FileTree root={root} activeRel={activeEditRel} onOpenFile={openEdit} onCopyPath={copyAbs} />
               </div>
@@ -593,14 +597,14 @@ export function IdePanel() {
                           : t.mode === 'image' ? 'var(--cth-peach-light)'
                           : 'var(--cth-sky-light)',
                         color: 'var(--cth-ink-900)'
-                      }}>{t.mode === 'revdiff' ? (t.revLabel ?? 'REV') : t.mode === 'image' ? 'IMG' : 'DIFF'}</span>
+                      }}>{t.mode === 'revdiff' ? (t.revLabel ?? 'REV') : t.mode === 'image' ? '画像' : '差分'}</span>
                     )}
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {basename(t.rel)}{dirty ? ' •' : ''}
                     </span>
                     <button
                       onClick={(e) => { e.stopPropagation(); closeTab(t.key); }}
-                      title="Close tab"
+                      title="タブを閉じる"
                       style={{ ...iconBtn, width: 16, height: 16 }}
                     >
                       <Icon name="x" />
@@ -621,9 +625,9 @@ export function IdePanel() {
                   <div style={{
                     fontFamily: 'var(--cth-font-display)', fontSize: 8, textTransform: 'uppercase',
                     letterSpacing: 1, color: 'var(--cth-ink-700)'
-                  }}>nothing open</div>
+                  }}>開いているファイルはありません</div>
                   <div style={{ fontFamily: 'var(--cth-font-ui)', fontSize: 13 }}>
-                    Pick a file from the tree to edit, or a changed file to diff.
+                    ツリーからファイルを選ぶと編集できます。変更されたファイルを選ぶと差分を表示します。
                   </div>
                   <ShortcutHint />
                 </div>
@@ -643,7 +647,7 @@ export function IdePanel() {
 
               {activeTab?.mode === 'edit' && (() => {
                 const buf = editBuffers[activeTab.rel];
-                if (!buf || buf.status === 'loading') return <Centered>loading…</Centered>;
+                if (!buf || buf.status === 'loading') return <Centered>読み込み中…</Centered>;
                 if (buf.status === 'error') return <Centered tone="error">{buf.error}</Centered>;
                 const md = isMarkdown(activeTab.rel);
                 const view: MdView = md ? (mdViews[activeTab.rel] ?? defaultMdView()) : 'code';
@@ -690,9 +694,9 @@ export function IdePanel() {
 
               {activeTab?.mode === 'revdiff' && (() => {
                 const d = diffData[activeTab.key];
-                if (!d || d.status === 'loading') return <Centered>loading diff…</Centered>;
+                if (!d || d.status === 'loading') return <Centered>差分を読み込み中…</Centered>;
                 if (d.status === 'error') return <Centered tone="error">{d.error}</Centered>;
-                if (d.status === 'binary') return <Centered>binary file — no text diff</Centered>;
+                if (d.status === 'binary') return <Centered>バイナリファイル — テキスト差分なし</Centered>;
                 return (
                   <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <div style={{
@@ -717,9 +721,9 @@ export function IdePanel() {
 
               {activeTab?.mode === 'diff' && (() => {
                 const d = diffData[activeTab.rel];
-                if (!d || d.status === 'loading') return <Centered>loading diff…</Centered>;
+                if (!d || d.status === 'loading') return <Centered>差分を読み込み中…</Centered>;
                 if (d.status === 'error') return <Centered tone="error">{d.error}</Centered>;
-                if (d.status === 'binary') return <Centered>binary file — no text diff</Centered>;
+                if (d.status === 'binary') return <Centered>バイナリファイル — テキスト差分なし</Centered>;
                 return (
                   <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <div style={{
@@ -729,12 +733,12 @@ export function IdePanel() {
                     }}>
                       <span style={{ color: 'var(--cth-ink-500)' }}>HEAD</span>
                       <Icon name="arrow-right" />
-                      <span>working tree</span>
+                      <span>作業ツリー</span>
                       <span style={{
                         flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                         fontFamily: 'var(--cth-font-mono)', textAlign: 'right'
                       }} title={activeTab.rel}>{activeTab.rel}</span>
-                      <button onClick={() => ensureDiff(activeTab.rel, true)} title="Refresh diff" style={iconBtn}>
+                      <button onClick={() => ensureDiff(activeTab.rel, true)} title="差分を更新" style={iconBtn}>
                         <Icon name="web" />
                       </button>
                     </div>
@@ -784,23 +788,23 @@ function EditorBar({ rel, dirty, saveState, onSave, onCopy, mdView, onMdView, on
             <button
               key={v}
               onClick={() => onMdView(v)}
-              title={v === 'code' ? 'Source only' : v === 'split' ? 'Source + preview' : 'Rendered preview'}
+              title={v === 'code' ? 'ソースのみ' : v === 'split' ? 'ソース + プレビュー' : 'プレビューを表示'}
               style={{
                 ...textBtn,
                 background: mdView === v ? 'var(--cth-sky-light)' : 'var(--cth-cream-100)',
                 boxShadow: mdView === v ? 'inset 0 0 0 1px var(--cth-ink-500)' : 'inset 0 0 0 1px var(--cth-ink-100)'
               }}
-            >{v}</button>
+            >{MD_VIEW_LABELS[v]}</button>
           ))}
         </span>
       )}
       {onViewImage && (
-        <button onClick={onViewImage} title="Show this file as an image" style={textBtn}>view image</button>
+        <button onClick={onViewImage} title="このファイルを画像として表示" style={textBtn}>画像を表示</button>
       )}
-      <button onClick={onCopy} title="Copy absolute path" style={textBtn}>copy path</button>
-      <button onClick={onSave} disabled={!dirty || saveState === 'saving'} title="Save (Cmd/Ctrl+S)"
+      <button onClick={onCopy} title="絶対パスをコピー" style={textBtn}>パスをコピー</button>
+      <button onClick={onSave} disabled={!dirty || saveState === 'saving'} title="保存（Cmd/Ctrl+S）"
         style={{ ...textBtn, opacity: dirty ? 1 : 0.5 }}>
-        {saveState === 'saving' ? '...' : saveState === 'saved' ? 'saved' : saveState === 'error' ? 'err' : 'save'}
+        {saveState === 'saving' ? '...' : saveState === 'saved' ? '保存済み' : saveState === 'error' ? 'エラー' : '保存'}
       </button>
     </div>
   );
@@ -863,18 +867,18 @@ const IS_MAC = typeof navigator !== 'undefined' && /mac/i.test(navigator.userAge
 /** Monaco's own default bindings — do not invent entries here. */
 const EDITOR_SHORTCUTS: ReadonlyArray<readonly [string, string]> = IS_MAC
   ? [
-      ['⌘F', 'find in file'],
-      ['⌥⌘F', 'replace'],
-      ['F1', 'command palette'],
-      ['⌃G', 'go to line'],
-      ['⇧⌘O', 'go to symbol']
+      ['⌘F', 'ファイル内検索'],
+      ['⌥⌘F', '置換'],
+      ['F1', 'コマンドパレット'],
+      ['⌃G', '指定行へ移動'],
+      ['⇧⌘O', 'シンボルへ移動']
     ]
   : [
-      ['Ctrl+F', 'find in file'],
-      ['Ctrl+H', 'replace'],
-      ['F1', 'command palette'],
-      ['Ctrl+G', 'go to line'],
-      ['Ctrl+Shift+O', 'go to symbol']
+      ['Ctrl+F', 'ファイル内検索'],
+      ['Ctrl+H', '置換'],
+      ['F1', 'コマンドパレット'],
+      ['Ctrl+G', '指定行へ移動'],
+      ['Ctrl+Shift+O', 'シンボルへ移動']
     ];
 
 function Centered({ children, tone }: { children: React.ReactNode; tone?: 'error' }) {
